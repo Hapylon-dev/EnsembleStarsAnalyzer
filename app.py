@@ -1470,14 +1470,29 @@ if analyze_button:
             "Xへ解析結果を投稿できます。"
         )
 
+        st.markdown(
+            """
+            <style>
+            div[data-testid="stLinkButton"] a {
+                color: #FFFFFF !important;
+                background-color: #222222 !important;
+                border: 1px solid #222222 !important;
+                font-weight: 600 !important;
+            }
+
+            div[data-testid="stLinkButton"] a:hover {
+                color: #FFFFFF !important;
+                background-color: #333333 !important;
+                border-color: #333333 !important;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+
         st.link_button(
-
             label="𝕏 結果を共有",
-
             url=tweet_url,
-
-            use_container_width=True,
-
         )
 
     st.divider()

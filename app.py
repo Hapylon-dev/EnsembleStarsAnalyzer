@@ -893,22 +893,29 @@ st.markdown("""
 border:1px solid #E2D8F5;
 border-radius:12px;
 padding:24px;
-background:#FFFFFF;
+background:#FFFFFF !important;
+color:#222222 !important;
 ">
-<h3 style="margin-top:0;color:#7B2CBF;">
+
+<h3 style="
+margin-top:0;
+color:#7B2CBF !important;
+">
 ⚙️ 解析設定
 </h3>
 
 <p style="
 margin-top:6px;
-color:#666666;
+color:#222222 !important;
 font-size:15px;
+line-height:1.6;
 ">
 
 楽曲情報・難易度・レベル・
 総ノーツ数を入力してください。
 
 </p>
+
 </div>
 """, unsafe_allow_html=True)
 

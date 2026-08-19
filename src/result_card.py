@@ -1212,10 +1212,12 @@ COPYRIGHT = "Developed by Hapylon × ChatGPT"
 # Font
 # ==========================================================
 
-FONT_DIR = Path("fonts")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-DEFAULT_FONT = "NotoSansJP-Regular.ttf"
-DEFAULT_BOLD_FONT = "NotoSansJP-Bold.ttf"
+FONT_DIR = PROJECT_ROOT / "fonts"
+
+DEFAULT_FONT = "NotoSansJP-Regular.otf"
+DEFAULT_BOLD_FONT = "NotoSansJP-Bold.otf"
 
 FONT_CACHE: dict[tuple[str, int], ImageFont.FreeTypeFont] = {}
 

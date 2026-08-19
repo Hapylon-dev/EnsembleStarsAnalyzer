@@ -4617,6 +4617,113 @@ def draw_fastslow_card(
 # Comment Card
 # ==========================================================
 
+# ==========================================================
+# Comment Layout Utility
+# ==========================================================
+
+def calculate_comment_layout(
+    draw: ImageDraw.ImageDraw,
+    comment: str,
+):
+    """
+    コメントカードの必要高さと折り返し結果を計算する。
+
+    コメントを実際に描画する前に必要なキャンバス高さを
+    確定するために使用する。
+    """
+
+    # ------------------------------------------------------
+    # Comment width
+    # ------------------------------------------------------
+
+    base_rect = (
+        CONTENT_LEFT,
+        0,
+        CONTENT_RIGHT,
+        COMMENT_HEIGHT,
+    )
+
+    base_x1, _, base_x2, _ = card_inner_rect(
+        base_rect,
+    )
+
+    total_width = base_x2 - base_x1
+
+    # 左側：バッジ・コメント
+    left_width = int(total_width * 0.72)
+
+    comment_width = left_width - 50
+
+    # ------------------------------------------------------
+    # Wrap
+    # ------------------------------------------------------
+
+    lines = wrap_text(
+        draw,
+        comment,
+        COMMENT_FONT,
+        comment_width,
+    )
+
+    if not lines:
+        lines = [""]
+
+    # ------------------------------------------------------
+    # Text height
+    # ------------------------------------------------------
+
+    comment_line_spacing = 14
+
+    comment_text_height = 0
+    current_offset = 0
+
+    for index, line in enumerate(lines):
+
+        left, bbox_top, right, bbox_bottom = draw.textbbox(
+            (0, 0),
+            line,
+            font=COMMENT_FONT,
+        )
+
+        # 実際に描画される文字の下端
+        actual_bottom = (
+            current_offset
+            + bbox_bottom
+        )
+
+        comment_text_height = max(
+            comment_text_height,
+            actual_bottom,
+        )
+
+        # draw_multiline_text() と同じ進行
+        line_height = bbox_bottom - bbox_top
+
+        current_offset += line_height
+
+        if index < len(lines) - 1:
+            current_offset += comment_line_spacing
+
+    # ------------------------------------------------------
+    # Required height
+    # ------------------------------------------------------
+
+    content_offset = 70
+
+    required_comment_height = (
+        content_offset
+        + COMMENT_TEXT_TOP
+        + comment_text_height
+        + COMMENT_BOTTOM_PADDING
+    )
+
+    dynamic_comment_height = max(
+        COMMENT_HEIGHT,
+        required_comment_height,
+    )
+
+    return dynamic_comment_height, lines
+
 def draw_comment_card(
     draw: ImageDraw.ImageDraw,
     *,
@@ -4669,60 +4776,12 @@ def draw_comment_card(
     right_center = right_left + right_width // 2
 
     # ------------------------------------------------------
-    # Comment Wrapping
+    # Comment Layout
     # ------------------------------------------------------
 
-    comment_width = left_width - 50
-
-    lines = wrap_text(
+    dynamic_comment_height, lines = calculate_comment_layout(
         draw,
         comment,
-        COMMENT_FONT,
-        comment_width,
-    )
-
-    if not lines:
-        lines = [""]
-
-    # ------------------------------------------------------
-    # Dynamic Height
-    # ------------------------------------------------------
-
-    # draw_multiline_text() と同じ行間を使用
-    comment_line_spacing = 14
-
-    # 実際に描画されるコメント本文の高さを計算
-    comment_text_height = 0
-
-    for index, line in enumerate(lines):
-
-        _, line_height = text_size(
-            draw,
-            line,
-            COMMENT_FONT,
-        )
-
-        comment_text_height += line_height
-
-        # 最終行の後ろには行間を加えない
-        if index < len(lines) - 1:
-            comment_text_height += comment_line_spacing
-
-    content_offset = (
-        card_content_top(base_rect)
-        - top
-    )
-
-    required_comment_height = (
-        content_offset
-        + COMMENT_TEXT_TOP
-        + comment_text_height
-        + COMMENT_BOTTOM_PADDING
-    )
-
-    dynamic_comment_height = max(
-        COMMENT_HEIGHT,
-        required_comment_height,
     )
 
     # ------------------------------------------------------
@@ -4913,6 +4972,7 @@ def draw_comment_card(
     # Comment
     # ------------------------------------------------------
 
+    comment_line_spacing = 14
 
     draw.text(
         (
@@ -4938,10 +4998,7 @@ def draw_comment_card(
         COMMENT_FONT,
         color=comment_color,
         line_spacing=comment_line_spacing,
-        max_bottom=(
-            comment_rect[3]
-            - COMMENT_BOTTOM_PADDING
-        ),
+        max_bottom=None,
     )
 
     return comment_rect[3]
@@ -5202,21 +5259,27 @@ def create_result_card(
             "（コメント表示OFFまたは解析対象外）"
         )
 
-    comment_bottom = draw_comment_card(
+    # ------------------------------------------------------
+    # Comment Layout / Canvas Height
+    # ------------------------------------------------------
+
+    comment_top = (
+        fastslow_bottom
+        + SECTION_GAP
+    )
+
+    comment_height, _ = calculate_comment_layout(
         draw,
-        badge=badge,
-        badge_color=badge_color,
-        badge_fill=badge_fill,
-        confidence_level=confidence_level,
-        confidence=confidence,
-        confidence_color=confidence_color,
-        comment=comment,
-        top=fastslow_bottom + SECTION_GAP,
-        visible=True,
+        comment,
+    )
+
+    comment_bottom = (
+        comment_top
+        + comment_height
     )
 
     # ------------------------------------------------------
-    # Footer / Dynamic Canvas Height
+    # Footer Position
     # ------------------------------------------------------
 
     footer_top = (
@@ -5234,16 +5297,19 @@ def create_result_card(
         + CARD_MARGIN
     )
 
-    # 必要な場合のみキャンバスを下方向へ拡張
+    # ------------------------------------------------------
+    # Expand Canvas BEFORE drawing comment
+    # ------------------------------------------------------
+
     if required_height > image.height:
 
         expanded_image = Image.new(
-            "RGB",
+            "RGBA",
             (
                 CARD_WIDTH,
                 required_height,
             ),
-            BACKGROUND,
+            BACKGROUND + (255,),
         )
 
         expanded_image.paste(
@@ -5258,38 +5324,31 @@ def create_result_card(
             image,
         )
 
-    # キャンバス拡張後にFooterを描画
+    # ------------------------------------------------------
+    # Draw Comment
+    # ------------------------------------------------------
+
+    comment_bottom = draw_comment_card(
+        draw,
+        badge=badge,
+        badge_color=badge_color,
+        badge_fill=badge_fill,
+        confidence_level=confidence_level,
+        confidence=confidence,
+        confidence_color=confidence_color,
+        comment=comment,
+        top=comment_top,
+        visible=True,
+    )
+
+    # ------------------------------------------------------
+    # Footer
+    # ------------------------------------------------------
+    
     draw_footer(
         draw,
         top=footer_top,
     )
-
-    # ------------------------------------------------------
-    # Dynamic Canvas Height
-    # ------------------------------------------------------
-
-    required_height = (
-        footer_bottom
-        + CARD_MARGIN
-    )
-
-    if required_height > image.height:
-
-        expanded_image = Image.new(
-            "RGB",
-            (
-                CARD_WIDTH,
-                required_height,
-            ),
-            BACKGROUND,
-        )
-
-        expanded_image.paste(
-            image,
-            (0, 0),
-        )
-
-        image = expanded_image
 
     save_path.parent.mkdir(
         parents=True,

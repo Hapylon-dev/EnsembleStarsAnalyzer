@@ -1335,6 +1335,21 @@ if analyze_button:
 
         )
 
+        # Result Cardをメモリへ読み込む
+        with open(card_path, "rb") as file:
+            card_data = file.read()
+
+        # Result Cardの一時ファイルを削除
+        try:
+            os.remove(card_path)
+        except FileNotFoundError:
+            pass
+        except OSError:
+            if config.DEBUG_MODE:
+                st.caption(
+                    "Result Cardの一時ファイルを削除できませんでした。"
+                )
+
         progress_status.markdown("""
         **現在の処理**
 
@@ -1496,7 +1511,7 @@ if analyze_button:
     )
 
     st.image(
-        card_path,
+        card_data,
         use_container_width=True,
     )
     
@@ -1550,16 +1565,13 @@ if analyze_button:
             f"{safe_music_name}_ResultCard.png"
         )
 
-        with open(card_path, "rb") as file:
-            file_data = file.read()
-
-            st.download_button(
-                label="📥 Result Cardを保存",
-                data=file_data,
-                file_name=download_file_name,
-                mime="image/png",
-                width="stretch",
-            )
+        st.download_button(
+            label="📥 Result Cardを保存",
+            data=card_data,
+            file_name=download_file_name,
+            mime="image/png",
+            width="stretch",
+        )
         
         st.caption(
             "※ 保存した画像はSNSなどで共有できます。"

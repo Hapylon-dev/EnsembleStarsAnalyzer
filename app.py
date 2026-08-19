@@ -464,6 +464,16 @@ div.stLinkButton > a:hover{
 }
 
 /* ==========================================================
+   X Share Button - Vertical Alignment
+   ========================================================== */
+
+/* 保存ボタンとX共有ボタンの縦位置を統一 */
+div[data-testid="stLinkButton"] {
+    position: relative !important;
+    top: -17px !important;
+}
+
+/* ==========================================================
    Streamlit Components
    ========================================================== */
 
@@ -588,6 +598,92 @@ hr {
         font-size: 14px;
         line-height: 1.6;
     }
+
+    /* ==========================================================
+    Save / X Share Buttons
+    ========================================================== */
+
+    /* ----------------------------------------------------------
+    Result Card 保存ボタン
+    ---------------------------------------------------------- */
+
+    div[data-testid="stDownloadButton"] {
+        width: 100% !important;
+    }
+
+    div[data-testid="stDownloadButton"] button {
+        width: 100% !important;
+
+        height: 48px !important;
+        min-height: 48px !important;
+        max-height: 48px !important;
+
+        box-sizing: border-box !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        padding: 0 16px !important;
+
+        border-radius: 10px !important;
+
+        font-size: 14px !important;
+        font-weight: 700 !important;
+    }
+
+
+    /* ----------------------------------------------------------
+    X 結果を共有ボタン
+    ---------------------------------------------------------- */
+
+    div[data-testid="stLinkButton"] {
+        width: 100% !important;
+    }
+
+    div[data-testid="stLinkButton"] a {
+        width: 100% !important;
+
+        height: 48px !important;
+        min-height: 48px !important;
+        max-height: 48px !important;
+
+        box-sizing: border-box !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        padding: 0 16px !important;
+
+        color: #FFFFFF !important;
+
+        background-color: #222222 !important;
+
+        border: 1px solid #222222 !important;
+
+        border-radius: 10px !important;
+
+        font-size: 14px !important;
+        font-weight: 700 !important;
+
+        line-height: 1 !important;
+
+        text-decoration: none !important;
+    }
+
+    /* ----------------------------------------------------------
+    X 結果を共有：Hover
+    ---------------------------------------------------------- */
+
+    div[data-testid="stLinkButton"] a:hover {
+        color: #FFFFFF !important;
+
+        background-color: #333333 !important;
+
+        border-color: #333333 !important;
+    }
+
 }
 
 </style>
@@ -1416,8 +1512,20 @@ if analyze_button:
 
         st.markdown("#### 📥 Result Card 保存")
 
-        st.caption(
-            "Result CardをPNG形式で保存できます。"
+        st.markdown(
+            """
+            <div style="
+                height: 24px;
+                display: flex;
+                align-items: center;
+                color: #999999;
+                font-size: 12px;
+                line-height: 1.2;
+            ">
+                Result CardをPNG形式で保存できます。
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
         # ----------------------------------------------------------
@@ -1443,19 +1551,14 @@ if analyze_button:
         )
 
         with open(card_path, "rb") as file:
+            file_data = file.read()
 
             st.download_button(
-
-                label="📥 Result Card を保存",
-
-                data=file,
-
+                label="📥 Result Cardを保存",
+                data=file_data,
                 file_name=download_file_name,
-
                 mime="image/png",
-
-                use_container_width=True,
-
+                width="stretch",
             )
         
         st.caption(
@@ -1466,8 +1569,20 @@ if analyze_button:
 
         st.markdown("#### 𝕏 結果を共有")
 
-        st.caption(
-            "Xへ解析結果を投稿できます。"
+        st.markdown(
+            """
+            <div style="
+                height: 24px;
+                display: flex;
+                align-items: center;
+                color: #999999;
+                font-size: 12px;
+                line-height: 1.2;
+            ">
+                Xへ解析結果を投稿できます。
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
         st.markdown(
@@ -1493,6 +1608,7 @@ if analyze_button:
         st.link_button(
             label="𝕏 結果を共有",
             url=tweet_url,
+            width="stretch",
         )
 
     st.divider()

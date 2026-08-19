@@ -1605,6 +1605,41 @@ def wrap_text(
     return lines
 
 # ==========================================================
+# Decorative Star
+# ==========================================================
+
+def draw_four_point_star(
+    draw: ImageDraw.ImageDraw,
+    cx: int,
+    cy: int,
+    outer: int = 18,
+    inner: int = 5,
+    fill=TITLE,
+):
+    """
+    フォントに依存しない四芒星を描画する。
+
+    Unicodeの ✦ / ✧ は環境によって
+    □ と表示されるため、Pillowの図形として描画する。
+    """
+
+    points = [
+        (cx, cy - outer),
+        (cx + inner, cy - inner),
+        (cx + outer, cy),
+        (cx + inner, cy + inner),
+        (cx, cy + outer),
+        (cx - inner, cy + inner),
+        (cx - outer, cy),
+        (cx - inner, cy - inner),
+    ]
+
+    draw.polygon(
+        points,
+        fill=fill,
+    )
+
+# ==========================================================
 # Center Text
 # ==========================================================
 
@@ -2731,25 +2766,165 @@ def draw_header(
     # Title
     # ------------------------------------------------------
 
-    title_text = f"✦✧ {APP_NAME} ✧✦"
+    title_text = APP_NAME
     title_y = HEADER_RECT[1] + 18
 
-    # Shadow
-    draw_center_text(
+    title_width, _ = text_size(
         draw,
         title_text,
-        title_y + 2,
         TITLE_FONT,
-        (188, 188, 198),
     )
 
-    # Main
-    draw_center_text(
+    title_x = (
+        CARD_WIDTH - title_width
+    ) // 2
+
+    # ------------------------------------------------------
+    # Decorative Stars
+    #
+    # 元の
+    #     ✦✧ Ensemble Stars!! Music ✧✦
+    # をフォント非依存の図形で再現する。
+    # ------------------------------------------------------
+
+    star_y = title_y + 44
+
+    # 大きい星
+    large_outer = 18
+    large_inner = 5
+
+    # 小さい星
+    small_outer = 10
+    small_inner = 3
+
+    # タイトルから星までの距離
+    large_gap = 55
+    small_gap = 25
+
+    # 左側
+    left_large_x = title_x - large_gap
+    left_small_x = title_x - small_gap
+
+    # 右側
+    right_small_x = title_x + title_width + small_gap
+    right_large_x = title_x + title_width + large_gap
+
+    # ------------------------------------------------------
+    # Star Shadow
+    # ------------------------------------------------------
+
+    star_shadow = (188, 188, 198)
+
+    # Left large
+    draw_four_point_star(
         draw,
+        left_large_x + 2,
+        star_y + 2,
+        outer=large_outer,
+        inner=large_inner,
+        fill=star_shadow,
+    )
+
+    # Left small
+    draw_four_point_star(
+        draw,
+        left_small_x + 2,
+        star_y + 2,
+        outer=small_outer,
+        inner=small_inner,
+        fill=star_shadow,
+    )
+
+    # Right small
+    draw_four_point_star(
+        draw,
+        right_small_x + 2,
+        star_y + 2,
+        outer=small_outer,
+        inner=small_inner,
+        fill=star_shadow,
+    )
+
+    # Right large
+    draw_four_point_star(
+        draw,
+        right_large_x + 2,
+        star_y + 2,
+        outer=large_outer,
+        inner=large_inner,
+        fill=star_shadow,
+    )
+
+    # ------------------------------------------------------
+    # Main Stars
+    # ------------------------------------------------------
+
+    # Left large
+    draw_four_point_star(
+        draw,
+        left_large_x,
+        star_y,
+        outer=large_outer,
+        inner=large_inner,
+        fill=TITLE,
+    )
+
+    # Left small
+    draw_four_point_star(
+        draw,
+        left_small_x,
+        star_y,
+        outer=small_outer,
+        inner=small_inner,
+        fill=TITLE,
+    )
+
+    # Right small
+    draw_four_point_star(
+        draw,
+        right_small_x,
+        star_y,
+        outer=small_outer,
+        inner=small_inner,
+        fill=TITLE,
+    )
+
+    # Right large
+    draw_four_point_star(
+        draw,
+        right_large_x,
+        star_y,
+        outer=large_outer,
+        inner=large_inner,
+        fill=TITLE,
+    )
+
+    # ------------------------------------------------------
+    # Title Shadow
+    # ------------------------------------------------------
+
+    draw.text(
+        (
+            title_x,
+            title_y + 2,
+        ),
         title_text,
-        title_y,
-        TITLE_FONT,
-        TITLE,
+        fill=(188, 188, 198),
+        font=TITLE_FONT,
+    )
+
+    # ------------------------------------------------------
+    # Title Main
+    # ------------------------------------------------------
+
+    draw.text(
+        (
+            title_x,
+            title_y,
+        ),
+        title_text,
+        fill=TITLE,
+        font=TITLE_FONT,
     )
 
     # ------------------------------------------------------

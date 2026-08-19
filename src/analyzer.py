@@ -77,8 +77,9 @@ class Analyzer:
     def analyze(
         self,
         image_path: str,
-        total_notes: int
-    ) -> EstimateResult:
+        total_notes: int,
+        return_graph: bool = False,
+    ) -> EstimateResult | tuple[EstimateResult, np.ndarray]:
    
         """
         タップタイミング解析
@@ -155,6 +156,9 @@ class Analyzer:
             total_notes
         )
 
+        if return_graph:
+            return result, graph_image
+
         return result
 
 
@@ -167,7 +171,8 @@ _analyzer = Analyzer()
 
 def analyze(
     image_path: str,
-    total_notes: int
+    total_notes: int,
+    return_graph: bool = False,
 ):
     """
     Analyzer簡易呼び出し
@@ -175,8 +180,10 @@ def analyze(
 
     return _analyzer.analyze(
         image_path,
-        total_notes
+        total_notes,
+        return_graph,
     )
+
 # ==========================================================
 # Main
 # ==========================================================

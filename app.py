@@ -1104,12 +1104,11 @@ if analyze_button:
 
         progress_bar.progress(35)
 
-        estimate_result = analyze(
+        estimate_result, graph_image = analyze(
             image_path=image_path,
             total_notes=total_notes,
+            return_graph=True,
         )
-
-        graph_image = Path(config.OUTPUT_DIR) / config.GRAPH_FILENAME
 
         progress_status.markdown("""
         **現在の処理**

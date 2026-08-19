@@ -686,6 +686,90 @@ hr {
 
 }
 
+/* ==========================================================
+   Dark Mode Compatibility
+   Streamlit theme=dark 時のみ適用
+   ========================================================== */
+[data-theme="dark"] [data-testid="stAppViewContainer"],
+[data-theme="dark"] [data-testid="stMain"] {
+    color: #EAEAEA;
+}
+
+[data-theme="dark"] [data-testid="stMainBlockContainer"] {
+    color: #EAEAEA;
+}
+
+[data-theme="dark"] .app-header {
+    background: linear-gradient(180deg, #211A2B 0%, #2A2138 45%, #17151B 100%);
+    border-color: #4A3A5C;
+}
+
+[data-theme="dark"] .app-title {
+    color: #D7B8FF;
+}
+
+[data-theme="dark"] .app-subtitle {
+    color: #C7C1D4;
+}
+
+[data-theme="dark"] .app-fan-tool,
+[data-theme="dark"] .app-description {
+    color: #C8C3D0;
+}
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4 {
+    color: #D7B8FF;
+}
+
+[data-theme="dark"] [data-testid="stCaptionContainer"],
+[data-theme="dark"] [data-testid="stMarkdownContainer"] p {
+    color: #C8C3D0;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] [data-baseweb="select"] > div,
+[data-theme="dark"] [data-testid="stNumberInput"] input {
+    background-color: #26222D !important;
+    color: #F2F0F5 !important;
+    border-color: #51475E !important;
+}
+
+[data-theme="dark"] [data-testid="stFileUploaderDropzone"] {
+    background-color: #26222D !important;
+    border-color: #51475E !important;
+}
+
+[data-theme="dark"] [style*="background:#FFFFFF"],
+[data-theme="dark"] [style*="background: #FFFFFF"] {
+    background: #26222D !important;
+    border-color: #51475E !important;
+}
+
+[data-theme="dark"] [style*="background:#F7F3FF"],
+[data-theme="dark"] [style*="background:#F6F1FF"] {
+    background: #2A2235 !important;
+    border-color: #5A4770 !important;
+}
+
+[data-theme="dark"] [style*="color:#666"],
+[data-theme="dark"] [style*="color:#666666"],
+[data-theme="dark"] [style*="color:#555"] {
+    color: #C8C3D0 !important;
+}
+
+[data-theme="dark"] [style*="color:#444444"] {
+    color: #D4CFDB !important;
+}
+
+[data-theme="dark"] [data-testid="stInfo"],
+[data-theme="dark"] [data-testid="stAlert"] {
+    border-color: #51475E;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -766,10 +850,13 @@ st.divider()
 # ==========================================================
 
 st.markdown("""
-<div style="padding:18px;
+<div style="
+padding:18px;
 border-radius:12px;
 border:2px solid #8E44AD;
-background-color:#F7F3FF;">
+background-color:#F7F3FF;
+color:#444444;
+">
 
 <h3 style="color:#7D3C98;margin-top:0;">
 解析可能な画像
@@ -1762,6 +1849,7 @@ if analyze_button:
         border-radius:12px;
         padding:22px;
         background:#FCFCFC;
+        color:#444444;
         ">
 
         <h3 style="
@@ -1801,6 +1889,7 @@ if analyze_button:
         border-radius:12px;
         padding:20px;
         background:#FFF8E1;
+        color:#444444;
         ">
 
         <h3 style="margin-top:0;color:#E65100;">

@@ -335,7 +335,7 @@ def get_rank_color(rank: str):
         # ==================================================
         "S+": (170, 185, 205),
         "S":  (170, 185, 205),
-
+        
         # ==================================================
         # AAA : Bronze
         # ==================================================
@@ -863,20 +863,6 @@ def draw_rank_text(
         anchor="mm",
     )
 
-    # ------------------------------------------------------
-    # Top Highlight
-    # ------------------------------------------------------
-
-    draw.text(
-        (
-            position[0],
-            position[1] - 3,
-        ),
-        rank,
-        fill=(255, 255, 255, 45),
-        font=RANK_FONT,
-        anchor="mm",
-    )
 
 def draw_expert_badge(
     draw: ImageDraw.ImageDraw,
@@ -2114,22 +2100,38 @@ def draw_card_title(
     draw: ImageDraw.ImageDraw,
     rect,
     title: str,
+    *,
+    centered: bool = False,
 ):
     """
     カードタイトル
     """
 
-    x1, y1, _, _ = rect
+    x1, y1, x2, _ = rect
 
-    draw.text(
-        (
-            x1 + 20,
-            y1 + 18,
-        ),
-        title,
-        fill=TITLE,
-        font=SECTION_FONT,
-    )
+    if centered:
+        center_x = (x1 + x2) // 2
+
+        draw.text(
+            (
+                center_x,
+                y1 + 18,
+            ),
+            title,
+            fill=TITLE,
+            font=SECTION_FONT,
+            anchor="ma",
+        )
+    else:
+        draw.text(
+            (
+                x1 + 20,
+                y1 + 18,
+            ),
+            title,
+            fill=TITLE,
+            font=SECTION_FONT,
+        )
 
 
 def draw_card_divider(
@@ -2158,6 +2160,8 @@ def draw_card_header(
     draw: ImageDraw.ImageDraw,
     rect,
     title: str,
+    *,
+    centered: bool = False,
 ):
     """
     カードヘッダー
@@ -2167,6 +2171,7 @@ def draw_card_header(
         draw,
         rect,
         title,
+        centered=centered,
     )
 
     draw_card_divider(
@@ -3562,7 +3567,7 @@ def draw_left_panel(
 
         value,
 
-        fill=TITLE,
+        fill=SUBTEXT,
 
         font=VALUE_FONT,
 
@@ -4017,7 +4022,7 @@ def draw_right_panel(
         width=2,
     )
 
-    title_text = "ACHIEVEMENT"
+    title_text = "Achievement"
     sub_text = "（達成率）"
 
     draw_left_text(
@@ -4353,7 +4358,7 @@ def draw_right_panel(
     draw.text(
         (
             x1 + (x2 - x1 - score_width) / 2,
-            y + 52,
+            y + 44,
         ),
         score_text,
         fill=(245, 140, 0),
@@ -4804,6 +4809,7 @@ def draw_comment_card(
         draw,
         comment_rect,
         "解析結果",
+        centered=True,
     )
 
     x1, y1, x2, y2 = card_inner_rect(
@@ -4832,13 +4838,28 @@ def draw_comment_card(
         font=SECTION_FONT,
     )
 
-    badge_text_width, _ = text_size(
-        draw,
-        badge,
-        SECTION_FONT,
-    )
+    if badge.startswith("✦ "):
+        badge_label = "Precision Master"
 
-    badge_width = badge_text_width + 22
+        badge_text_width, _ = text_size(
+            draw,
+            badge_label,
+            SECTION_FONT,
+        )
+
+        badge_width = (
+            badge_text_width
+            + 20
+            + 22
+        )
+    else:
+        badge_text_width, _ = text_size(
+            draw,
+            badge,
+            SECTION_FONT,
+        )
+
+        badge_width = badge_text_width + 22
 
     badge_left = x1 + COMMENT_LEFT_PADDING
 
@@ -4865,16 +4886,63 @@ def draw_comment_card(
         width=2,
     )
 
-    draw.text(
-        (
-            badge_center_x,
+    if badge.startswith("✦ "):
+        # Precision Master
+        badge_label = "Precision Master"
+
+        label_width, label_height = text_size(
+            draw,
+            badge_label,
+            TEXT_FONT,
+        )
+
+        star_size = 10
+        star_gap = 6
+
+        total_width = (
+            star_size * 2
+            + star_gap
+            + label_width
+        )
+
+        start_x = (
+            badge_center_x
+            - total_width // 2
+        )
+
+        draw_four_point_star(
+            draw,
+            start_x + star_size,
             badge_top + COMMENT_BADGE_TEXT_Y,
-        ),
-        badge,
-        fill=badge_color,
-        font=TEXT_FONT,
-        anchor="mm",
-    )
+            outer=star_size,
+            inner=3,
+            fill=badge_color,
+        )
+
+        draw.text(
+            (
+                start_x
+                + star_size * 2
+                + star_gap,
+                badge_top + COMMENT_BADGE_TEXT_Y,
+            ),
+            badge_label,
+            fill=badge_color,
+            font=TEXT_FONT,
+            anchor="lm",
+        )
+
+    else:
+        draw.text(
+            (
+                badge_center_x,
+                badge_top + COMMENT_BADGE_TEXT_Y,
+            ),
+            badge,
+            fill=badge_color,
+            font=TEXT_FONT,
+            anchor="mm",
+        )
 
     # ------------------------------------------------------
     # Confidence

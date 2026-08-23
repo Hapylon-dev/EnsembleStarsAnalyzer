@@ -32,7 +32,7 @@ from share import create_tweet_url
 # Release Validation Settings
 # ==========================================================
 
-MAX_MUSIC_LENGTH = 80
+MAX_MUSIC_LENGTH = 60
 MAX_UPLOAD_SIZE_MB = 20
 MAX_UPLOAD_SIZE_BYTES = MAX_UPLOAD_SIZE_MB * 1024 * 1024
 
@@ -1829,6 +1829,7 @@ if analyze_button:
         st.image(
             graph_image,
             use_container_width=True,
+            channels="BGR",
         )
 
         st.success(

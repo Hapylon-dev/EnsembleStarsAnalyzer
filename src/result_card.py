@@ -302,16 +302,20 @@ RESULT_TITLE = (
 
 def get_rank_color(rank: str):
     """
-    Rank表示用メインカラー。
+    Overall Rank表示用メインカラー。
 
     SSS系 : 虹色描画用フォールバック
     SS系  : Gold
     S系   : Silver
-    A系   : Red
-    B系   : Yellow
-    C系   : Blue
-    D系   : Gray
-    E     : Dark Gray
+    AAA系 : Bronze
+    AA系  : Red
+    A系   : Deep Red
+    BBB/BB/B : Amber / Gold Yellow / Yellow
+    CCC/CC/C : Blue系
+    D/E/F : Gray系
+
+    Overallの現行ランク体系に合わせ、旧 DDD / DD / EEE / EE
+    および存在しない旧Plusランクは定義しない。
     """
 
     colors = {
@@ -335,7 +339,7 @@ def get_rank_color(rank: str):
         # ==================================================
         "S+": (170, 185, 205),
         "S":  (170, 185, 205),
-        
+
         # ==================================================
         # AAA : Bronze
         # ==================================================
@@ -357,74 +361,42 @@ def get_rank_color(rank: str):
         # ==================================================
         # BBB : Amber
         # ==================================================
-        "BBB+": (230, 150, 35),
-        "BBB":  (230, 150, 35),
+        "BBB": (230, 150, 35),
 
         # ==================================================
         # BB : Gold Yellow
         # ==================================================
-        "BB+": (245, 190, 45),
-        "BB":  (245, 190, 45),
+        "BB": (245, 190, 45),
 
         # ==================================================
         # B : Yellow
         # ==================================================
-        "B+": (255, 224, 102),
-        "B":  (255, 224, 102),
+        "B": (255, 224, 102),
 
         # ==================================================
         # CCC : Deep Blue
         # ==================================================
-        "CCC+": (45, 90, 170),
-        "CCC":  (45, 90, 170),
+        "CCC": (45, 90, 170),
 
         # ==================================================
         # CC : Blue
         # ==================================================
-        "CC+": (55, 110, 205),
-        "CC":  (55, 110, 205),
+        "CC": (55, 110, 205),
 
         # ==================================================
         # C : Light Blue
         # ==================================================
-        "C+": (66, 133, 244),
-        "C":  (66, 133, 244),
-
-        # ==================================================
-        # DDD : Dark Gray
-        # ==================================================
-        "DDD+": (95, 95, 105),
-        "DDD":  (95, 95, 105),
-
-        # ==================================================
-        # DD : Gray
-        # ==================================================
-        "DD+": (120, 120, 130),
-        "DD":  (120, 120, 130),
+        "C": (66, 133, 244),
 
         # ==================================================
         # D : Light Gray
         # ==================================================
-        "D+": (145, 145, 145),
-        "D":  (145, 145, 145),
+        "D": (145, 145, 145),
 
         # ==================================================
-        # EEE : Dark Charcoal
+        # E : Dark Charcoal
         # ==================================================
-        "EEE+": (70, 70, 78),
-        "EEE":  (70, 70, 78),
-
-        # ==================================================
-        # EE : Charcoal
-        # ==================================================
-        "EE+": (82, 82, 88),
-        "EE":  (82, 82, 88),
-
-        # ==================================================
-        # E
-        # ==================================================
-        "E+": (95, 95, 100),
-        "E":  (95, 95, 100),
+        "E": (95, 95, 100),
 
         # ==================================================
         # F
@@ -436,6 +408,7 @@ def get_rank_color(rank: str):
         rank,
         TITLE,
     )
+
 
 def get_rank_card_colors(rank: str):
     """
@@ -1436,12 +1409,6 @@ COMMENT_COMMENT_LABEL_TOP = 120
 
 COMMENT_TEXT_TOP = 162
 
-COMMENT_CONFIDENCE_TOP = 28
-
-COMMENT_CONFIDENCE_LABEL_Y = 36
-
-COMMENT_CONFIDENCE_DOT_Y = 74
-
 COMMENT_BOTTOM_PADDING = 20
 
 # ==========================================================
@@ -2239,14 +2206,10 @@ GRADE_STAR = {
     "CC":  "★★★☆☆☆",
     "C":   "★★★☆☆☆",
 
-    # DDD / DD / D
-    "DDD": "★★☆☆☆☆",
-    "DD":  "★★☆☆☆☆",
+    # D
     "D":   "★★☆☆☆☆",
 
-    # EEE / EE / E
-    "EEE": "★☆☆☆☆☆",
-    "EE":  "★☆☆☆☆☆",
+    # E
     "E":   "★☆☆☆☆☆",
 
     # F
@@ -2275,14 +2238,10 @@ GRADE_DIAMOND = {
     "CC":  "◆◆◆◇◇◇",
     "C":   "◆◆◆◇◇◇",
 
-    # DDD / DD / D
-    "DDD": "◆◆◇◇◇◇",
-    "DD":  "◆◆◇◇◇◇",
+    # D
     "D":   "◆◆◇◇◇◇",
 
-    # EEE / EE / E
-    "EEE": "◆◇◇◇◇◇",
-    "EE":  "◆◇◇◇◇◇",
+    # E
     "E":   "◆◇◇◇◇◇",
 
     # F
@@ -3597,61 +3556,32 @@ def generate_comment(
     comments = []
 
     # ----------------------------
-    # Achievement
-    # ----------------------------
-
-    if achievement >= 100.800:
-        comments.append(
-            "驚異的な達成率です。非常に高水準の判定結果です。"
-        )
-
-    elif achievement >= 100.750:
-        comments.append(
-            "非常に高い達成率です。高水準の判定結果となっています。"
-        )
-
-    elif achievement >= 100.700:
-        comments.append(
-            "高い達成率です。さらに上の達成率を目指せます。"
-        )
-
-    else:
-        comments.append(
-            "良好な達成率です。さらに上の達成率を目指せます。"
-        )
-
-    # ----------------------------
     # Precision
     # ----------------------------
 
-    if precision >= 80.0:
+    if precision >= 84.0:
         comments.append(
             "タイミングのばらつきが非常に少なく、非常に精密なタップです。"
         )
 
-    elif precision >= 75.0:
+    elif precision >= 78.0:
         comments.append(
             "タイミングのばらつきが少なく、高い精密度です。"
         )
 
-    elif precision >= 68.75:
+    elif precision >= 70.0:
         comments.append(
             "タイミングのばらつきは比較的少なく、精密度は良好です。"
         )
 
-    elif precision >= 62.5:
+    elif precision >= 64.0:
         comments.append(
             "タイミングのばらつきは比較的抑えられています。"
         )
 
-    elif precision >= 56.25:
+    elif precision >= 56.0:
         comments.append(
             "タイミングにややばらつきがあります。"
-        )
-
-    elif precision >= 50.0:
-        comments.append(
-            "タイミングのばらつきが見られます。中央判定を意識すると改善につながります。"
         )
 
     else:
@@ -3665,32 +3595,37 @@ def generate_comment(
 
     if balance_available:
 
-        if balance >= 98.0:
+        if balance >= 97.0:
             comments.append(
                 "SLOW/FASTの偏りが非常に少なく、非常に安定したタップです。"
             )
 
-        elif balance >= 90.0:
+        elif balance >= 87.0:
             comments.append(
                 "SLOW/FASTの偏りが少なく、安定したタップです。"
             )
 
-        elif balance >= 78.0:
+        elif balance >= 71.0:
             comments.append(
                 "SLOW/FASTの偏りは比較的小さく、バランスは良好です。"
             )
 
-        elif balance >= 66.0:
+        elif balance >= 53.0:
+                comments.append(
+                    "タイミングのばらつきは比較的抑えられています。"
+                )
+
+        elif balance >= 37.0:
             comments.append(
                 "SLOW/FASTにやや偏りがあります。"
             )
 
-        elif balance >= 54.0:
+        elif balance >= 20.0:
             comments.append(
                 "SLOW/FASTの偏りが見られます。"
             )
 
-        elif balance >= 42.0:
+        elif balance >= 12.0:
             comments.append(
                 "SLOW/FASTの偏りが大きく、タップタイミングが一方向に寄っています。"
             )
@@ -3737,7 +3672,8 @@ def generate_play_badge(
     fast: int,
     slow: int,
     amazing_plus: int,
-    amazing: int,
+    amazing_slow: int,
+    amazing_fast: int,
 ):
     """
     Version 1.3 Final
@@ -3765,38 +3701,59 @@ def generate_play_badge(
         )
 
     # ======================================================
-    # Ratio Calculation
+    # Amazing+率
     # ======================================================
 
-    # 3本バーの合計
-    total = (
+    # AMAZING+率の定義：
+    #
+    # AMAZING+
+    # ÷
+    # (AMAZING+ + AMAZING(SLOW) + AMAZING(FAST))
+    # × 100
+    #
+    # FAST / SLOW は AMAZING の内訳であり、
+    # AMAZING 本体とは別の判定値ではない。
+
+    amazing_total = (
         amazing_plus
-        + amazing
+        + amazing_slow
+        + amazing_fast
     )
 
-    if total > 0:
+    if amazing_total > 0:
 
         amazing_plus_rate = (
             amazing_plus
-            / total
-            * 100.0
-        )
-
-        fast_rate = (
-            fast
-            / total
-            * 100.0
-        )
-
-        slow_rate = (
-            slow
-            / total
+            / amazing_total
             * 100.0
         )
 
     else:
 
         amazing_plus_rate = 0.0
+
+    # ------------------------------------------------------
+    # FAST / SLOW 比率
+    # ------------------------------------------------------
+
+    timing_total = fast + slow
+
+    if timing_total > 0:
+
+        fast_rate = (
+            fast
+            / timing_total
+            * 100.0
+        )
+
+        slow_rate = (
+            slow
+            / timing_total
+            * 100.0
+        )
+
+    else:
+
         fast_rate = 0.0
         slow_rate = 0.0
 
@@ -3813,7 +3770,7 @@ def generate_play_badge(
     if (
         balance_available
         and precision >= 80.0
-        and balance >= 95.0
+        and balance >= 87.0
     ):
         return (
             "✦ Precision Master",
@@ -3838,7 +3795,7 @@ def generate_play_badge(
 
     if (
         balance_available
-        and balance >= 95.0
+        and balance >= 87.0
     ):
         return (
             "■ Balanced Player",
@@ -3852,7 +3809,7 @@ def generate_play_badge(
 
     if (
         balance_available
-        and balance < 68.0
+        and balance < 71.0
         and timing_difference > 15.0
     ):
         return (
@@ -3867,7 +3824,7 @@ def generate_play_badge(
 
     if (
         balance_available
-        and balance < 68.0
+        and balance < 71.0
         and timing_difference < -15.0
     ):
         return (
@@ -3885,41 +3842,6 @@ def generate_play_badge(
         TITLE,
         (248, 248, 255),
     )
-
-# ==========================================================
-# Confidence
-# ==========================================================
-
-def generate_confidence(
-    *,
-    judges: dict,
-):
-    """
-    解析信頼度
-    """
-
-    total = sum(judges.values())
-
-    if total >= 1000:
-        return (
-            3,
-            "High",
-            (33, 92, 210),
-        )
-
-    elif total >= 500:
-        return (
-            2,
-            "Medium",
-            (245, 140, 0),
-        )
-
-    else:
-        return (
-            1,
-            "Low",
-            (229, 57, 53),
-        )
 
 # ==========================================================
 # Right Panel
@@ -4735,9 +4657,6 @@ def draw_comment_card(
     badge: str,
     badge_color,
     badge_fill,
-    confidence_level,
-    confidence,
-    confidence_color,
     comment: str,
     top: int,
     visible: bool = True,
@@ -4774,11 +4693,6 @@ def draw_comment_card(
 
     # 左側：バッジ・コメント
     left_width = int(total_width * 0.72)
-
-    # 右側：解析信頼度
-    right_left = base_x1 + left_width + 20
-    right_width = base_x2 - right_left
-    right_center = right_left + right_width // 2
 
     # ------------------------------------------------------
     # Comment Layout
@@ -4943,98 +4857,6 @@ def draw_comment_card(
             font=TEXT_FONT,
             anchor="mm",
         )
-
-    # ------------------------------------------------------
-    # Confidence
-    # ------------------------------------------------------
-
-    confidence_top = (
-        content_top
-        + COMMENT_CONFIDENCE_TOP
-    )
-
-    draw.text(
-        (
-            right_center,
-            confidence_top,
-        ),
-        "解析信頼度",
-        fill=TITLE,
-        font=SECTION_FONT,
-        anchor="mm",
-    )
-
-    draw.text(
-    (
-        right_center,
-        confidence_top + COMMENT_CONFIDENCE_LABEL_Y + 2,
-    ),
-        confidence,
-        fill=confidence_color,
-        font=TEXT_FONT,
-        anchor="mm",
-    )
-
-    # ------------------------------------------------------
-    # Confidence Indicator
-    # ------------------------------------------------------
-
-    dot_radius = 10
-    dot_gap = 44
-
-    dot_y = (
-        confidence_top
-        + COMMENT_CONFIDENCE_DOT_Y
-    )
-
-    TOTAL_DOTS = 3
-
-    indicator_width = (
-        TOTAL_DOTS * dot_radius * 2
-        + (TOTAL_DOTS - 1) * dot_gap
-    )
-
-    indicator_left = (
-        right_center
-        - indicator_width // 2
-        + 22
-    )
-
-    for i in range(TOTAL_DOTS):
-
-        active = i < confidence_level
-
-        dot_x = (
-            indicator_left
-            + i * dot_gap
-        )
-
-        if active:
-
-            draw.ellipse(
-                (
-                    dot_x,
-                    dot_y,
-                    dot_x + dot_radius * 2,
-                    dot_y + dot_radius * 2,
-                ),
-                fill=confidence_color,
-                outline=confidence_color,
-            )
-
-        else:
-
-            draw.ellipse(
-                (
-                    dot_x,
-                    dot_y,
-                    dot_x + dot_radius * 2,
-                    dot_y + dot_radius * 2,
-                ),
-                fill=WHITE,
-                outline=(210, 210, 210),
-                width=2,
-            )
 
     # ------------------------------------------------------
     # Comment
@@ -5294,10 +5116,6 @@ def create_result_card(
     # Comment
     # ------------------------------------------------------
     
-    confidence_level, confidence, confidence_color = generate_confidence(
-        judges=judges,
-    )
-    
     badge, badge_color, badge_fill = generate_play_badge(
         precision=precision,
         balance=balance,
@@ -5305,7 +5123,8 @@ def create_result_card(
         fast=fast,
         slow=slow,
         amazing_plus=judges.get("AMAZING+", 0),
-        amazing=judges.get("AMAZING", 0),
+        amazing_slow=judges.get("AMAZING(SLOW)", 0),
+        amazing_fast=judges.get("AMAZING(FAST)", 0),
     )
     
     if show_comment:
@@ -5401,9 +5220,6 @@ def create_result_card(
         badge=badge,
         badge_color=badge_color,
         badge_fill=badge_fill,
-        confidence_level=confidence_level,
-        confidence=confidence,
-        confidence_color=confidence_color,
         comment=comment,
         top=comment_top,
         visible=True,

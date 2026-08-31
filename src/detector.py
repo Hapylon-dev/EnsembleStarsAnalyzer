@@ -239,7 +239,7 @@ class Detector:
 
             x, y, w, h = cv2.boundingRect(contour)
 
-            if y < graph_height * 0.25:
+            if y < graph_height * 0.24:
                 continue
 
             #
@@ -331,7 +331,7 @@ class Detector:
             area = cv2.contourArea(contour)
 
             # 通常ROI条件は維持
-            if y < graph_height * 0.25:
+            if y < graph_height * 0.24:
                 continue
 
             if y > graph_height * 0.71:

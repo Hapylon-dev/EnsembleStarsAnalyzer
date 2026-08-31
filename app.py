@@ -934,12 +934,12 @@ with upload_col:
     )
 
     st.info(
-        "📷 PNG・JPG・JPEG形式のスクリーンショットに対応しています。"
+        "📷 PNG・JPG・JPEG・WebP形式のスクリーンショットに対応しています。"
     )
 
     uploaded_file = st.file_uploader(
         "リザルト画像",
-        type=["png", "jpg", "jpeg"],
+        type=["png", "jpg", "jpeg", "webp"],
         label_visibility="collapsed",
     )
 
@@ -1017,7 +1017,7 @@ with info_col:
             "29", "29+",
             "30", "30+",
             "31", "31+",
-            "♪", "♪♪", "♪♪♪", "♪♪♪♪", "♪♪♪♪♪", "♪♪♪♪♪♪",
+            "♪1", "♪2", "♪3", "♪4", "♪5", "♪6",
         ],
     }
 
@@ -1263,7 +1263,7 @@ if analyze_button:
         ### 🔄 タップタイミング解析中
 
         Result Card を生成しています。
-        処理には数秒かかる場合があります。
+        処理には時間がかかる場合があります。
         """)
 
         progress_status.markdown("""

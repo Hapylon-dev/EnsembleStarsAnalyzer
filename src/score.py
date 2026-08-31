@@ -37,48 +37,26 @@ BALANCE_WEIGHT = 0.20
 
 RANK_TABLE = [
 
-    (85.6, "SSS+"),
-    (84.4, "SSS"),
-    (83.2, "SS+"),
-    (82.0, "SS"),
-    (80.8, "S+"),
-    (79.6, "S"),
-
-    (78.4, "AAA+"),
-    (77.2, "AAA"),
-    (76.0, "AA+"),
-    (74.8, "AA"),
-    (73.6, "A+"),
-    (72.4, "A"),
-
-    (71.2, "BBB+"),
-    (70.0, "BBB"),
-    (68.8, "BB+"),
-    (67.6, "BB"),
-    (66.4, "B+"),
-    (65.2, "B"),
-
-    (64.0, "CCC+"),
-    (62.8, "CCC"),
-    (61.6, "CC+"),
-    (60.4, "CC"),
-    (59.2, "C+"),
-    (58.0, "C"),
-
-    (56.8, "DDD+"),
-    (55.6, "DDD"),
-    (54.4, "DD+"),
-    (53.2, "DD"),
-    (52.0, "D+"),
-    (50.8, "D"),
-
-    (49.6, "EEE+"),
-    (48.4, "EEE"),
-    (47.2, "EE+"),
-    (46.0, "EE"),
-    (44.8, "E+"),
-    (43.6, "E"),
-
+    (86.0, "SSS+"),
+    (84.0, "SSS"),
+    (82.0, "SS+"),
+    (80.0, "SS"),
+    (78.0, "S+"),
+    (76.0, "S"),
+    (74.0, "AAA+"),
+    (72.0, "AAA"),
+    (70.0, "AA+"),
+    (68.0, "AA"),
+    (66.0, "A+"),
+    (64.0, "A"),
+    (62.0, "BBB"),
+    (60.0, "BB"),
+    (58.0, "B"),
+    (56.0, "CCC"),
+    (54.0, "CC"),
+    (52.0, "C"),
+    (50.0, "D"),
+    (48.0, "E"),
     (0.0, "F"),
 
 ]
@@ -90,24 +68,20 @@ RANK_TABLE = [
 
 PRECISION_GRADE_TABLE = [
 
-    (84.0, "SSS"),
-    (82.0, "SS"),
-    (80.0, "S"),
-    (78.0, "AAA"),
-    (76.0, "AA"),
-    (74.0, "A"),
-    (72.0, "BBB"),
-    (70.0, "BB"),
-    (68.0, "B"),
-    (66.0, "CCC"),
-    (64.0, "CC"),
-    (62.0, "C"),
-    (60.0, "DDD"),
-    (58.0, "DD"),
-    (56.0, "D"),
-    (54.0, "EEE"),
-    (52.0, "EE"),
-    (50.0, "E"),
+    (88.0, "SSS"),
+    (86.0, "SS"),
+    (84.0, "S"),
+    (82.0, "AAA"),
+    (80.0, "AA"),
+    (78.0, "A"),
+    (76.0, "BBB"),
+    (74.0, "BB"),
+    (72.0, "B"),
+    (70.0, "CCC"),
+    (68.0, "CC"),
+    (64.0, "C"),
+    (60.0, "D"),
+    (56.0, "E"),
     (0.0, "F"),
 
 ]
@@ -120,23 +94,19 @@ PRECISION_GRADE_TABLE = [
 BALANCE_GRADE_TABLE = [
 
     (98.0, "SSS"),
-    (94.0, "SS"),
-    (90.0, "S"),
-    (86.0, "AAA"),
-    (82.0, "AA"),
-    (78.0, "A"),
-    (74.0, "BBB"),
-    (70.0, "BB"),
-    (66.0, "B"),
-    (62.0, "CCC"),
-    (58.0, "CC"),
-    (54.0, "C"),
-    (50.0, "DDD"),
-    (46.0, "DD"),
-    (42.0, "D"),
-    (38.0, "EEE"),
-    (34.0, "EE"),
-    (30.0, "E"),
+    (95.0, "SS"),
+    (84.0, "S"),
+    (72.0, "AAA"),
+    (63.0, "AA"),
+    (54.0, "A"),
+    (45.0, "BBB"),
+    (37.0, "BB"),
+    (34.0, "B"),
+    (32.0, "CCC"),
+    (27.0, "CC"),
+    (20.0, "C"),
+    (15.0, "D"),
+    (12.0, "E"),
     (0.0, "F"),
 
 ]
@@ -207,7 +177,7 @@ class ScoreCalculator:
             achievement,
             3
         )
-    
+
     # ======================================================
     # Precision
     # ======================================================
@@ -219,37 +189,51 @@ class ScoreCalculator:
         """
         Precision
 
-        AMAZING+ が最高判定内で占める割合を計算する。
+        グラフ高さのみから計算する。
+
+        3本のグラフの場合：
+
+            [0] = SLOW
+            [1] = AMAZING+
+            [2] = FAST
+
+        Precisionは、
+        AMAZING+ が最高判定
+        (AMAZING+ + AMAZING) に占める割合。
+
+        AMAZING
+            = AMAZING(SLOW) + AMAZING(FAST)
+
+        Total Notes および推定ノーツ数は使用しない。
         """
 
-        highest = (
+        ratios = estimate.height_ratio
 
-            estimate.amazing_plus
+        if len(ratios) < 3:
+            return 0.0
 
-            + estimate.amazing
+        slow_ratio = ratios[0]
+        center_ratio = ratios[1]
+        fast_ratio = ratios[2]
 
+        highest_ratio = (
+            slow_ratio
+            + center_ratio
+            + fast_ratio
         )
 
-        if highest <= 0:
-
+        if highest_ratio <= 0:
             return 0.0
 
         precision = (
-
-            estimate.amazing_plus
-
-            / highest
-
+            center_ratio
+            / highest_ratio
             * 100.0
-
         )
 
         return round(
-
             precision,
-
             3
-
         )
     
     # ======================================================
@@ -261,7 +245,7 @@ class ScoreCalculator:
         precision: float
     ) -> str:
         """
-        Precision を SS～E へ変換する。
+        Precision を SSS～F へ変換する。
         """
 
         for border, grade in PRECISION_GRADE_TABLE:
@@ -270,7 +254,7 @@ class ScoreCalculator:
 
                 return grade
 
-        return "E"
+        return "F"
 
     # ======================================================
     # Balance Grade
@@ -281,7 +265,7 @@ class ScoreCalculator:
         balance: float
     ) -> str:
         """
-        Balance を SS～E へ変換する。
+        Balance を SSS～F へ変換する。
         """
 
         for border, grade in BALANCE_GRADE_TABLE:
@@ -290,7 +274,7 @@ class ScoreCalculator:
 
                 return grade
 
-        return "E"
+        return "F"
     
     # ======================================================
     # Balance
@@ -303,44 +287,51 @@ class ScoreCalculator:
         """
         Balance
 
-        FAST と SLOW の偏りを評価する。
+        グラフ高さのみから計算する。
 
-        100% に近いほど
-        左右の入力バランスが良い。
+        [0] = SLOW
+        [1] = AMAZING+
+        [2] = FAST
 
-        SLOW / FAST 両側のバーを検出できない場合は、
-        Balanceを評価対象外とする。
+        SLOW / FAST のグラフ高さが
+        どれだけ均等かを評価する。
+
+        100%:
+            SLOW と FAST が同じ高さ
+
+        0%:
+            SLOW または FAST の一方しか存在しない
+
+        Total Notes および推定ノーツ数は使用しない。
         """
 
         if not estimate.balance_available:
             return 0.0
 
+        ratios = estimate.height_ratio
+
+        if len(ratios) < 3:
+            return 0.0
+
+        slow_ratio = ratios[0]
+        fast_ratio = ratios[2]
+
         total = (
-
-            estimate.fast
-
-            + estimate.slow
-
+            slow_ratio
+            + fast_ratio
         )
 
         if total <= 0:
-
             return 100.0
 
         difference = abs(
-
-            estimate.fast
-
-            - estimate.slow
-
+            slow_ratio
+            - fast_ratio
         )
 
         balance = (
-
             1.0
-
             - difference / total
-
         ) * 100.0
 
         balance = max(

@@ -3672,8 +3672,6 @@ def generate_play_badge(
     fast: int,
     slow: int,
     amazing_plus: int,
-    amazing_slow: int,
-    amazing_fast: int,
 ):
     """
     Version 1.3 Final
@@ -3716,8 +3714,8 @@ def generate_play_badge(
 
     amazing_total = (
         amazing_plus
-        + amazing_slow
-        + amazing_fast
+        + slow
+        + fast
     )
 
     if amazing_total > 0:
@@ -5123,8 +5121,6 @@ def create_result_card(
         fast=fast,
         slow=slow,
         amazing_plus=judges.get("AMAZING+", 0),
-        amazing_slow=judges.get("AMAZING(SLOW)", 0),
-        amazing_fast=judges.get("AMAZING(FAST)", 0),
     )
     
     if show_comment:

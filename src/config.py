@@ -14,7 +14,7 @@ from dataclasses import dataclass
 APP_NAME = "Ensemble Stars!! Music Judgement Analyzer"
 VERSION = "1.3 Final"
 
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 # ==========================================================
 # YOLO Graph Detector

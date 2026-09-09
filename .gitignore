@@ -59,8 +59,9 @@ Thumbs.db
 # ==========================================================
 
 output/
+!output/
+!output/ranking_batch_results.csv
 debug/
-
 
 # ==========================================================
 # YOLO Training Output

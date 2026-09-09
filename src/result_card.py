@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from datetime import datetime
 import math
 
 from PIL import Image
@@ -28,34 +29,66 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 
 CARD_PATH = OUTPUT_DIR / "result_card.png"
 
+# ==========================================================
+# Ranking Assets
+# ==========================================================
+
+RANKING_TITLE_DIR = (
+    Path(__file__).resolve().parent.parent
+    / "assets"
+    / "ranking_titles"
+)
+
+RANKING_TITLE_FILES = {
+    "レインボーランカー": "rainbow.png",
+    "ダイヤモンドランカー": "diamond.png",
+    "プラチナランカー": "platinum.png",
+    "ゴールドランカー": "gold.png",
+    "シルバーランカー": "silver.png",
+    "ブロンズランカー": "bronze.png",
+    "パープルランカー": "purple.png",
+    "レッドランカー": "red.png",
+    "オレンジランカー": "orange.png",
+    "グリーンランカー": "green.png",
+    "ブルーランカー": "blue.png",
+    "ホワイトランカー": "white.png",
+}
+
+RANKING_RANK_ORDER = (
+    "SSS+", "SSS", "SS+", "SS", "S+", "S",
+    "AAA+", "AAA", "AA+", "AA", "A+", "A",
+    "BBB", "BB", "B", "CCC", "CC", "C", "D", "E", "F",
+)
+
+RANKING_SECTION_HEIGHT = 300
 
 # ==========================================================
 # Card Size
 # ==========================================================
 
 CARD_WIDTH = 1080
-CARD_HEIGHT = 1800
+CARD_HEIGHT = 1450
 
 
 # ==========================================================
 # Layout
 # ==========================================================
 
-CARD_MARGIN = 30
+CARD_MARGIN = 18
 
-CONTENT_MARGIN = 40
+CONTENT_MARGIN = 20
 
-SECTION_GAP = 16
+SECTION_GAP = 8
 
-FOOTER_TOP_GAP = 8
+FOOTER_TOP_GAP = 4
 
-COLUMN_GAP = 26
+COLUMN_GAP = 20
 
-CARD_RADIUS = 30
+CARD_RADIUS = 22
 
 CARD_BORDER = 2
 
-INNER_PADDING = 24
+INNER_PADDING = 18
 
 # ==========================================================
 # Common Padding
@@ -69,13 +102,13 @@ LEFT_PADDING = 20
 # Song Badge
 # ==========================================================
 
-DIFFICULTY_BADGE_WIDTH = 195
+DIFFICULTY_BADGE_WIDTH = 160
 
 LEVEL_BADGE_GAP = 14
 
-LEVEL_BADGE_MIN_WIDTH = 105
+LEVEL_BADGE_MIN_WIDTH = 88
 
-BADGE_HEIGHT = 56
+BADGE_HEIGHT = 36
 
 BADGE_RADIUS = 22
 
@@ -86,7 +119,7 @@ BADGE_RADIUS = 22
 
 PIE_SIZE = 230
 
-PIE_LIST_GAP = 26
+PIE_LIST_GAP = 8
 
 
 # ==========================================================
@@ -95,11 +128,7 @@ PIE_LIST_GAP = 26
 
 CONTENT_LEFT = CARD_MARGIN + CONTENT_MARGIN
 
-CONTENT_TOP = (
-    CARD_MARGIN
-    + CONTENT_MARGIN
-    - 18
-)
+CONTENT_TOP = CARD_MARGIN + CONTENT_MARGIN
 
 CONTENT_RIGHT = CARD_WIDTH - CARD_MARGIN - CONTENT_MARGIN
 CONTENT_BOTTOM = CARD_HEIGHT - CARD_MARGIN - CONTENT_MARGIN
@@ -131,15 +160,15 @@ RIGHT_X = (
 # Section Height
 # ==========================================================
 
-HEADER_HEIGHT = 120
+HEADER_HEIGHT = 88
 
-SONG_HEIGHT = 198
+SONG_HEIGHT = 140
 
-MAIN_HEIGHT = 808
+MAIN_HEIGHT = 640
 
-FASTSLOW_HEIGHT = 130
+FASTSLOW_HEIGHT = 92
 
-COMMENT_HEIGHT = 255
+COMMENT_HEIGHT = 300
 
 FOOTER_HEIGHT = 90
 
@@ -206,40 +235,93 @@ RIGHT_RECT = layout_rect(
 )
 
 # ==========================================================
-# Dynamic Layout
+# Fixed Layout (1080 x 1450)
 # ==========================================================
 
-# 左右メインパネルの一番下
+HEADER_RECT = layout_rect(
+    CONTENT_LEFT,
+    CONTENT_TOP,
+    CONTENT_RIGHT - CONTENT_LEFT,
+    HEADER_HEIGHT,
+)
+
+SONG_RECT = layout_rect(
+    CONTENT_LEFT,
+    next_top(HEADER_RECT),
+    CONTENT_RIGHT - CONTENT_LEFT,
+    SONG_HEIGHT,
+)
+
+LEFT_RECT = layout_rect(
+    LEFT_X,
+    next_top(SONG_RECT),
+    LEFT_WIDTH,
+    MAIN_HEIGHT,
+)
+
+RIGHT_RECT = layout_rect(
+    RIGHT_X,
+    next_top(SONG_RECT),
+    RIGHT_WIDTH,
+    MAIN_HEIGHT,
+)
+
+# ----------------------------------------------------------
+# Main bottom
+# ----------------------------------------------------------
+
 MAIN_BOTTOM = max(
     LEFT_RECT[3],
     RIGHT_RECT[3],
 )
 
-# FAST / SLOW 開始余白
-FASTSLOW_GAP = 48
+# ----------------------------------------------------------
+# Combined SLOW / FAST
+# ----------------------------------------------------------
 
-COMMENT_GAP = 24
-
-# コメント開始位置のみ保持
-COMMENT_TOP = (
-    MAIN_BOTTOM
-    + FASTSLOW_GAP
-    + FASTSLOW_HEIGHT
-    + COMMENT_GAP
+FASTSLOW_RECT = layout_rect(
+    CONTENT_LEFT,
+    MAIN_BOTTOM + SECTION_GAP + 8,
+    CONTENT_RIGHT - CONTENT_LEFT,
+    FASTSLOW_HEIGHT,
 )
 
-COMMENT_RECT = (
-    CONTENT_LEFT,
-    COMMENT_TOP,
-    CONTENT_RIGHT,
-    COMMENT_TOP + COMMENT_HEIGHT,
+# ----------------------------------------------------------
+# Lower cards
+# 左：解析結果
+# 右：ランキング
+# ----------------------------------------------------------
+
+LOWER_TOP = FASTSLOW_RECT[3] + SECTION_GAP
+
+LOWER_LEFT_RECT = layout_rect(
+    LEFT_X,
+    LOWER_TOP,
+    LEFT_WIDTH,
+    COMMENT_HEIGHT,
+)
+
+LOWER_RIGHT_RECT = layout_rect(
+    RIGHT_X,
+    LOWER_TOP,
+    RIGHT_WIDTH,
+    RANKING_SECTION_HEIGHT,
+)
+
+# ----------------------------------------------------------
+# Footer
+# ----------------------------------------------------------
+
+LOWER_BOTTOM = max(
+    LOWER_LEFT_RECT[3],
+    LOWER_RIGHT_RECT[3],
 )
 
 FOOTER_RECT = (
     CONTENT_LEFT,
-    COMMENT_RECT[3] + SECTION_GAP + FOOTER_TOP_GAP,
+    LOWER_BOTTOM + SECTION_GAP + FOOTER_TOP_GAP,
     CONTENT_RIGHT,
-    COMMENT_RECT[3] + SECTION_GAP + FOOTER_TOP_GAP + FOOTER_HEIGHT,
+    LOWER_BOTTOM + SECTION_GAP + FOOTER_TOP_GAP + FOOTER_HEIGHT,
 )
 
 # ==========================================================
@@ -1213,9 +1295,9 @@ def load_font(
 # Font Size
 # ==========================================================
 
-TITLE_FONT_SIZE = 56
+TITLE_FONT_SIZE = 50
 
-SUBTITLE_FONT_SIZE = 28
+SUBTITLE_FONT_SIZE = 22
 
 SECTION_FONT_SIZE = 24
 
@@ -1227,11 +1309,11 @@ VALUE_FONT_SIZE = 24
 
 LARGE_VALUE_FONT_SIZE = 42
 
-RANK_FONT_SIZE = 92
+RANK_FONT_SIZE = 72
 
 FOOTER_FONT_SIZE = 16
 
-COMMENT_FONT_SIZE = 18
+COMMENT_FONT_SIZE = 16
 
 # ==========================================================
 # Font Utility
@@ -1378,16 +1460,15 @@ RATING_ICON_FONT = load_font(
 # Rating Layout
 # ==========================================================
 
-# X Position
 RATING_LEFT = 18
 RATING_ICON_OFFSET = 0
 
-# Y Position
-RATING_TITLE_Y = 18
-RATING_SUBTITLE_Y = 13
-RATING_DESC_Y = 46
-RATING_VALUE_Y = 68
-RATING_ICON_Y = 98
+RATING_TITLE_Y = 10
+RATING_SUBTITLE_Y = 11
+RATING_DESC_Y = 36
+RATING_VALUE_Y = 49
+RATING_ICON_Y = 76
+
 RATING_PRECISION_SUBTITLE_X = 128
 RATING_BALANCE_SUBTITLE_X = 118
 
@@ -1397,17 +1478,17 @@ RATING_BALANCE_SUBTITLE_X = 118
 
 COMMENT_LEFT_PADDING = 30
 
-COMMENT_PLAY_STYLE_LABEL_TOP = 8
+COMMENT_PLAY_STYLE_LABEL_TOP = 12
 
-COMMENT_BADGE_TOP = 50
+COMMENT_BADGE_TOP = 96
 
 COMMENT_BADGE_HEIGHT = 52
 
 COMMENT_BADGE_TEXT_Y = 22
 
-COMMENT_COMMENT_LABEL_TOP = 120
+COMMENT_COMMENT_LABEL_TOP = 124
 
-COMMENT_TEXT_TOP = 162
+COMMENT_TEXT_TOP = 186
 
 COMMENT_BOTTOM_PADDING = 20
 
@@ -2731,7 +2812,9 @@ def draw_header(
     # ------------------------------------------------------
 
     title_text = APP_NAME
-    title_y = HEADER_RECT[1] + 18
+
+    # タイトルを少し上へ
+    title_y = HEADER_RECT[1] + 1
 
     title_width, _ = text_size(
         draw,
@@ -2751,19 +2834,19 @@ def draw_header(
     # をフォント非依存の図形で再現する。
     # ------------------------------------------------------
 
-    star_y = title_y + 44
+    star_y = title_y + 31
 
     # 大きい星
-    large_outer = 18
+    large_outer = 15
     large_inner = 5
 
     # 小さい星
-    small_outer = 10
+    small_outer = 8
     small_inner = 3
 
     # タイトルから星までの距離
-    large_gap = 55
-    small_gap = 25
+    large_gap = 48
+    small_gap = 22
 
     # 左側
     left_large_x = title_x - large_gap
@@ -2897,8 +2980,8 @@ def draw_header(
 
     draw_center_text(
         draw,
-        f" {APP_SUBTITLE} ",
-        HEADER_RECT[1] + 78,
+        APP_SUBTITLE,
+        HEADER_RECT[1] + 52,
         SUBTITLE_FONT,
         (96, 98, 120),
     )
@@ -2913,9 +2996,9 @@ def draw_header(
 
         (
             x1 + 30,
-            y1 + 114,
+            y1 + 82,
             x2 - 30,
-            y1 + 114,
+            y1 + 82,
         ),
 
         fill=(205, 200, 236),
@@ -3002,39 +3085,31 @@ def draw_song_card(
 
     x1, y1, x2, y2 = inner
 
-    y = SONG_RECT[1] + 72
+    y = SONG_RECT[1] + 51
+
+    # ------------------------------------------------------
+    # Song Title
+    # ------------------------------------------------------
 
     song_font = fit_text(
         draw,
         music,
         max_width=(x2 - x1) - 20,
-        start_size=32,
-        min_size=20,
+        start_size=30,
+        min_size=14,
         bold=True,
     )
 
-    lines = wrap_text(
-        draw,
+    # 曲名は常に1行。幅に収まるまでフォントだけ縮小する。
+    # wrap_text() は使用しない。
+    draw.text(
+        (
+            x1,
+            SONG_RECT[1] + 57,
+        ),
         music,
-        song_font,
-        max_width=(x2 - x1) - 20,
-    )
-
-    # 最大2行まで表示
-    if len(lines) > 2:
-
-        lines = lines[:2]
-
-        # 最終行だけ省略記号
-        if len(lines[1]) > 1:
-            lines[1] = lines[1][:-1] + "…"
-
-    y = draw_multiline_text(
-        draw,
-        lines,
-        x1,
-        y,
-        song_font,
+        fill=TEXT,
+        font=song_font,
     )
 
     badge_color = {
@@ -3054,12 +3129,11 @@ def draw_song_card(
         TITLE,
     )
 
-    badge_margin = 8
+    badge_margin = 20
 
-    badge_y = min(
-        y + badge_margin,
-        SONG_RECT[3] - BADGE_HEIGHT - 18,
-    )
+    # 楽曲名の下に固定配置し、タイトルと難易度バッジを重ねない。
+    # 下端側へ少し移動し、短い楽曲名との間隔を確保する。
+    badge_y = SONG_RECT[3] - BADGE_HEIGHT - 5
 
     # ------------------------------------------------------
     # Difficulty Badge
@@ -3321,7 +3395,7 @@ def draw_judge_list(
 
     total = sum(judges.values())
 
-    row_height = 56
+    row_height = 34
 
     for name, value in judges.items():
 
@@ -3331,7 +3405,7 @@ def draw_judge_list(
             (
                 x,
                 y - 4,
-                x + 395,
+                x + min(395, LEFT_WIDTH - 60),
                 y +30,
             ),
             radius=10,
@@ -3412,7 +3486,7 @@ def draw_left_panel(
 
     draw_left_text(
         draw,
-        "判定分布（推定）",
+        "判定内訳（推定）",
         x1,
         y1,
         SECTION_FONT,
@@ -3457,13 +3531,13 @@ def draw_left_panel(
 
     notes_rect = (
 
-        x1 + 18,
+        x1 + 2,
 
-        y2 - 76,
+        y2 - 70,
 
-        x2 - 18,
+        x2 - 22,
 
-        y2 - 26,
+        y2 - 12,
     )
 
     draw.rounded_rectangle(
@@ -3488,7 +3562,7 @@ def draw_left_panel(
 
         (
 
-            notes_rect[0] + 18,
+            notes_rect[0] + 12,
 
             notes_rect[1] + 15,
 
@@ -3866,45 +3940,6 @@ def draw_right_panel(
         RIGHT_RECT,
     )
 
-    draw_card(
-        draw,
-        COMMENT_RECT,
-    )
-
-    draw_card_divider(
-        draw,
-        COMMENT_RECT,
-    )
-
-    title = "解析結果"
-
-    center_x = (
-        COMMENT_RECT[0]
-        + card_width(COMMENT_RECT) // 2
-    )
-
-    draw.text(
-        (
-            center_x,
-            COMMENT_RECT[1] + 23,
-        ),
-        title,
-        fill=(255,255,255),
-        font=RESULT_TITLE_FONT,
-        anchor="ma",
-    )
-
-    draw.text(
-        (
-            center_x,
-            COMMENT_RECT[1] + 24,
-        ),
-        title,
-        fill=RESULT_TITLE,
-        font=RESULT_TITLE_FONT,
-        anchor="ma",
-    )
-
     x1, y1, x2, y2 = card_inner_rect(
         RIGHT_RECT,
     )
@@ -3915,13 +3950,13 @@ def draw_right_panel(
 
     CARD_GAP = 8
 
-    ACHIEVEMENT_H = 108
+    ACHIEVEMENT_H = 92
 
-    RATING_H = 128
+    RATING_H = 108
 
-    SCORE_H = 108
+    SCORE_H = 92
 
-    RANK_H = 145
+    RANK_H = 110
 
     # ======================================================
     # Achievement
@@ -3982,7 +4017,7 @@ def draw_right_panel(
     draw.text(
         (
             x1 + (x2 - x1 - value_width) / 2,
-            y + 48,
+            y + 33,
         ),
         value,
         fill=value_color,
@@ -4278,7 +4313,7 @@ def draw_right_panel(
     draw.text(
         (
             x1 + (x2 - x1 - score_width) / 2,
-            y + 44,
+            y + 34,
         ),
         score_text,
         fill=(245, 140, 0),
@@ -4314,7 +4349,7 @@ def draw_right_panel(
     draw.text(
         (
             x1 + 18,
-            y + 18,
+            y + 12,
         ),
         "Rank",
         fill=get_rank_color(rank),
@@ -4326,7 +4361,7 @@ def draw_right_panel(
         draw,
         rank=rank,
         center_x=(x1 + x2) // 2,
-        center_y=y + 84,
+        center_y=y + 62,
     )
 
     # Rankカードの一番下を返す
@@ -4346,15 +4381,7 @@ def draw_fastslow_card(
     total_notes,
     top,
 ):
-    """
-    SLOW / FAST Card
-    (Dynamic Layout)
-    """
-
-    # -----------------------------
-    # Percentage
-    # -----------------------------
-
+    """SLOW / FASTを横一列の1カードとして描画する。"""
     if total_notes > 0:
         slow_rate = slow / total_notes * 100.0
         fast_rate = fast / total_notes * 100.0
@@ -4362,83 +4389,61 @@ def draw_fastslow_card(
         slow_rate = 0.0
         fast_rate = 0.0
 
-    # -----------------------------
-    # Rectangle
-    # -----------------------------
-
-    card_top = top + FASTSLOW_GAP
-
-    slow_rect = (
-        LEFT_X,
-        card_top,
-        LEFT_X + LEFT_WIDTH,
-        card_top + FASTSLOW_HEIGHT,
-    )
-
-    fast_rect = (
-        RIGHT_X,
-        card_top,
+    rect = (
+        CONTENT_LEFT,
+        top,
         CONTENT_RIGHT,
-        card_top + FASTSLOW_HEIGHT,
+        top + FASTSLOW_HEIGHT,
     )
 
-    # -----------------------------
-    # Card
-    # -----------------------------
+    draw_card_with_shadow(draw, rect)
 
-    draw_card_with_shadow(
-        draw,
-        slow_rect,
+    x1, y1, x2, y2 = card_inner_rect(rect)
+
+    center_x = (x1 + x2) // 2
+
+    draw.line(
+        (
+            center_x,
+            y1 + 10,
+            center_x,
+            y2 - 10,
+        ),
+        fill=LINE,
+        width=1,
     )
 
-    draw_card_with_shadow(
-        draw,
-        fast_rect,
-    )
+    slow_center = (x1 + center_x) // 2
+    fast_center = (center_x + x2) // 2
 
-    # -----------------------------
-    # Header
-    # -----------------------------
+
+    # ------------------------------------------------------
+    # Labels
+    # ------------------------------------------------------
 
     draw.text(
-        (
-            slow_rect[0] + 20,
-            slow_rect[1] + 18,
-        ),
+        (x1 + 18, y1 + 12),
         "SLOW",
         fill=(33, 150, 243),
         font=SECTION_FONT,
     )
 
     draw.text(
-        (
-            fast_rect[0] + 20,
-            fast_rect[1] + 18,
-        ),
+        (center_x + 18, y1 + 12),
         "FAST",
         fill=(229, 57, 53),
         font=SECTION_FONT,
     )
 
-    sx1, sy1, sx2, sy2 = card_inner_rect(
-        slow_rect,
-    )
 
-    fx1, fy1, fx2, fy2 = card_inner_rect(
-        fast_rect,
-    )
-
-    # -----------------------------
+    # ------------------------------------------------------
     # SLOW
-    # -----------------------------
+    # ------------------------------------------------------
 
     if slow_available:
 
         draw.text(
-            (
-                (sx1 + sx2) // 2,
-                sy1 + 44,
-            ),
+            (slow_center, y1 + 29),
             str(slow),
             fill=(33, 150, 243),
             font=LARGE_VALUE_FONT,
@@ -4446,10 +4451,7 @@ def draw_fastslow_card(
         )
 
         draw.text(
-            (
-                (sx1 + sx2) // 2,
-                sy1 + 80,
-            ),
+            (slow_center, y1 + 55),
             f"{slow_rate:.1f}%",
             fill=SUBTEXT,
             font=SMALL_FONT,
@@ -4459,39 +4461,22 @@ def draw_fastslow_card(
     else:
 
         draw.text(
-            (
-                (sx1 + sx2) // 2,
-                sy1 + 44,
-            ),
+            (slow_center, y1 + 29),
             "N/A",
-            fill=(120, 125, 135),
+            fill=SUBTEXT,
             font=LARGE_VALUE_FONT,
             anchor="mm",
         )
 
-        draw.text(
-            (
-                (sx1 + sx2) // 2,
-                sy1 + 80,
-            ),
-            "評価対象外",
-            fill=(120, 125, 135),
-            font=SMALL_FONT,
-            anchor="mm",
-        )
 
-
-    # -----------------------------
+    # ------------------------------------------------------
     # FAST
-    # -----------------------------
+    # ------------------------------------------------------
 
     if fast_available:
 
         draw.text(
-            (
-                (fx1 + fx2) // 2,
-                fy1 + 44,
-            ),
+            (fast_center, y1 + 29),
             str(fast),
             fill=(229, 57, 53),
             font=LARGE_VALUE_FONT,
@@ -4499,10 +4484,7 @@ def draw_fastslow_card(
         )
 
         draw.text(
-            (
-                (fx1 + fx2) // 2,
-                fy1 + 80,
-            ),
+            (fast_center, y1 + 55),
             f"{fast_rate:.1f}%",
             fill=SUBTEXT,
             font=SMALL_FONT,
@@ -4512,32 +4494,14 @@ def draw_fastslow_card(
     else:
 
         draw.text(
-            (
-                (fx1 + fx2) // 2,
-                fy1 + 44,
-            ),
+            (fast_center, y1 + 29),
             "N/A",
-            fill=(120, 125, 135),
+            fill=SUBTEXT,
             font=LARGE_VALUE_FONT,
             anchor="mm",
         )
+    return rect[3]
 
-        draw.text(
-            (
-                (fx1 + fx2) // 2,
-                fy1 + 80,
-            ),
-            "評価対象外",
-            fill=(120, 125, 135),
-            font=SMALL_FONT,
-            anchor="mm",
-        )
-
-    return max(
-        slow_rect[3],
-        fast_rect[3],
-    )
-       
 # ==========================================================
 # Comment Card
 # ==========================================================
@@ -4892,6 +4856,562 @@ def draw_comment_card(
     return comment_rect[3]
 
 # ==========================================================
+# Analysis Result (lower-left card)
+# ==========================================================
+
+def draw_analysis_result_card(
+    draw: ImageDraw.ImageDraw,
+    *,
+    badge: str,
+    badge_color,
+    badge_fill,
+    comment: str,
+    rect,
+):
+    """下段左側：プレイ傾向と解析コメントを1カードに整理する。"""
+    draw_card_with_shadow(draw, rect)
+    draw_card_header(draw, rect, "解析結果", centered=True)
+
+    x1, y1, x2, y2 = card_inner_rect(rect)
+    content_top = card_content_top(rect)
+    divider_x = x1 + int((x2 - x1) * 0.40)
+
+    draw.line((divider_x, content_top + 4, divider_x, y2 - 12), fill=LINE, width=1)
+
+    left_center = (x1 + divider_x) // 2
+    right_x = divider_x + 20
+
+    draw.text((left_center, content_top + 34), "プレイ傾向", fill=TITLE, font=SECTION_FONT, anchor="ma")
+
+    # Badge width / fontを左カラム内に確実に収める。
+    is_precision_master = badge.startswith("✦ ")
+    label = "Precision Master" if is_precision_master else badge
+
+    max_badge_width = max(100, divider_x - x1 - 10)
+    if is_precision_master:
+        badge_font = fit_text(
+            draw,
+            label,
+            max_width=max_badge_width - 42,
+            start_size=15,
+            min_size=12,
+            bold=False,
+        )
+        label_w, _ = text_size(draw, label, badge_font)
+        badge_w = min(max_badge_width, label_w + 42)
+    else:
+        badge_font = fit_text(
+            draw,
+            label,
+            max_width=max_badge_width - 24,
+            start_size=15,
+            min_size=12,
+            bold=False,
+        )
+        label_w, _ = text_size(draw, label, badge_font)
+        badge_w = min(max_badge_width, label_w + 24)
+
+    badge_w = max(100, badge_w)
+    badge_h = 38
+    badge_rect = (
+        left_center - badge_w // 2,
+        content_top + 76,
+        left_center + badge_w // 2,
+        content_top + 76 + badge_h,
+    )
+    draw.rounded_rectangle(badge_rect, radius=18, fill=badge_fill, outline=badge_color, width=2)
+
+    badge_center_y = (badge_rect[1] + badge_rect[3]) // 2
+
+    if is_precision_master:
+        start_x = left_center - (label_w + 30) // 2
+        draw_four_point_star(
+            draw,
+            start_x + 8,
+            badge_center_y,
+            outer=8,
+            inner=2.5,
+            fill=badge_color,
+        )
+        draw.text(
+            (start_x + 20, badge_center_y),
+            label,
+            fill=badge_color,
+            font=badge_font,
+            anchor="lm",
+        )
+    else:
+        draw.text(
+            (left_center, badge_center_y),
+            label,
+            fill=badge_color,
+            font=badge_font,
+            anchor="mm",
+        )
+
+    draw.text((right_x, content_top + 34), "解析コメント", fill=TITLE, font=SECTION_FONT)
+
+    # コメントは条件によって行数が増えるため、カード内に全文が収まる
+    # フォントサイズと行間を自動調整する。内容を途中で切らない。
+    comment_text_x = right_x
+    comment_text_y = content_top + 68
+    comment_max_width = max(170, x2 - right_x - 8)
+    comment_max_bottom = y2 - 12
+
+    comment_font = COMMENT_FONT
+    comment_line_spacing = 6
+    lines = [""]
+
+    fitted = False
+    for font_size in range(COMMENT_FONT_SIZE, 11, -1):
+        candidate_font = get_font(font_size, bold=False)
+        candidate_lines = wrap_text(
+            draw,
+            comment,
+            candidate_font,
+            comment_max_width,
+        )
+        if not candidate_lines:
+            candidate_lines = [""]
+
+        for spacing in range(6, 2, -1):
+            total_height = 0
+            for index, line in enumerate(candidate_lines):
+                _, line_height = text_size(draw, line, candidate_font)
+                total_height += line_height
+                if index < len(candidate_lines) - 1:
+                    total_height += spacing
+
+            if comment_text_y + total_height <= comment_max_bottom:
+                comment_font = candidate_font
+                comment_line_spacing = spacing
+                lines = candidate_lines
+                fitted = True
+                break
+
+        if fitted:
+            break
+
+    # 通常は上の範囲で収まるが、極端に長いコメントでも最後まで表示できる
+    # よう、最小フォントで再計算する。
+    if not fitted:
+        comment_font = get_font(11, bold=False)
+        comment_line_spacing = 2
+        lines = wrap_text(
+            draw,
+            comment,
+            comment_font,
+            comment_max_width,
+        ) or [""]
+
+    draw_multiline_text(
+        draw,
+        lines,
+        comment_text_x,
+        comment_text_y,
+        comment_font,
+        color=SUBTEXT if "解析コメントはありません" in comment else TEXT,
+        line_spacing=comment_line_spacing,
+        max_bottom=comment_max_bottom,
+    )
+
+    return rect[3]
+
+# ==========================================================
+# Ranking Result
+# ==========================================================
+
+def draw_ranking_result_card(
+    image: Image.Image,
+    draw: ImageDraw.ImageDraw,
+    *,
+    ranking_position: int,
+    comparison_total: int,
+    ranking_top_percent: float,
+    ranking_title: str,
+    ranking_rank: str,
+    rank_distribution: dict[str, int],
+    analysis_date: str | None,
+    top: int,
+    rect,
+):
+    """
+    総合評価ランキング結果カード。
+
+    左側:
+        ・あなたの称号
+        ・ランキング称号画像
+        ・順位
+        ・上位○%
+
+    右側:
+        ・総合評価スコア分布
+        ・本人位置マーカー
+        ・本人より高得点側の範囲を強調
+
+    「上位○%」は左側に1回だけ表示し、
+    グラフ側には重複表示しない。
+    """
+
+    draw_card_with_shadow(draw, rect)
+    draw_card_header(
+        draw,
+        rect,
+        "総合評価ランキング結果",
+        centered=True,
+    )
+
+    x1, y1, x2, y2 = card_inner_rect(rect)
+    content_top = card_content_top(rect)
+
+    # ------------------------------------------------------
+    # Layout
+    # ------------------------------------------------------
+    divider_x = x1 + int((x2 - x1) * 0.40)
+
+    left_center = (x1 + divider_x) // 2
+
+    chart_left = divider_x + 12
+    chart_right = x2 - 6
+
+    draw.line(
+        (
+            divider_x,
+            content_top + 4,
+            divider_x,
+            y2 - 12,
+        ),
+        fill=LINE,
+        width=1,
+    )
+
+    # ------------------------------------------------------
+    # Left : Ranking information
+    # ------------------------------------------------------
+
+    # ① タイトル
+    title_y = content_top + 34
+
+    draw.text(
+        (left_center, title_y),
+        "あなたの称号",
+        fill=TITLE,
+        font=SECTION_FONT,
+        anchor="ma",
+    )
+
+    # ② ランキング称号画像
+    filename = RANKING_TITLE_FILES.get(ranking_title)
+
+    title_img_bottom = content_top + 104
+
+    if filename:
+        title_path = RANKING_TITLE_DIR / filename
+
+        if title_path.exists():
+            title_img = Image.open(title_path).convert("RGBA")
+
+            max_w = max(
+                120,
+                divider_x - x1 - 16,
+            )
+
+            max_h = 58
+
+            scale = min(
+                max_w / title_img.width,
+                max_h / title_img.height,
+                1.0,
+            )
+
+            if scale < 1.0:
+                title_img = title_img.resize(
+                    (
+                        max(1, int(title_img.width * scale)),
+                        max(1, int(title_img.height * scale)),
+                    ),
+                    Image.Resampling.LANCZOS,
+                )
+
+            title_img_y = content_top + 70
+
+            image.alpha_composite(
+                title_img,
+                (
+                    left_center - title_img.width // 2,
+                    title_img_y,
+                ),
+            )
+
+            title_img_bottom = (
+                title_img_y + title_img.height
+            )
+
+    # ③ 順位
+    position_y = max(
+        content_top + 142,
+        title_img_bottom + 24,
+    )
+
+    draw.text(
+        (left_center, position_y),
+        f"{ranking_position:,}位 / {comparison_total:,}件中",
+        fill=TEXT,
+        font=TEXT_FONT,
+        anchor="ma",
+    )
+
+    # ④ 上位○%はここだけ
+    top_percent_y = position_y + 32
+
+    draw.text(
+        (left_center, top_percent_y),
+        f"上位 {ranking_top_percent:.1f}%",
+        fill=TITLE,
+        font=TEXT_FONT,
+        anchor="ma",
+    )
+
+    # ------------------------------------------------------
+    # Right : Distribution graph
+    # ------------------------------------------------------
+
+    graph_title_y = content_top + 5
+
+    draw.text(
+        (
+            (chart_left + chart_right) // 2,
+            graph_title_y,
+        ),
+        "総合評価スコア分布（固定基準データ1,799件）",
+        fill=SUBTEXT,
+        font=load_font(12),
+        anchor="ma",
+    )
+
+    chart_x1 = chart_left + 2
+    chart_x2 = chart_right - 2
+
+    # グラフ領域をカード内で十分に確保
+    chart_top = content_top + 56
+    chart_bottom = y2 - 55
+
+    plot_top = chart_top + 8
+
+    chart_h = max(
+        30,
+        chart_bottom - plot_top,
+    )
+
+    labels = RANKING_RANK_ORDER
+    counts = [
+        int(rank_distribution.get(label, 0))
+        for label in labels
+    ]
+
+    n = len(labels)
+
+    gap = 2
+
+    bar_w = max(
+        3,
+        (
+            chart_x2
+            - chart_x1
+            - gap * (n - 1)
+        ) // n,
+    )
+
+    max_count = max(counts) if counts else 1
+
+    # ------------------------------------------------------
+    # Histogram background
+    # ------------------------------------------------------
+
+    # 半透明ではなく、グラフ領域そのものを不透明に塗る。
+    draw.rectangle(
+        (
+            chart_x1,
+            chart_top,
+            chart_x2,
+            chart_bottom,
+        ),
+        fill=(247, 244, 255),
+        outline=(225, 220, 238),
+        width=1,
+    )
+
+    # 固定基準データは必ず1,799件であることを検証。
+    distribution_total = sum(counts)
+    if distribution_total != 1799:
+        raise ValueError(
+            f"ランキング分布データ件数が不正です: {distribution_total}件（期待値1799件）"
+        )
+
+    # ------------------------------------------------------
+    # 本人位置
+    # ------------------------------------------------------
+
+    # 順位そのものを横位置へ線形変換してはいけない。
+    # このグラフは「Rank別の1,799件分布」なので、
+    # 現在のRankに対応する棒の中央を本人位置とする。
+    current_rank_index = (
+        labels.index(ranking_rank)
+        if ranking_rank in labels
+        else None
+    )
+
+    marker_x = None
+    if current_rank_index is not None:
+        marker_x = (
+            chart_x1
+            + current_rank_index * (bar_w + gap)
+            + bar_w // 2
+        )
+
+    # ------------------------------------------------------
+    # Histogram
+    # ------------------------------------------------------
+
+    for i, (label, count) in enumerate(
+        zip(labels, counts)
+    ):
+        x = chart_x1 + i * (bar_w + gap)
+
+        if count > 0:
+            bar_h = (
+                count
+                / max_count
+                * chart_h
+            )
+        else:
+            bar_h = 0
+
+        bar_y = chart_bottom - int(bar_h)
+
+        bar_color = (126, 82, 240) if i == current_rank_index else (175, 183, 198)
+
+        draw.rectangle(
+            (
+                x,
+                bar_y,
+                x + bar_w,
+                chart_bottom,
+            ),
+            fill=bar_color,
+        )
+
+        if bar_w >= 8:
+            draw.text(
+                (
+                    x + bar_w // 2,
+                    chart_bottom + 5,
+                ),
+                label,
+                fill=SUBTEXT,
+                font=load_font(7),
+                anchor="ma",
+            )
+
+    # ------------------------------------------------------
+    # 本人位置マーカー
+    # ------------------------------------------------------
+
+    if marker_x is not None:
+        draw.line(
+            (
+                int(marker_x),
+                plot_top - 2,
+                int(marker_x),
+                chart_bottom + 4,
+            ),
+            fill=TITLE,
+            width=3,
+        )
+
+    # マーカーラベル
+    # 棒グラフを隠さないよう、ラベルはプロット領域の上側に配置する。
+    marker_label_y = chart_top - 15
+
+    if marker_x is not None:
+        marker_overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
+        marker_draw = ImageDraw.Draw(marker_overlay)
+
+        marker_draw.rounded_rectangle(
+            (
+                int(marker_x) - 34,
+                marker_label_y - 12,
+                int(marker_x) + 34,
+                marker_label_y + 12,
+            ),
+            radius=8,
+            fill=(126, 82, 240),
+        )
+
+        marker_draw.text(
+            (
+                int(marker_x),
+                marker_label_y,
+            ),
+            "あなた",
+            fill=WHITE,
+            font=load_font(13),
+            anchor="mm",
+        )
+
+        image.alpha_composite(marker_overlay)
+
+
+    # ------------------------------------------------------
+    # 軸方向
+    # ------------------------------------------------------
+
+    axis_y = chart_bottom + 24
+
+    draw.text(
+        (chart_x1, axis_y),
+        "（高）",
+        fill=SUBTEXT,
+        font=load_font(8),
+        anchor="lm",
+    )
+
+    draw.text(
+        (
+            (chart_x1 + chart_x2) // 2,
+            axis_y,
+        ),
+        "総合評価スコア",
+        fill=SUBTEXT,
+        font=load_font(9),
+        anchor="mm",
+    )
+
+    draw.text(
+        (chart_x2, axis_y),
+        "（低）",
+        fill=SUBTEXT,
+        font=load_font(8),
+        anchor="rm",
+    )
+
+    # ------------------------------------------------------
+    # 解析日
+    # ------------------------------------------------------
+
+    date_text = analysis_date or ""
+
+    if date_text:
+        draw_right_text(
+            draw,
+            f"解析日：{date_text}",
+            x2 - 4,
+            y2 - 18,
+            font=load_font(9),
+            color=SUBTEXT,
+        )
+
+# ==========================================================
 # Footer
 # ==========================================================
 
@@ -4920,7 +5440,7 @@ def draw_footer(
             footer_left,
             top,
         ),
-        "※ Precision・Balance・Overall Score・判定内訳は",
+        "※ 判定内訳・各スコアは",
         fill=(125,128,138),
         font=FOOTER_FONT,
     )
@@ -4928,7 +5448,7 @@ def draw_footer(
     draw.text(
         (
             footer_left,
-            top + 30,
+            top + 22,
         ),
         "解析結果から推定した値です。",
         fill=(125,128,138),
@@ -4938,7 +5458,7 @@ def draw_footer(
     draw.text(
         (
             footer_left,
-            top + 60,
+            top + 44,
         ),
         "公式アプリが表示する値ではありません。",
         fill=(125,128,138),
@@ -4948,7 +5468,7 @@ def draw_footer(
     draw.text(
         (
             footer_left,
-            top + 90,
+            top + 66,
         ),
         "本ツールは非公式ファンメイドツールです。",
         fill=(125,128,138),
@@ -4963,7 +5483,7 @@ def draw_footer(
         draw,
         "Developed by Hapylon × ChatGPT",
         footer_right,
-        top + 65,
+        top + 42,
         FOOTER_FONT,
         (120,125,138),
     )
@@ -4999,46 +5519,35 @@ def create_result_card(
     balance_available: bool,
     overall_score: float,
     rank: str,
+    ranking_position: int | None = None,
+    ranking_comparison_total: int | None = None,
+    ranking_top_percent: float | None = None,
+    ranking_title: str | None = None,
+    ranking_rank: str | None = None,
+    ranking_distribution: dict[str, int] | None = None,
+    ranking_analysis_date: str | None = None,
     comment: str = "",
     show_comment: bool = True,
     save_path: Path | None = None,
 ):
-    """
-    Generate Result Card
-
-    Returns
-    -------
-    str
-        Saved image path
-    """
-
+    """1080x1450の固定レイアウトで総合解析結果カードを生成する。"""
     if save_path is None:
         save_path = CARD_PATH
 
     image, draw = create_card()
-
     judges = {
-
         "AMAZING+": amazing_plus,
-
         "AMAZING": amazing,
-
         "PERFECT": perfect,
-
         "GREAT": great,
-
         "GOOD": good,
-
         "BAD": bad,
-
         "MISS": miss,
-
     }
 
     # ------------------------------------------------------
-    # Song
+    # 1. Song Information
     # ------------------------------------------------------
-
     draw_song_card(
         image,
         draw,
@@ -5048,7 +5557,7 @@ def create_result_card(
     )
 
     # ------------------------------------------------------
-    # Left Panel
+    # 2. Main Panels
     # ------------------------------------------------------
 
     left_bottom = draw_left_panel(
@@ -5057,30 +5566,16 @@ def create_result_card(
         total_notes=total_notes,
     )
 
-    # ------------------------------------------------------
-    # Right Panel
-    # ------------------------------------------------------
-
     right_bottom = draw_right_panel(
-
         draw,
-
         achievement=achievement,
-
         precision=precision,
-
         precision_grade=precision_grade,
-
         balance=balance,
-
         balance_grade=balance_grade,
-
         balance_available=balance_available,
-
         overall_score=overall_score,
-
         rank=rank,
-
     )
 
     panel_bottom = max(
@@ -5089,31 +5584,22 @@ def create_result_card(
     )
 
     # ------------------------------------------------------
-    # SLOW / FAST
+    # 3. One combined SLOW / FAST card.
     # ------------------------------------------------------
+
+    fastslow_top = panel_bottom + SECTION_GAP + 20
 
     fastslow_bottom = draw_fastslow_card(
-
         draw,
-
         fast=fast,
-
         slow=slow,
-
         slow_available=slow_available,
-
         fast_available=fast_available,
-
         total_notes=sum(judges.values()),
-
-        top=panel_bottom + 12,
-
+        top=fastslow_top,
     )
 
-    # ------------------------------------------------------
-    # Comment
-    # ------------------------------------------------------
-    
+    # 4. Generate analysis text once.
     badge, badge_color, badge_fill = generate_play_badge(
         precision=precision,
         balance=balance,
@@ -5122,9 +5608,7 @@ def create_result_card(
         slow=slow,
         amazing_plus=judges.get("AMAZING+", 0),
     )
-    
     if show_comment:
-
         comment = generate_comment(
             achievement=achievement,
             precision=precision,
@@ -5134,112 +5618,51 @@ def create_result_card(
             fast=fast,
             slow=slow,
         )
-
     else:
+        comment = "解析コメントはありません。\n（コメント表示OFFまたは解析対象外）"
 
-        comment = (
-            "解析コメントはありません。\n"
-            "（コメント表示OFFまたは解析対象外）"
-        )
-
-    # ------------------------------------------------------
-    # Comment Layout / Canvas Height
-    # ------------------------------------------------------
-
-    comment_top = (
-        fastslow_bottom
-        + SECTION_GAP
-    )
-
-    comment_height, _ = calculate_comment_layout(
-        draw,
-        comment,
-    )
-
-    comment_bottom = (
-        comment_top
-        + comment_height
-    )
-
-    # ------------------------------------------------------
-    # Footer Position
-    # ------------------------------------------------------
-
-    footer_top = (
-        comment_bottom
-        + SECTION_GAP
-    )
-
-    footer_bottom = (
-        footer_top
-        + FOOTER_HEIGHT
-    )
-
-    required_height = (
-        footer_bottom
-        + CARD_MARGIN
-    )
-
-    # ------------------------------------------------------
-    # Expand Canvas BEFORE drawing comment
-    # ------------------------------------------------------
-
-    if required_height > image.height:
-
-        expanded_image = Image.new(
-            "RGBA",
-            (
-                CARD_WIDTH,
-                required_height,
-            ),
-            BACKGROUND + (255,),
-        )
-
-        expanded_image.paste(
-            image,
-            (0, 0),
-        )
-
-        image = expanded_image
-
-        # 新しいキャンバス用にDrawを作り直す
-        draw = ImageDraw.Draw(
-            image,
-        )
-
-    # ------------------------------------------------------
-    # Draw Comment
-    # ------------------------------------------------------
-
-    comment_bottom = draw_comment_card(
+    # 5. Lower cards: independent left/right placement.
+    draw_analysis_result_card(
         draw,
         badge=badge,
         badge_color=badge_color,
         badge_fill=badge_fill,
         comment=comment,
-        top=comment_top,
-        visible=True,
+        rect=LOWER_LEFT_RECT,
     )
 
-    # ------------------------------------------------------
-    # Footer
-    # ------------------------------------------------------
-    
-    draw_footer(
-        draw,
-        top=footer_top,
+    ranking_enabled = (
+        ranking_position is not None
+        and ranking_comparison_total is not None
+        and ranking_top_percent is not None
+        and bool(ranking_title)
+        and bool(ranking_rank)
+        and ranking_distribution is not None
     )
 
-    save_path.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
+    if ranking_enabled:
+        draw_ranking_result_card(
+            image,
+            draw,
+            ranking_position=ranking_position,
+            comparison_total=ranking_comparison_total,
+            ranking_top_percent=ranking_top_percent,
+            ranking_title=ranking_title,
+            ranking_rank=ranking_rank,
+            rank_distribution=ranking_distribution,
+            analysis_date=ranking_analysis_date,
+            top=LOWER_RIGHT_RECT[1],
+            rect=LOWER_RIGHT_RECT,
+        )
 
-    image.save(
-        save_path,
-        optimize=True,
-    )
+    # 6. Footer is anchored to the bottom of the fixed 1450px canvas.
+    draw_footer(draw, top=FOOTER_RECT[1])
 
+    # Never leave stale/unused canvas below the designed layout.
+    image = image.crop((0, 0, CARD_WIDTH, CARD_HEIGHT))
+
+    save_path.parent.mkdir(parents=True, exist_ok=True)
+    image.save(save_path, optimize=True)
     return str(save_path)
 
 # ==========================================================

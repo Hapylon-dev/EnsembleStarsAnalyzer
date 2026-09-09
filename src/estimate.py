@@ -216,6 +216,33 @@ class Estimate:
             normalized
         )
 
+        # ======================================================
+        # 2本グラフ対応
+        # SLOW / CENTER / FAST の位置を固定する
+        #
+        # height_ratio:
+        #   [0] = SLOW
+        #   [1] = CENTER
+        #   [2] = FAST
+        #
+        # 2本の場合、存在しない側は 0.0 とする。
+        # ======================================================
+
+        if len(bars) == 2:
+            fixed_ratios = [0.0, 0.0, 0.0]
+
+            for bar, ratio in zip(bars, ratios):
+                if bar.side == "SLOW":
+                    fixed_ratios[0] = ratio
+
+                elif bar.side == "CENTER":
+                    fixed_ratios[1] = ratio
+
+                elif bar.side == "FAST":
+                    fixed_ratios[2] = ratio
+
+            ratios = fixed_ratios
+
         if config.DEBUG_MODE:
 
             print()
@@ -266,6 +293,7 @@ class Estimate:
         result.estimated_notes = estimated
 
         return result
+        
     # ======================================================
     # Distribution
     # ======================================================
@@ -283,6 +311,10 @@ class Estimate:
         SLOW   -> AMAZING(SLOW)
         CENTER -> AMAZING+
         FAST   -> AMAZING(FAST)
+
+        2本グラフの場合も、
+        estimated は [SLOW, CENTER, FAST] の
+        3要素として扱う。
         """
 
         distribution: dict[str, int] = {}
@@ -290,10 +322,18 @@ class Estimate:
         if len(bars) == 0:
             return distribution
 
-        if len(bars) != len(estimated):
+        # ======================================================
+        # 推定ノーツ数の形式を確認
+        #
+        # estimated:
+        #   [0] = SLOW
+        #   [1] = CENTER
+        #   [2] = FAST
+        # ======================================================
+
+        if len(estimated) != 3:
             raise ValueError(
-                "バー数と推定ノーツ数が一致しません。"
-                f"bars={len(bars)}, "
+                "推定ノーツ数の要素数が不正です。"
                 f"estimated={len(estimated)}"
             )
 
@@ -303,10 +343,38 @@ class Estimate:
             "FAST": "AMAZING(FAST)",
         }
 
-        for bar, value in zip(
-            bars,
-            estimated
-        ):
+        ratio_index_map = {
+            "SLOW": 0,
+            "CENTER": 1,
+            "FAST": 2,
+        }
+
+        # ======================================================
+        # 3種類の判定を初期化
+        # 存在しないバーは 0 とする
+        # ======================================================
+
+        distribution = {
+            "AMAZING(SLOW)": 0,
+            "AMAZING+": 0,
+            "AMAZING(FAST)": 0,
+        }
+
+        # ======================================================
+        # バー位置に対応する推定ノーツ数を取得
+        # ======================================================
+
+        for bar in bars:
+
+            index = ratio_index_map.get(
+                bar.side
+            )
+
+            if index is None:
+                raise ValueError(
+                    "バー位置を判定できませんでした。"
+                    f"side={bar.side!r}"
+                )
 
             label = label_map.get(
                 bar.side
@@ -318,10 +386,9 @@ class Estimate:
                     f"side={bar.side!r}"
                 )
 
-            distribution[label] = value
+            distribution[label] = estimated[index]
 
         return distribution
-
 
     # ======================================================
     # Estimate

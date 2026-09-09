@@ -15,7 +15,7 @@
 
 🔗 **Webアプリ：**
 
-> 公開後に正式URLを記載します。
+https://ensemble-stars-analyzer.streamlit.app/
 
 ---
 

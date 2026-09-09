@@ -175,3 +175,18 @@ main.py
 # GitHubへ含める。
 #
 # ==========================================================
+
+# ==========================================================
+# Release: Development Backups / Intermediate Files
+# ==========================================================
+
+_backup_check/
+
+app_before_ranking_integration.py
+app_ranking_integrated.py
+ranking_batch_backup.py
+result_card_latest.py
+estimate.py.bak
+
+src/*.backup_*
+src/result_card_before_*.py

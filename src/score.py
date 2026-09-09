@@ -93,17 +93,17 @@ PRECISION_GRADE_TABLE = [
 
 BALANCE_GRADE_TABLE = [
 
-    (98.0, "SSS"),
-    (95.0, "SS"),
-    (84.0, "S"),
-    (72.0, "AAA"),
-    (63.0, "AA"),
-    (54.0, "A"),
-    (45.0, "BBB"),
-    (37.0, "BB"),
-    (34.0, "B"),
-    (32.0, "CCC"),
-    (27.0, "CC"),
+    (97.0, "SSS"),
+    (94.0, "SS"),
+    (87.0, "S"),
+    (80.0, "AAA"),
+    (71.0, "AA"),
+    (62.0, "A"),
+    (53.0, "BBB"),
+    (44.0, "BB"),
+    (37.0, "B"),
+    (30.0, "CCC"),
+    (25.0, "CC"),
     (20.0, "C"),
     (15.0, "D"),
     (12.0, "E"),
@@ -191,25 +191,28 @@ class ScoreCalculator:
 
         グラフ高さのみから計算する。
 
-        3本のグラフの場合：
-
+        3本の場合：
             [0] = SLOW
-            [1] = AMAZING+
+            [1] = CENTER
             [2] = FAST
 
-        Precisionは、
-        AMAZING+ が最高判定
-        (AMAZING+ + AMAZING) に占める割合。
+        2本の場合も、
+            [SLOW, CENTER, 0]
+            または
+            [0, CENTER, FAST]
+        の3要素へ正規化されている。
 
-        AMAZING
-            = AMAZING(SLOW) + AMAZING(FAST)
+        Precision =
+            CENTER
+            / (SLOW + CENTER + FAST)
+            × 100
 
         Total Notes および推定ノーツ数は使用しない。
         """
 
         ratios = estimate.height_ratio
 
-        if len(ratios) < 3:
+        if len(ratios) != 3:
             return 0.0
 
         slow_ratio = ratios[0]

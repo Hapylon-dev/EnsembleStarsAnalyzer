@@ -633,7 +633,9 @@ X共有機能は**解析結果をもとにした投稿文とWebアプリURLを�
 
 リザルト画像をアップロードし、楽曲名・難易度・レベル・総ノーツ数を入力する画面です。
 
-![Webアプリ入力画面](assets/webapp_input.png)
+<p align="center">
+  <img src="assets/webapp_input.png" alt="Webアプリ入力画面" width="700">
+</p>
 
 ---
 
@@ -643,7 +645,9 @@ X共有機能は**解析結果をもとにした投稿文とWebアプリURLを�
 
 判定分布、Achievement、Precision、Balance、Overall Score、Rank、SLOW / FAST、ランキングなどをまとめて確認できます。
 
-![解析結果・リザルトカード](assets/result_card.png)
+<p align="center">
+  <img src="assets/result_card.png" alt="解析結果・リザルトカード" width="500">
+</p>
 
 ---
 
@@ -651,7 +655,9 @@ X共有機能は**解析結果をもとにした投稿文とWebアプリURLを�
 
 ランキングの上位率に応じて表示される12種類のランキング称号です。
 
-![ランキング称号一覧](assets/ranking_titles.png)
+<p align="center">
+  <img src="assets/ranking_titles.png" alt="ランキング称号一覧" width="700">
+</p>
 
 ---
 

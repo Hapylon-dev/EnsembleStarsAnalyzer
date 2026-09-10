@@ -11,8 +11,6 @@
 
 ## 🌟 Webアプリ
 
-**Version 1.3 Final**
-
 🔗 **Webアプリ：**
 
 https://ensemble-stars-analyzer.streamlit.app/
@@ -26,15 +24,15 @@ https://ensemble-stars-analyzer.streamlit.app/
 主な解析項目は以下のとおりです。
 
 - 判定分布の推定
-- ACHIEVEMENT
+- Achievement
 - Precision（精密度）
 - Balance（安定度）
 - Overall Score（総合評価）
 - Rank（ランク）
 - FAST / SLOW の傾向
-- Result Cardによる解析結果の可視化
+- リザルトカードによる解析結果の可視化
 
-解析結果は、1枚のResult Cardとして確認・保存できます。
+解析結果は、1枚のリザルトカードとして確認・保存できます。
 
 ---
 
@@ -44,17 +42,12 @@ https://ensemble-stars-analyzer.streamlit.app/
 
 簡単に説明すると、
 
-リザルト画面のスクリーンショット
-↓
-タップタイミング棒グラフを検出
-↓
-棒グラフを解析
-↓
-判定分布を推定
-↓
-各種指標を計算
-↓
-Result Cardを生成
+①リザルト画面のスクリーンショット
+②タップタイミング棒グラフを検出
+③棒グラフを解析
+④判定分布を推定
+⑤各種指標を計算
+⑥リザルトカードを生成
 
 という流れで解析を行います。
 
@@ -66,10 +59,11 @@ Result Cardを生成
 
 ゲーム内のリザルト画面のスクリーンショットを用意してください。
 
+対応形式：PNG / JPG / JPEG / WebP
+
 タップタイミングの棒グラフが、はっきり確認できる画像を使用してください。
 
 > ⚠️ 解像度が低い画像では、正しく解析できない場合があります。
-
 ---
 
 ### STEP 2：リザルト画像をアップロードする
@@ -85,9 +79,11 @@ Webアプリを開き、解析したいリザルト画面のスクリーンシ�
 - 曲名
 - 難易度
 - レベル
-- 総ノーツ数
+- 総ノーツ数（60～1800）
 
 特に**総ノーツ数は解析結果の推定に使用される重要な情報です。**
+
+総ノーツ数は60～1800の範囲で入力してください。
 
 ---
 
@@ -95,15 +91,15 @@ Webアプリを開き、解析したいリザルト画面のスクリーンシ�
 
 「解析開始」ボタンを押してください。
 
-解析が開始されると、画像の読み込みから解析、Result Cardの生成まで自動的に処理されます。
+解析が開始されると、画像の読み込みから解析、リザルトカードの生成まで自動的に処理されます。
 
 ---
 
-### STEP 5：Result Cardを確認する
+### STEP 5：リザルトカードを確認する
 
-解析が完了すると、Result Cardが表示されます。
+解析が完了すると、リザルトカードが表示されます。
 
-Result Cardでは、判定分布や各種指標、総合評価などを確認できます。
+リザルトカードでは、判定分布や各種指標、総合評価などを確認できます。
 
 ---
 
@@ -130,7 +126,7 @@ Result Cardでは、判定分布や各種指標、総合評価などを確認で
 
 ---
 
-## 🏆 ACHIEVEMENT（達成率）
+## 🏆 Achievement（達成率）
 
 本ツール独自の評価指標です。
 
@@ -160,9 +156,9 @@ Result Cardでは、判定分布や各種指標、総合評価などを確認で
 
 ## ⚖️ Balance（安定度）
 
-FASTとSLOWの**偏りの少なさ**を表す本ツール独自の指標です。
+SLOWとFASTの**偏りの少なさ**を表す本ツール独自の指標です。
 
-FASTとSLOWの偏りが小さいほど、高い評価になります。
+SLOWとFASTの偏りが小さいほど、高い評価になります。
 
 表示範囲：
 
@@ -172,7 +168,7 @@ FASTとSLOWの偏りが小さいほど、高い評価になります。
 
 ## ⭐ Overall Score（総合評価）
 
-ACHIEVEMENT、Precision、Balanceなどの各指標をもとに算出する、本ツール独自の総合評価です。
+Achievement、Precision、Balanceなどの各指標をもとに算出する、本ツール独自の総合評価です。
 
 数値が高いほど、総合的に良い結果として評価されます。
 
@@ -194,12 +190,12 @@ Overall Scoreをもとに、本ツール独自のランクを決定します。
 
 # 🖼️ Result Card
 
-解析が完了すると、解析結果をまとめたResult Cardを確認できます。
+解析が完了すると、解析結果をまとめたリザルトカードを確認できます。
 
 ここには、
 
 - 判定分布
-- ACHIEVEMENT
+- Achievement
 - Precision
 - Balance
 - Overall Score
@@ -209,18 +205,6 @@ Overall Scoreをもとに、本ツール独自のランクを決定します。
 などが表示されます。
 
 また、解析結果を画像として保存し、共有することもできます。
-
----
-
-## 📷 実際の画面
-
-### Webアプリ入力画面
-
-> 公開後、実際のWebアプリ画面のスクリーンショットをここに掲載します。
-
-### Result Card
-
-> 公開後、実際のResult Cardのスクリーンショットをここに掲載します。
 
 ---
 
@@ -280,53 +264,3 @@ Overall Scoreをもとに、本ツール独自のランクを決定します。
 
 本ツールはゲーム公式の機能・サービスではありません。
 
----
-
-# 🛠️ 使用技術
-
-本プロジェクトでは、以下の技術を使用しています。
-
-- Python
-- Streamlit
-- Ultralytics
-- YOLO
-- OpenCV
-- NumPy
-- Pillow
-- pandas
-- matplotlib
-
-画像からタップタイミングの棒グラフを検出し、その結果をもとに解析を行っています。
-
----
-
-# 📁 プロジェクト構成
-
-```text
-EnsembleStarsAnalyzer/
-│
-├── app.py
-├── README.md
-├── requirements.txt
-├── .gitignore
-│
-├── src/
-│   ├── analyzer.py
-│   ├── config.py
-│   ├── crop.py
-│   ├── cropper.py
-│   ├── csv_writer.py
-│   ├── detector.py
-│   ├── estimate.py
-│   ├── graph.py
-│   ├── models.py
-│   ├── renderer.py
-│   ├── result_card.py
-│   ├── score.py
-│   ├── share.py
-│   ├── utils.py
-│   └── validator.py
-│
-└── weights/
-    └── graph_detector_v13.pt
-    

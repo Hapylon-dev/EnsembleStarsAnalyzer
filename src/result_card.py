@@ -54,6 +54,165 @@ RANKING_TITLE_FILES = {
     "ホワイトランカー": "white.png",
 }
 
+# ==========================================================
+# Ranking Plate Styles
+# ==========================================================
+
+RANKING_PLATE_STYLES = {
+    # Rainbow / Prism
+    "レインボーランカー": {
+        "mode": "rainbow",
+        "top": (255, 253, 255),
+        "middle": (250, 248, 255),
+        "bottom": (245, 242, 252),
+        "line": (190, 160, 220),
+        "highlight": (255, 255, 255),
+        "crystal": (225, 205, 245),
+        "accent": (248, 205, 225),
+        "rainbow_colors": (
+            (255, 205, 220),
+            (255, 232, 190),
+            (230, 245, 190),
+            (190, 238, 220),
+            (185, 225, 250),
+            (215, 200, 248),
+            (248, 205, 232),
+        ),
+    },
+
+    # Diamond / Ice Crystal
+    "ダイヤモンドランカー": {
+        "mode": "gradient",
+        "top": (255, 255, 255),
+        "middle": (238, 249, 255),
+        "bottom": (218, 237, 250),
+        "line": (165, 205, 235),
+        "highlight": (255, 255, 255),
+        "crystal": (190, 225, 250),
+        "accent": (210, 238, 255),
+    },
+
+    # Platinum / White Silver
+    "プラチナランカー": {
+        "mode": "gradient",
+        "top": (255, 255, 255),
+        "middle": (247, 249, 252),
+        "bottom": (222, 228, 236),
+        "line": (190, 202, 216),
+        "highlight": (255, 255, 255),
+        "crystal": (210, 218, 230),
+        "accent": (232, 237, 244),
+    },
+
+    # Gold / Champagne
+    "ゴールドランカー": {
+        "mode": "gradient",
+        "top": (255, 254, 246),
+        "middle": (253, 244, 211),
+        "bottom": (238, 211, 150),
+        "line": (205, 160, 65),
+        "highlight": (255, 255, 245),
+        "crystal": (242, 211, 145),
+        "accent": (255, 229, 170),
+    },
+
+    # Silver / Crystal
+    "シルバーランカー": {
+        "mode": "gradient",
+        "top": (255, 255, 255),
+        "middle": (247, 249, 252),
+        "bottom": (232, 237, 243),
+        "line": (200, 208, 220),
+        "highlight": (255, 255, 255),
+        "crystal": (218, 226, 237),
+        "accent": (235, 241, 248),
+    },
+
+    # Bronze / Copper
+    "ブロンズランカー": {
+        "mode": "gradient",
+        "top": (255, 250, 246),
+        "middle": (249, 231, 211),
+        "bottom": (229, 198, 165),
+        "line": (185, 130, 85),
+        "highlight": (255, 253, 248),
+        "crystal": (230, 185, 145),
+        "accent": (248, 210, 175),
+    },
+
+    # Purple / Amethyst
+    "パープルランカー": {
+        "mode": "gradient",
+        "top": (255, 252, 255),
+        "middle": (247, 237, 254),
+        "bottom": (224, 205, 242),
+        "line": (180, 140, 215),
+        "highlight": (255, 255, 255),
+        "crystal": (214, 185, 236),
+        "accent": (238, 208, 248),
+    },
+
+    # Red / Ruby
+    "レッドランカー": {
+        "mode": "gradient",
+        "top": (255, 250, 251),
+        "middle": (252, 231, 235),
+        "bottom": (239, 198, 207),
+        "line": (205, 125, 142),
+        "highlight": (255, 255, 255),
+        "crystal": (241, 170, 184),
+        "accent": (250, 208, 216),
+    },
+
+    # Orange / Amber
+    "オレンジランカー": {
+        "mode": "gradient",
+        "top": (255, 253, 247),
+        "middle": (253, 239, 211),
+        "bottom": (239, 211, 164),
+        "line": (210, 155, 65),
+        "highlight": (255, 255, 248),
+        "crystal": (244, 207, 140),
+        "accent": (255, 226, 170),
+    },
+
+    # Green / Emerald
+    "グリーンランカー": {
+        "mode": "gradient",
+        "top": (248, 255, 251),
+        "middle": (228, 247, 235),
+        "bottom": (193, 225, 207),
+        "line": (105, 175, 130),
+        "highlight": (255, 255, 255),
+        "crystal": (165, 214, 185),
+        "accent": (207, 237, 219),
+    },
+
+    # Blue / Sapphire
+    "ブルーランカー": {
+        "mode": "gradient",
+        "top": (248, 253, 255),
+        "middle": (226, 241, 253),
+        "bottom": (194, 220, 243),
+        "line": (110, 160, 210),
+        "highlight": (255, 255, 255),
+        "crystal": (165, 205, 238),
+        "accent": (205, 231, 252),
+    },
+
+    # White / Pearl
+    "ホワイトランカー": {
+        "mode": "gradient",
+        "top": (255, 255, 255),
+        "middle": (252, 252, 253),
+        "bottom": (238, 238, 243),
+        "line": (208, 208, 218),
+        "highlight": (255, 255, 255),
+        "crystal": (228, 228, 237),
+        "accent": (242, 242, 248),
+    },
+}
+
 RANKING_RANK_ORDER = (
     "SSS+", "SSS", "SS+", "SS", "S+", "S",
     "AAA+", "AAA", "AA+", "AA", "A+", "A",
@@ -2420,6 +2579,8 @@ def create_draw(
 
 def draw_background(
     image: Image.Image,
+    *,
+    ranking_title: str | None = None,
 ):
     """
     背景描画
@@ -2440,38 +2601,66 @@ def draw_background(
 
     plate_draw = ImageDraw.Draw(plate)
 
-    for y in range(height):
+    style = RANKING_PLATE_STYLES.get(ranking_title)
 
-        t = y / max(height - 1, 1)
+    if style is None:
+        style = {
+            "top": (250, 250, 252),
+            "middle": (255, 255, 255),
+            "bottom": (248, 248, 251),
+            "line": (225, 225, 230),
+            "highlight": (255, 255, 255),
+            "crystal": (235, 235, 240),
+        }
 
-        if t < 0.5:
+    # ------------------------------------------------------
+    # Ranking-specific plate base
+    # ------------------------------------------------------
 
-            ratio = t / 0.5
+    if style.get("mode") == "rainbow":
+        # Rainbow is a true multi-color prism gradient rather than
+        # the normal three-stop vertical gradient used by other ranks.
+        colors = style["rainbow_colors"]
+        segments = len(colors) - 1
 
-            r = int(250 + (255 - 250) * ratio)
-            g = int(250 + (255 - 250) * ratio)
-            b = int(252 + (255 - 252) * ratio)
+        for y in range(height):
+            # Vertical prism flow with a slight horizontal phase shift.
+            base_t = y / max(height - 1, 1)
 
-        else:
+            for x in range(width):
+                phase = (x / max(width - 1, 1)) * 0.18
+                position = ((base_t + phase) % 1.0) * segments
+                index = min(int(position), segments - 1)
+                fraction = position - index
+                c1 = colors[index]
+                c2 = colors[index + 1]
 
-            ratio = (t - 0.5) / 0.5
+                color = tuple(
+                    int(c1[i] + (c2[i] - c1[i]) * fraction)
+                    for i in range(3)
+                )
+                plate_draw.point((x, y), fill=color)
+    else:
+        for y in range(height):
+            t = y / max(height - 1, 1)
 
-            r = int(255 + (248 - 255) * ratio)
-            g = int(255 + (248 - 255) * ratio)
-            b = int(255 + (251 - 255) * ratio)
+            if t < 0.5:
+                ratio = t / 0.5
+                start = style["top"]
+                end = style["middle"]
+            else:
+                ratio = (t - 0.5) / 0.5
+                start = style["middle"]
+                end = style["bottom"]
 
-        plate_draw.line(
+            r = int(start[0] + (end[0] - start[0]) * ratio)
+            g = int(start[1] + (end[1] - start[1]) * ratio)
+            b = int(start[2] + (end[2] - start[2]) * ratio)
 
-            (
-                0,
-                y,
-                width,
-                y,
-            ),
-
-            fill=(r, g, b),
-
-        )
+            plate_draw.line(
+                (0, y, width, y),
+                fill=(r, g, b),
+            )
 
     mask = Image.new(
         "L",
@@ -2512,29 +2701,137 @@ def draw_background(
     draw = ImageDraw.Draw(image)
 
     # ------------------------------------------------------
+    # Ranking Plate Decoration
+    # ------------------------------------------------------
+
+    if ranking_title in RANKING_PLATE_STYLES:
+
+        # Ranking-specific outer border
+        draw.rounded_rectangle(
+            (
+                x1,
+                y1,
+                x2,
+                y2,
+            ),
+            radius=34,
+            outline=style["line"],
+            width=2,
+        )
+
+        # Inner white highlight
+        draw.rounded_rectangle(
+            (
+                x1 + 3,
+                y1 + 3,
+                x2 - 3,
+                y2 - 3,
+            ),
+            radius=31,
+            outline=style["highlight"],
+            width=1,
+        )
+
+        # --------------------------------------------------
+        # Subtle Crystal Facets
+        # --------------------------------------------------
+
+        crystal = Image.new(
+            "RGBA",
+            (width, height),
+            (0, 0, 0, 0),
+        )
+
+        crystal_draw = ImageDraw.Draw(crystal)
+
+        crystal_draw.polygon(
+            [
+                (80, 80),
+                (360, 20),
+                (260, height - 80),
+                (20, height - 220),
+            ],
+            fill=(*style["crystal"], 14),
+        )
+
+        crystal_draw.polygon(
+            [
+                (width - 40, 80),
+                (width - 300, 20),
+                (width - 420, height - 120),
+                (width - 80, height - 260),
+            ],
+            fill=(*style["accent"], 12),
+        )
+
+        crystal_draw.polygon(
+            [
+                (width // 2 - 40, 0),
+                (width // 2 + 100, 0),
+                (width // 2 + 20, height),
+                (width // 2 - 180, height),
+            ],
+            fill=(*style["highlight"], 7),
+        )
+
+        crystal_draw.line(
+            (
+                100,
+                160,
+                330,
+                40,
+            ),
+            fill=(*style["highlight"], 35),
+            width=2,
+        )
+
+        crystal_draw.line(
+            (
+                width - 100,
+                height - 160,
+                width - 330,
+                height - 40,
+            ),
+            fill=(*style["highlight"], 30),
+            width=2,
+        )
+
+        crystal = crystal.filter(
+            ImageFilter.GaussianBlur(1)
+        )
+
+        image.paste(
+            crystal,
+            (
+                x1,
+                y1,
+            ),
+            crystal,
+        )
+
+    # ------------------------------------------------------
     # Hairline Texture
     # ------------------------------------------------------
+
+    texture_color = style.get("accent", (242, 243, 246))
 
     for x in range(
         x1,
         x2,
         2,
     ):
+        alpha = 0.10 + ((x - x1) % 6) * 0.015
 
-        alpha = 2 + (x % 6)
+        # Blend the ranking tint very lightly into the existing
+        # hairline texture so the plate remains clean and readable.
+        texture = tuple(
+            int(255 * (1 - alpha) + channel * alpha)
+            for channel in texture_color
+        )
 
         draw.line(
-            (
-                x,
-                y1,
-                x,
-                y2,
-            ),
-            fill=(
-                242 + alpha,
-                243 + alpha,
-                246 + alpha,
-            ),
+            (x, y1, x, y2),
+            fill=texture,
         )
     
     # ------------------------------------------------------
@@ -2700,7 +2997,10 @@ def draw_background(
 # Initialize Card
 # ==========================================================
 
-def create_card():
+def create_card(
+    *,
+    ranking_title: str | None = None,
+):
     """
     Result Card生成
     """
@@ -2709,6 +3009,7 @@ def create_card():
 
     draw_background(
         image,
+        ranking_title=ranking_title,
     )
 
     draw = create_draw(
@@ -5149,8 +5450,8 @@ def draw_ranking_result_card(
 
     # ③ 順位
     position_y = max(
-        content_top + 142,
-        title_img_bottom + 24,
+        content_top + 106,
+        title_img_bottom + 4,
     )
 
     draw.text(
@@ -5440,7 +5741,7 @@ def draw_footer(
             footer_left,
             top,
         ),
-        "※ 判定内訳・各スコアは",
+        "※ 判定内訳・各スコアは解析結果から推定した値です。",
         fill=(125,128,138),
         font=FOOTER_FONT,
     )
@@ -5450,16 +5751,6 @@ def draw_footer(
             footer_left,
             top + 22,
         ),
-        "解析結果から推定した値です。",
-        fill=(125,128,138),
-        font=FOOTER_FONT,
-    )
-
-    draw.text(
-        (
-            footer_left,
-            top + 44,
-        ),
         "公式アプリが表示する値ではありません。",
         fill=(125,128,138),
         font=FOOTER_FONT,
@@ -5468,7 +5759,7 @@ def draw_footer(
     draw.text(
         (
             footer_left,
-            top + 66,
+            top + 44,
         ),
         "本ツールは非公式ファンメイドツールです。",
         fill=(125,128,138),
@@ -5534,7 +5825,9 @@ def create_result_card(
     if save_path is None:
         save_path = CARD_PATH
 
-    image, draw = create_card()
+    image, draw = create_card(
+        ranking_title=ranking_title,
+    )
     judges = {
         "AMAZING+": amazing_plus,
         "AMAZING": amazing,

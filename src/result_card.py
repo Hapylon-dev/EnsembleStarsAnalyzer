@@ -3934,27 +3934,27 @@ def generate_comment(
     # Precision
     # ----------------------------
 
-    if precision >= 84.0:
+    if precision >= 88.0:
         comments.append(
             "タイミングのばらつきが非常に少なく、非常に精密なタップです。"
         )
 
-    elif precision >= 78.0:
+    elif precision >= 82.0:
         comments.append(
             "タイミングのばらつきが少なく、高い精密度です。"
         )
 
-    elif precision >= 70.0:
+    elif precision >= 74.0:
         comments.append(
             "タイミングのばらつきは比較的少なく、精密度は良好です。"
         )
 
-    elif precision >= 64.0:
+    elif precision >= 68.0:
         comments.append(
             "タイミングのばらつきは比較的抑えられています。"
         )
 
-    elif precision >= 56.0:
+    elif precision >= 60.0:
         comments.append(
             "タイミングにややばらつきがあります。"
         )
@@ -3970,27 +3970,27 @@ def generate_comment(
 
     if balance_available:
 
-        if balance >= 97.0:
+        if balance >= 98.0:
             comments.append(
                 "SLOW/FASTの偏りが非常に少なく、非常に安定したタップです。"
             )
 
-        elif balance >= 87.0:
+        elif balance >= 88.0:
             comments.append(
                 "SLOW/FASTの偏りが少なく、安定したタップです。"
             )
 
-        elif balance >= 71.0:
+        elif balance >= 74.0:
             comments.append(
                 "SLOW/FASTの偏りは比較的小さく、バランスは良好です。"
             )
 
-        elif balance >= 53.0:
+        elif balance >= 56.0:
                 comments.append(
                     "タイミングのばらつきは比較的抑えられています。"
                 )
 
-        elif balance >= 37.0:
+        elif balance >= 42.0:
             comments.append(
                 "SLOW/FASTにやや偏りがあります。"
             )

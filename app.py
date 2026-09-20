@@ -2660,6 +2660,9 @@ def render_analysis_results(result_payload):
     本Webアプリは『あんさんぶるスターズ！！Music』を題材とした非公式ファンツールです。Happy Elements株式会社とは関係ありません。<br><br>
     ゲームに関する名称・画像・ロゴ・キャラクター等の権利は、それぞれの権利者に帰属します。<br><br>
     本アプリで使用されるゲーム関連コンテンツは、転載・再配布を目的としたものではありません。<br><br>
+    当ページは、Happy Elements株式会社「あんさんぶるスターズ！！Music」の画像を利用しております。<br>
+    該当画像の転載・配布等は禁止しております。<br>
+    ©Happy Elements K.K
     </div>
     """, unsafe_allow_html=True)
 

@@ -756,6 +756,37 @@ div[data-testid="stLinkButton"] a:hover {
     border-color:#000000 !important;
 }
 
+/* ==========================================================
+   ご利用マニュアルリンク
+   ========================================================== */
+
+div[data-testid="stLinkButton"] a[href="https://hapylon-dev.github.io/EnsembleStarsAnalyzer/"] {
+    background:#eee8fb !important;
+    color:#5d4a92 !important;
+    border-color:#cfc4e8 !important;
+}
+
+div[data-testid="stLinkButton"] a[href="https://hapylon-dev.github.io/EnsembleStarsAnalyzer/"] *,
+div[data-testid="stLinkButton"] a[href="https://hapylon-dev.github.io/EnsembleStarsAnalyzer/"] p,
+div[data-testid="stLinkButton"] a[href="https://hapylon-dev.github.io/EnsembleStarsAnalyzer/"] span {
+    color:#5d4a92 !important;
+    -webkit-text-fill-color:#5d4a92 !important;
+    text-shadow:none !important;
+}
+
+div[data-testid="stLinkButton"] a[href="https://hapylon-dev.github.io/EnsembleStarsAnalyzer/"]:hover {
+    background:#e2d8f6 !important;
+    color:#4b3c79 !important;
+    border-color:#b9a9dc !important;
+}
+
+div[data-testid="stLinkButton"] a[href="https://hapylon-dev.github.io/EnsembleStarsAnalyzer/"]:hover *,
+div[data-testid="stLinkButton"] a[href="https://hapylon-dev.github.io/EnsembleStarsAnalyzer/"]:hover p,
+div[data-testid="stLinkButton"] a[href="https://hapylon-dev.github.io/EnsembleStarsAnalyzer/"]:hover span {
+    color:#4b3c79 !important;
+    -webkit-text-fill-color:#4b3c79 !important;
+}
+
 div[data-testid="stLinkButton"] a:hover *,
 div[data-testid="stLinkButton"] a:hover p,
 div[data-testid="stLinkButton"] a:hover span {
@@ -1543,6 +1574,16 @@ with st.expander("❓ よくある質問", expanded=False):
 
 
 render_guide_and_policies()
+
+# ==========================================================
+# User Manual Link
+# ==========================================================
+
+st.link_button(
+    "📖 ご利用マニュアル",
+    "https://hapylon-dev.github.io/EnsembleStarsAnalyzer/",
+    width="stretch",
+)
 
 st.divider()
 

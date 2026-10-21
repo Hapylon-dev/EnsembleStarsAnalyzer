@@ -1400,9 +1400,9 @@ COMMENT_TITLE = TITLE
 # Version
 # ==========================================================
 
-APP_NAME = "Ensemble Stars!! Music"
+APP_NAME = "あんさんぶるスターズ！！Music"
 
-APP_SUBTITLE = "Tap Timing Analyzer"
+APP_SUBTITLE = "タップタイミング解析"
 
 VERSION = "Version 1.3 Final"
 
@@ -3462,7 +3462,7 @@ def draw_song_card(
             fill=badge_color,
         )
 
-    difficulty_text = difficulty.upper()
+    difficulty_text = difficulty
 
     if difficulty == "Expert":
         text_color = WHITE

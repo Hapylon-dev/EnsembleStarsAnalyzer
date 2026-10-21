@@ -44,7 +44,7 @@ MAX_UPLOAD_SIZE_BYTES = MAX_UPLOAD_SIZE_MB * 1024 * 1024
 # ==========================================================
 
 st.set_page_config(
-    page_title="あんさんぶるスターズ！！Music タップタイミング解析ツール",
+    page_title="Ensemble Stars!! Music Tap Timing Analyzer",
     page_icon="🎵",
     layout="wide",
     initial_sidebar_state="collapsed",

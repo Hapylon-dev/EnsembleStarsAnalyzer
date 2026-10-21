@@ -44,7 +44,7 @@ MAX_UPLOAD_SIZE_BYTES = MAX_UPLOAD_SIZE_MB * 1024 * 1024
 # ==========================================================
 
 st.set_page_config(
-    page_title="Ensemble Stars!! Music Tap Timing Analyzer",
+    page_title="あんさんぶるスターズ！！Music タップタイミング解析ツール",
     page_icon="🎵",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -1159,9 +1159,9 @@ st.markdown(
     f"""
 <div class="app-hero">
   <div class="app-hero-inner">
-    <div class="app-kicker">✦ MUSIC TAP TIMING ANALYZER</div>
-    <div class="app-title">あんさんぶるスターズ！！Music</div>
-    <div class="app-subtitle">タップタイミング解析</div>
+    <div class="app-kicker">✦ TAP TIMING ANALYZER</div>
+    <div class="app-title">Ensemble Stars!! Music</div>
+    <div class="app-subtitle">Tap Timing Analyzer</div>
     <div class="app-fan-tool">あんさんぶるスターズ！！Music 非公式ファンツール</div>
     <div class="app-description">
       タップタイミング棒グラフを解析し、判定分布・精密度・安定度・総合評価などを

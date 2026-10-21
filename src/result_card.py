@@ -1400,9 +1400,9 @@ COMMENT_TITLE = TITLE
 # Version
 # ==========================================================
 
-APP_NAME = "あんさんぶるスターズ！！Music"
+APP_NAME = "Ensemble Stars!! Music"
 
-APP_SUBTITLE = "タップタイミング解析"
+APP_SUBTITLE = "Tap Timing Analyzer"
 
 VERSION = "Version 1.3 Final"
 

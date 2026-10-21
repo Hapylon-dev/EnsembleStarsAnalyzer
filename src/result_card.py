@@ -3462,7 +3462,7 @@ def draw_song_card(
             fill=badge_color,
         )
 
-    difficulty_text = difficulty
+    difficulty_text = difficulty.upper()
 
     if difficulty == "Expert":
         text_color = WHITE

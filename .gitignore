@@ -61,6 +61,8 @@ Thumbs.db
 output/
 !output/
 !output/ranking_batch_results.csv
+!output/simulation/
+!output/simulation/*
 debug/
 
 # ==========================================================

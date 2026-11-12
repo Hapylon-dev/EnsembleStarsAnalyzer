@@ -1,6 +1,6 @@
 """
 score.py
-Version : 1.0
+Version : 2.0 Final
 
 Tap Timing Score Calculator
 
@@ -20,7 +20,6 @@ from models import (
 
 AMAZING_PLUS_WEIGHT = 1.01
 AMAZING_WEIGHT = 1.00
-PERFECT_WEIGHT = 0.90
 
 
 # ==========================================================
@@ -137,14 +136,12 @@ class ScoreCalculator:
         total_notes: int
     ) -> float:
         """
-        独自ACHIEVEMENT
+        ACHIEVEMENT
 
         AMAZING+ × 1.01
         AMAZING  × 1.00
-        PERFECT  × 0.90
-
-        理論値
-            101.000%
+        PERFECT以下は本Webアプリの仕様上、評価対象外（0件）。
+        理論値：101.000%
         """
 
         if total_notes <= 0:
@@ -160,11 +157,6 @@ class ScoreCalculator:
         score += (
             estimate.amazing
             * AMAZING_WEIGHT
-        )
-
-        score += (
-            estimate.perfect
-            * PERFECT_WEIGHT
         )
 
         achievement = (

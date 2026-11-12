@@ -12,7 +12,7 @@ from dataclasses import dataclass
 # ==========================================================
 
 APP_NAME = "Ensemble Stars!! Music Judgement Analyzer"
-VERSION = "1.3 Final"
+VERSION = "3.3.1-dev (Pachinko spec display, RUSH presentation, achievements, effect modes)"
 
 DEBUG_MODE = False
 

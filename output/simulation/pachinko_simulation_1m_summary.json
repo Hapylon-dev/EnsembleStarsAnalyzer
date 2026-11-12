@@ -1,0 +1,4128 @@
+{
+  "count": 1000000,
+  "seed": 20261111,
+  "initial_draw_pool_count": 1799,
+  "initial_jackpot_pool_count": 52,
+  "initial_hit_probability_actual": 0.028904947192884937,
+  "initial_hit_probability_display": 0.028901734104046242,
+  "pity_spins": 150,
+  "theoretical_pity_percentage": 1.2287875134879005,
+  "simulated_pity_count": 12325,
+  "simulated_pity_percentage": 1.2325,
+  "normal_initial_count": 987675,
+  "normal_initial_percentage": 98.7675,
+  "initial_payout_counts": {
+    "300": 265672,
+    "1500": 550651,
+    "3000": 152183,
+    "4500": 19169,
+    "6000": 12325
+  },
+  "rush_payout_distribution_percent": {
+    "300": 20,
+    "1500": 50,
+    "3000": 15,
+    "4500": 10,
+    "6000": 5
+  },
+  "rush_payout_counts": {
+    "300": 845733,
+    "1500": 2114350,
+    "3000": 635197,
+    "4500": 421705,
+    "6000": 210870
+  },
+  "rush_hit_count_distribution": [
+    {
+      "rush_hits": 0,
+      "count": 191552,
+      "percentage": 19.1552
+    },
+    {
+      "rush_hits": 1,
+      "count": 154158,
+      "percentage": 15.415799999999999
+    },
+    {
+      "rush_hits": 2,
+      "count": 125470,
+      "percentage": 12.547
+    },
+    {
+      "rush_hits": 3,
+      "count": 100537,
+      "percentage": 10.053700000000001
+    },
+    {
+      "rush_hits": 4,
+      "count": 81540,
+      "percentage": 8.154
+    },
+    {
+      "rush_hits": 5,
+      "count": 66527,
+      "percentage": 6.6527
+    },
+    {
+      "rush_hits": 6,
+      "count": 53572,
+      "percentage": 5.3572
+    },
+    {
+      "rush_hits": 7,
+      "count": 43404,
+      "percentage": 4.3404
+    },
+    {
+      "rush_hits": 8,
+      "count": 35196,
+      "percentage": 3.5195999999999996
+    },
+    {
+      "rush_hits": 9,
+      "count": 28268,
+      "percentage": 2.8268
+    },
+    {
+      "rush_hits": 10,
+      "count": 23072,
+      "percentage": 2.3072
+    },
+    {
+      "rush_hits": 11,
+      "count": 18634,
+      "percentage": 1.8634000000000002
+    },
+    {
+      "rush_hits": 12,
+      "count": 14870,
+      "percentage": 1.4869999999999999
+    },
+    {
+      "rush_hits": 13,
+      "count": 12229,
+      "percentage": 1.2229
+    },
+    {
+      "rush_hits": 14,
+      "count": 9776,
+      "percentage": 0.9776
+    },
+    {
+      "rush_hits": 15,
+      "count": 7912,
+      "percentage": 0.7912
+    },
+    {
+      "rush_hits": 16,
+      "count": 6335,
+      "percentage": 0.6335000000000001
+    },
+    {
+      "rush_hits": 17,
+      "count": 5283,
+      "percentage": 0.5283
+    },
+    {
+      "rush_hits": 18,
+      "count": 4114,
+      "percentage": 0.4114
+    },
+    {
+      "rush_hits": 19,
+      "count": 3379,
+      "percentage": 0.3379
+    },
+    {
+      "rush_hits": 20,
+      "count": 2760,
+      "percentage": 0.27599999999999997
+    },
+    {
+      "rush_hits": 21,
+      "count": 2174,
+      "percentage": 0.2174
+    },
+    {
+      "rush_hits": 22,
+      "count": 1734,
+      "percentage": 0.1734
+    },
+    {
+      "rush_hits": 23,
+      "count": 1407,
+      "percentage": 0.1407
+    },
+    {
+      "rush_hits": 24,
+      "count": 1191,
+      "percentage": 0.1191
+    },
+    {
+      "rush_hits": 25,
+      "count": 973,
+      "percentage": 0.0973
+    },
+    {
+      "rush_hits": 26,
+      "count": 745,
+      "percentage": 0.0745
+    },
+    {
+      "rush_hits": 27,
+      "count": 617,
+      "percentage": 0.061700000000000005
+    },
+    {
+      "rush_hits": 28,
+      "count": 496,
+      "percentage": 0.049600000000000005
+    },
+    {
+      "rush_hits": 29,
+      "count": 385,
+      "percentage": 0.0385
+    },
+    {
+      "rush_hits": 30,
+      "count": 320,
+      "percentage": 0.032
+    },
+    {
+      "rush_hits": 31,
+      "count": 252,
+      "percentage": 0.0252
+    },
+    {
+      "rush_hits": 32,
+      "count": 219,
+      "percentage": 0.021900000000000003
+    },
+    {
+      "rush_hits": 33,
+      "count": 174,
+      "percentage": 0.0174
+    },
+    {
+      "rush_hits": 34,
+      "count": 141,
+      "percentage": 0.014100000000000001
+    },
+    {
+      "rush_hits": 35,
+      "count": 117,
+      "percentage": 0.0117
+    },
+    {
+      "rush_hits": 36,
+      "count": 101,
+      "percentage": 0.0101
+    },
+    {
+      "rush_hits": 37,
+      "count": 71,
+      "percentage": 0.0071
+    },
+    {
+      "rush_hits": 38,
+      "count": 57,
+      "percentage": 0.0057
+    },
+    {
+      "rush_hits": 39,
+      "count": 41,
+      "percentage": 0.0041
+    },
+    {
+      "rush_hits": 40,
+      "count": 38,
+      "percentage": 0.0038000000000000004
+    },
+    {
+      "rush_hits": 41,
+      "count": 37,
+      "percentage": 0.0036999999999999997
+    },
+    {
+      "rush_hits": 42,
+      "count": 31,
+      "percentage": 0.0031000000000000003
+    },
+    {
+      "rush_hits": 43,
+      "count": 23,
+      "percentage": 0.0023
+    },
+    {
+      "rush_hits": 44,
+      "count": 11,
+      "percentage": 0.0011
+    },
+    {
+      "rush_hits": 45,
+      "count": 13,
+      "percentage": 0.0013
+    },
+    {
+      "rush_hits": 46,
+      "count": 13,
+      "percentage": 0.0013
+    },
+    {
+      "rush_hits": 47,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "rush_hits": 48,
+      "count": 6,
+      "percentage": 0.0006000000000000001
+    },
+    {
+      "rush_hits": 49,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_hits": 50,
+      "count": 4,
+      "percentage": 0.00039999999999999996
+    },
+    {
+      "rush_hits": 51,
+      "count": 6,
+      "percentage": 0.0006000000000000001
+    },
+    {
+      "rush_hits": 52,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_hits": 53,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_hits": 54,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_hits": 55,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_hits": 56,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_hits": 59,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_hits": 60,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_hits": 62,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_hits": 75,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    }
+  ],
+  "rush_notes_distribution": [
+    {
+      "rush_notes": 0,
+      "count": 191552,
+      "percentage": 19.1552
+    },
+    {
+      "rush_notes": 300,
+      "count": 30972,
+      "percentage": 3.0972
+    },
+    {
+      "rush_notes": 600,
+      "count": 4930,
+      "percentage": 0.49300000000000005
+    },
+    {
+      "rush_notes": 900,
+      "count": 797,
+      "percentage": 0.0797
+    },
+    {
+      "rush_notes": 1200,
+      "count": 139,
+      "percentage": 0.0139
+    },
+    {
+      "rush_notes": 1500,
+      "count": 77093,
+      "percentage": 7.7093
+    },
+    {
+      "rush_notes": 1800,
+      "count": 25165,
+      "percentage": 2.5165
+    },
+    {
+      "rush_notes": 2100,
+      "count": 6009,
+      "percentage": 0.6009
+    },
+    {
+      "rush_notes": 2400,
+      "count": 1192,
+      "percentage": 0.11919999999999999
+    },
+    {
+      "rush_notes": 2700,
+      "count": 236,
+      "percentage": 0.0236
+    },
+    {
+      "rush_notes": 3000,
+      "count": 54510,
+      "percentage": 5.4510000000000005
+    },
+    {
+      "rush_notes": 3300,
+      "count": 22531,
+      "percentage": 2.2531
+    },
+    {
+      "rush_notes": 3600,
+      "count": 6786,
+      "percentage": 0.6786000000000001
+    },
+    {
+      "rush_notes": 3900,
+      "count": 1754,
+      "percentage": 0.1754
+    },
+    {
+      "rush_notes": 4200,
+      "count": 353,
+      "percentage": 0.0353
+    },
+    {
+      "rush_notes": 4500,
+      "count": 46896,
+      "percentage": 4.6896
+    },
+    {
+      "rush_notes": 4800,
+      "count": 22233,
+      "percentage": 2.2233
+    },
+    {
+      "rush_notes": 5100,
+      "count": 7562,
+      "percentage": 0.7562
+    },
+    {
+      "rush_notes": 5400,
+      "count": 2119,
+      "percentage": 0.21189999999999998
+    },
+    {
+      "rush_notes": 5700,
+      "count": 577,
+      "percentage": 0.0577
+    },
+    {
+      "rush_notes": 6000,
+      "count": 39576,
+      "percentage": 3.9576000000000002
+    },
+    {
+      "rush_notes": 6300,
+      "count": 21525,
+      "percentage": 2.1525
+    },
+    {
+      "rush_notes": 6600,
+      "count": 7843,
+      "percentage": 0.7842999999999999
+    },
+    {
+      "rush_notes": 6900,
+      "count": 2378,
+      "percentage": 0.23779999999999998
+    },
+    {
+      "rush_notes": 7200,
+      "count": 774,
+      "percentage": 0.0774
+    },
+    {
+      "rush_notes": 7500,
+      "count": 29592,
+      "percentage": 2.9592
+    },
+    {
+      "rush_notes": 7800,
+      "count": 18973,
+      "percentage": 1.8973
+    },
+    {
+      "rush_notes": 8100,
+      "count": 8102,
+      "percentage": 0.8102
+    },
+    {
+      "rush_notes": 8400,
+      "count": 2713,
+      "percentage": 0.2713
+    },
+    {
+      "rush_notes": 8700,
+      "count": 834,
+      "percentage": 0.0834
+    },
+    {
+      "rush_notes": 9000,
+      "count": 23018,
+      "percentage": 2.3018
+    },
+    {
+      "rush_notes": 9300,
+      "count": 16719,
+      "percentage": 1.6719000000000002
+    },
+    {
+      "rush_notes": 9600,
+      "count": 7873,
+      "percentage": 0.7873
+    },
+    {
+      "rush_notes": 9900,
+      "count": 2950,
+      "percentage": 0.295
+    },
+    {
+      "rush_notes": 10200,
+      "count": 981,
+      "percentage": 0.0981
+    },
+    {
+      "rush_notes": 10500,
+      "count": 17891,
+      "percentage": 1.7891000000000001
+    },
+    {
+      "rush_notes": 10800,
+      "count": 14545,
+      "percentage": 1.4545000000000001
+    },
+    {
+      "rush_notes": 11100,
+      "count": 7389,
+      "percentage": 0.7389
+    },
+    {
+      "rush_notes": 11400,
+      "count": 2981,
+      "percentage": 0.29810000000000003
+    },
+    {
+      "rush_notes": 11700,
+      "count": 1030,
+      "percentage": 0.10300000000000001
+    },
+    {
+      "rush_notes": 12000,
+      "count": 14041,
+      "percentage": 1.4041
+    },
+    {
+      "rush_notes": 12300,
+      "count": 12554,
+      "percentage": 1.2553999999999998
+    },
+    {
+      "rush_notes": 12600,
+      "count": 6999,
+      "percentage": 0.6999
+    },
+    {
+      "rush_notes": 12900,
+      "count": 2997,
+      "percentage": 0.2997
+    },
+    {
+      "rush_notes": 13200,
+      "count": 1133,
+      "percentage": 0.11329999999999998
+    },
+    {
+      "rush_notes": 13500,
+      "count": 11244,
+      "percentage": 1.1244
+    },
+    {
+      "rush_notes": 13800,
+      "count": 10808,
+      "percentage": 1.0808
+    },
+    {
+      "rush_notes": 14100,
+      "count": 6500,
+      "percentage": 0.65
+    },
+    {
+      "rush_notes": 14400,
+      "count": 3001,
+      "percentage": 0.30010000000000003
+    },
+    {
+      "rush_notes": 14700,
+      "count": 1170,
+      "percentage": 0.117
+    },
+    {
+      "rush_notes": 15000,
+      "count": 8928,
+      "percentage": 0.8928
+    },
+    {
+      "rush_notes": 15300,
+      "count": 9226,
+      "percentage": 0.9226
+    },
+    {
+      "rush_notes": 15600,
+      "count": 5878,
+      "percentage": 0.5878
+    },
+    {
+      "rush_notes": 15900,
+      "count": 2936,
+      "percentage": 0.29359999999999997
+    },
+    {
+      "rush_notes": 16200,
+      "count": 1220,
+      "percentage": 0.122
+    },
+    {
+      "rush_notes": 16500,
+      "count": 7102,
+      "percentage": 0.7101999999999999
+    },
+    {
+      "rush_notes": 16800,
+      "count": 7800,
+      "percentage": 0.7799999999999999
+    },
+    {
+      "rush_notes": 17100,
+      "count": 5397,
+      "percentage": 0.5397
+    },
+    {
+      "rush_notes": 17400,
+      "count": 2743,
+      "percentage": 0.27430000000000004
+    },
+    {
+      "rush_notes": 17700,
+      "count": 1205,
+      "percentage": 0.1205
+    },
+    {
+      "rush_notes": 18000,
+      "count": 5683,
+      "percentage": 0.5682999999999999
+    },
+    {
+      "rush_notes": 18300,
+      "count": 6563,
+      "percentage": 0.6563
+    },
+    {
+      "rush_notes": 18600,
+      "count": 4794,
+      "percentage": 0.47939999999999994
+    },
+    {
+      "rush_notes": 18900,
+      "count": 2518,
+      "percentage": 0.25179999999999997
+    },
+    {
+      "rush_notes": 19200,
+      "count": 1185,
+      "percentage": 0.11850000000000001
+    },
+    {
+      "rush_notes": 19500,
+      "count": 4491,
+      "percentage": 0.4491
+    },
+    {
+      "rush_notes": 19800,
+      "count": 5413,
+      "percentage": 0.5413
+    },
+    {
+      "rush_notes": 20100,
+      "count": 4245,
+      "percentage": 0.4245
+    },
+    {
+      "rush_notes": 20400,
+      "count": 2400,
+      "percentage": 0.24
+    },
+    {
+      "rush_notes": 20700,
+      "count": 1132,
+      "percentage": 0.1132
+    },
+    {
+      "rush_notes": 21000,
+      "count": 3617,
+      "percentage": 0.3617
+    },
+    {
+      "rush_notes": 21300,
+      "count": 4568,
+      "percentage": 0.4568
+    },
+    {
+      "rush_notes": 21600,
+      "count": 3651,
+      "percentage": 0.36510000000000004
+    },
+    {
+      "rush_notes": 21900,
+      "count": 2224,
+      "percentage": 0.2224
+    },
+    {
+      "rush_notes": 22200,
+      "count": 1098,
+      "percentage": 0.10980000000000001
+    },
+    {
+      "rush_notes": 22500,
+      "count": 2895,
+      "percentage": 0.2895
+    },
+    {
+      "rush_notes": 22800,
+      "count": 3791,
+      "percentage": 0.3791
+    },
+    {
+      "rush_notes": 23100,
+      "count": 3153,
+      "percentage": 0.3153
+    },
+    {
+      "rush_notes": 23400,
+      "count": 2085,
+      "percentage": 0.20850000000000002
+    },
+    {
+      "rush_notes": 23700,
+      "count": 1055,
+      "percentage": 0.1055
+    },
+    {
+      "rush_notes": 24000,
+      "count": 2346,
+      "percentage": 0.2346
+    },
+    {
+      "rush_notes": 24300,
+      "count": 3191,
+      "percentage": 0.3191
+    },
+    {
+      "rush_notes": 24600,
+      "count": 2728,
+      "percentage": 0.2728
+    },
+    {
+      "rush_notes": 24900,
+      "count": 1936,
+      "percentage": 0.1936
+    },
+    {
+      "rush_notes": 25200,
+      "count": 1013,
+      "percentage": 0.1013
+    },
+    {
+      "rush_notes": 25500,
+      "count": 1942,
+      "percentage": 0.19419999999999998
+    },
+    {
+      "rush_notes": 25800,
+      "count": 2640,
+      "percentage": 0.264
+    },
+    {
+      "rush_notes": 26100,
+      "count": 2401,
+      "percentage": 0.24009999999999998
+    },
+    {
+      "rush_notes": 26400,
+      "count": 1618,
+      "percentage": 0.1618
+    },
+    {
+      "rush_notes": 26700,
+      "count": 959,
+      "percentage": 0.0959
+    },
+    {
+      "rush_notes": 27000,
+      "count": 1642,
+      "percentage": 0.1642
+    },
+    {
+      "rush_notes": 27300,
+      "count": 2194,
+      "percentage": 0.2194
+    },
+    {
+      "rush_notes": 27600,
+      "count": 2136,
+      "percentage": 0.21359999999999998
+    },
+    {
+      "rush_notes": 27900,
+      "count": 1451,
+      "percentage": 0.1451
+    },
+    {
+      "rush_notes": 28200,
+      "count": 917,
+      "percentage": 0.09169999999999999
+    },
+    {
+      "rush_notes": 28500,
+      "count": 1318,
+      "percentage": 0.1318
+    },
+    {
+      "rush_notes": 28800,
+      "count": 1855,
+      "percentage": 0.1855
+    },
+    {
+      "rush_notes": 29100,
+      "count": 1759,
+      "percentage": 0.1759
+    },
+    {
+      "rush_notes": 29400,
+      "count": 1342,
+      "percentage": 0.1342
+    },
+    {
+      "rush_notes": 29700,
+      "count": 821,
+      "percentage": 0.0821
+    },
+    {
+      "rush_notes": 30000,
+      "count": 1148,
+      "percentage": 0.1148
+    },
+    {
+      "rush_notes": 30300,
+      "count": 1557,
+      "percentage": 0.1557
+    },
+    {
+      "rush_notes": 30600,
+      "count": 1552,
+      "percentage": 0.1552
+    },
+    {
+      "rush_notes": 30900,
+      "count": 1164,
+      "percentage": 0.1164
+    },
+    {
+      "rush_notes": 31200,
+      "count": 753,
+      "percentage": 0.07529999999999999
+    },
+    {
+      "rush_notes": 31500,
+      "count": 946,
+      "percentage": 0.0946
+    },
+    {
+      "rush_notes": 31800,
+      "count": 1272,
+      "percentage": 0.12719999999999998
+    },
+    {
+      "rush_notes": 32100,
+      "count": 1290,
+      "percentage": 0.129
+    },
+    {
+      "rush_notes": 32400,
+      "count": 990,
+      "percentage": 0.099
+    },
+    {
+      "rush_notes": 32700,
+      "count": 703,
+      "percentage": 0.0703
+    },
+    {
+      "rush_notes": 33000,
+      "count": 745,
+      "percentage": 0.0745
+    },
+    {
+      "rush_notes": 33300,
+      "count": 1025,
+      "percentage": 0.10250000000000001
+    },
+    {
+      "rush_notes": 33600,
+      "count": 1114,
+      "percentage": 0.1114
+    },
+    {
+      "rush_notes": 33900,
+      "count": 915,
+      "percentage": 0.0915
+    },
+    {
+      "rush_notes": 34200,
+      "count": 612,
+      "percentage": 0.061200000000000004
+    },
+    {
+      "rush_notes": 34500,
+      "count": 650,
+      "percentage": 0.065
+    },
+    {
+      "rush_notes": 34800,
+      "count": 896,
+      "percentage": 0.0896
+    },
+    {
+      "rush_notes": 35100,
+      "count": 952,
+      "percentage": 0.0952
+    },
+    {
+      "rush_notes": 35400,
+      "count": 751,
+      "percentage": 0.0751
+    },
+    {
+      "rush_notes": 35700,
+      "count": 549,
+      "percentage": 0.054900000000000004
+    },
+    {
+      "rush_notes": 36000,
+      "count": 595,
+      "percentage": 0.059500000000000004
+    },
+    {
+      "rush_notes": 36300,
+      "count": 706,
+      "percentage": 0.0706
+    },
+    {
+      "rush_notes": 36600,
+      "count": 825,
+      "percentage": 0.0825
+    },
+    {
+      "rush_notes": 36900,
+      "count": 687,
+      "percentage": 0.0687
+    },
+    {
+      "rush_notes": 37200,
+      "count": 495,
+      "percentage": 0.0495
+    },
+    {
+      "rush_notes": 37500,
+      "count": 514,
+      "percentage": 0.0514
+    },
+    {
+      "rush_notes": 37800,
+      "count": 647,
+      "percentage": 0.06470000000000001
+    },
+    {
+      "rush_notes": 38100,
+      "count": 730,
+      "percentage": 0.073
+    },
+    {
+      "rush_notes": 38400,
+      "count": 573,
+      "percentage": 0.057300000000000004
+    },
+    {
+      "rush_notes": 38700,
+      "count": 403,
+      "percentage": 0.040299999999999996
+    },
+    {
+      "rush_notes": 39000,
+      "count": 473,
+      "percentage": 0.0473
+    },
+    {
+      "rush_notes": 39300,
+      "count": 493,
+      "percentage": 0.0493
+    },
+    {
+      "rush_notes": 39600,
+      "count": 548,
+      "percentage": 0.0548
+    },
+    {
+      "rush_notes": 39900,
+      "count": 526,
+      "percentage": 0.0526
+    },
+    {
+      "rush_notes": 40200,
+      "count": 385,
+      "percentage": 0.0385
+    },
+    {
+      "rush_notes": 40500,
+      "count": 393,
+      "percentage": 0.0393
+    },
+    {
+      "rush_notes": 40800,
+      "count": 437,
+      "percentage": 0.0437
+    },
+    {
+      "rush_notes": 41100,
+      "count": 497,
+      "percentage": 0.04970000000000001
+    },
+    {
+      "rush_notes": 41400,
+      "count": 436,
+      "percentage": 0.0436
+    },
+    {
+      "rush_notes": 41700,
+      "count": 354,
+      "percentage": 0.0354
+    },
+    {
+      "rush_notes": 42000,
+      "count": 337,
+      "percentage": 0.0337
+    },
+    {
+      "rush_notes": 42300,
+      "count": 366,
+      "percentage": 0.0366
+    },
+    {
+      "rush_notes": 42600,
+      "count": 425,
+      "percentage": 0.042499999999999996
+    },
+    {
+      "rush_notes": 42900,
+      "count": 368,
+      "percentage": 0.0368
+    },
+    {
+      "rush_notes": 43200,
+      "count": 286,
+      "percentage": 0.0286
+    },
+    {
+      "rush_notes": 43500,
+      "count": 265,
+      "percentage": 0.0265
+    },
+    {
+      "rush_notes": 43800,
+      "count": 322,
+      "percentage": 0.0322
+    },
+    {
+      "rush_notes": 44100,
+      "count": 338,
+      "percentage": 0.0338
+    },
+    {
+      "rush_notes": 44400,
+      "count": 345,
+      "percentage": 0.034499999999999996
+    },
+    {
+      "rush_notes": 44700,
+      "count": 275,
+      "percentage": 0.0275
+    },
+    {
+      "rush_notes": 45000,
+      "count": 266,
+      "percentage": 0.026600000000000002
+    },
+    {
+      "rush_notes": 45300,
+      "count": 249,
+      "percentage": 0.0249
+    },
+    {
+      "rush_notes": 45600,
+      "count": 306,
+      "percentage": 0.030600000000000002
+    },
+    {
+      "rush_notes": 45900,
+      "count": 289,
+      "percentage": 0.0289
+    },
+    {
+      "rush_notes": 46200,
+      "count": 222,
+      "percentage": 0.0222
+    },
+    {
+      "rush_notes": 46500,
+      "count": 222,
+      "percentage": 0.0222
+    },
+    {
+      "rush_notes": 46800,
+      "count": 231,
+      "percentage": 0.0231
+    },
+    {
+      "rush_notes": 47100,
+      "count": 266,
+      "percentage": 0.026600000000000002
+    },
+    {
+      "rush_notes": 47400,
+      "count": 279,
+      "percentage": 0.0279
+    },
+    {
+      "rush_notes": 47700,
+      "count": 211,
+      "percentage": 0.0211
+    },
+    {
+      "rush_notes": 48000,
+      "count": 191,
+      "percentage": 0.019100000000000002
+    },
+    {
+      "rush_notes": 48300,
+      "count": 206,
+      "percentage": 0.0206
+    },
+    {
+      "rush_notes": 48600,
+      "count": 230,
+      "percentage": 0.023
+    },
+    {
+      "rush_notes": 48900,
+      "count": 162,
+      "percentage": 0.0162
+    },
+    {
+      "rush_notes": 49200,
+      "count": 164,
+      "percentage": 0.0164
+    },
+    {
+      "rush_notes": 49500,
+      "count": 178,
+      "percentage": 0.0178
+    },
+    {
+      "rush_notes": 49800,
+      "count": 165,
+      "percentage": 0.0165
+    },
+    {
+      "rush_notes": 50100,
+      "count": 176,
+      "percentage": 0.0176
+    },
+    {
+      "rush_notes": 50400,
+      "count": 187,
+      "percentage": 0.018699999999999998
+    },
+    {
+      "rush_notes": 50700,
+      "count": 133,
+      "percentage": 0.013300000000000001
+    },
+    {
+      "rush_notes": 51000,
+      "count": 140,
+      "percentage": 0.013999999999999999
+    },
+    {
+      "rush_notes": 51300,
+      "count": 127,
+      "percentage": 0.0127
+    },
+    {
+      "rush_notes": 51600,
+      "count": 163,
+      "percentage": 0.016300000000000002
+    },
+    {
+      "rush_notes": 51900,
+      "count": 163,
+      "percentage": 0.016300000000000002
+    },
+    {
+      "rush_notes": 52200,
+      "count": 118,
+      "percentage": 0.0118
+    },
+    {
+      "rush_notes": 52500,
+      "count": 131,
+      "percentage": 0.0131
+    },
+    {
+      "rush_notes": 52800,
+      "count": 133,
+      "percentage": 0.013300000000000001
+    },
+    {
+      "rush_notes": 53100,
+      "count": 129,
+      "percentage": 0.012899999999999998
+    },
+    {
+      "rush_notes": 53400,
+      "count": 115,
+      "percentage": 0.0115
+    },
+    {
+      "rush_notes": 53700,
+      "count": 108,
+      "percentage": 0.010799999999999999
+    },
+    {
+      "rush_notes": 54000,
+      "count": 94,
+      "percentage": 0.009399999999999999
+    },
+    {
+      "rush_notes": 54300,
+      "count": 113,
+      "percentage": 0.0113
+    },
+    {
+      "rush_notes": 54600,
+      "count": 105,
+      "percentage": 0.0105
+    },
+    {
+      "rush_notes": 54900,
+      "count": 114,
+      "percentage": 0.0114
+    },
+    {
+      "rush_notes": 55200,
+      "count": 113,
+      "percentage": 0.0113
+    },
+    {
+      "rush_notes": 55500,
+      "count": 89,
+      "percentage": 0.0089
+    },
+    {
+      "rush_notes": 55800,
+      "count": 95,
+      "percentage": 0.0095
+    },
+    {
+      "rush_notes": 56100,
+      "count": 96,
+      "percentage": 0.009600000000000001
+    },
+    {
+      "rush_notes": 56400,
+      "count": 81,
+      "percentage": 0.0081
+    },
+    {
+      "rush_notes": 56700,
+      "count": 100,
+      "percentage": 0.01
+    },
+    {
+      "rush_notes": 57000,
+      "count": 98,
+      "percentage": 0.0098
+    },
+    {
+      "rush_notes": 57300,
+      "count": 73,
+      "percentage": 0.0073
+    },
+    {
+      "rush_notes": 57600,
+      "count": 75,
+      "percentage": 0.0075
+    },
+    {
+      "rush_notes": 57900,
+      "count": 83,
+      "percentage": 0.0083
+    },
+    {
+      "rush_notes": 58200,
+      "count": 82,
+      "percentage": 0.0082
+    },
+    {
+      "rush_notes": 58500,
+      "count": 69,
+      "percentage": 0.0069
+    },
+    {
+      "rush_notes": 58800,
+      "count": 71,
+      "percentage": 0.0071
+    },
+    {
+      "rush_notes": 59100,
+      "count": 88,
+      "percentage": 0.0088
+    },
+    {
+      "rush_notes": 59400,
+      "count": 68,
+      "percentage": 0.0068
+    },
+    {
+      "rush_notes": 59700,
+      "count": 70,
+      "percentage": 0.006999999999999999
+    },
+    {
+      "rush_notes": 60000,
+      "count": 73,
+      "percentage": 0.0073
+    },
+    {
+      "rush_notes": 60300,
+      "count": 54,
+      "percentage": 0.005399999999999999
+    },
+    {
+      "rush_notes": 60600,
+      "count": 72,
+      "percentage": 0.0072
+    },
+    {
+      "rush_notes": 60900,
+      "count": 52,
+      "percentage": 0.0052
+    },
+    {
+      "rush_notes": 61200,
+      "count": 59,
+      "percentage": 0.0059
+    },
+    {
+      "rush_notes": 61500,
+      "count": 63,
+      "percentage": 0.0063
+    },
+    {
+      "rush_notes": 61800,
+      "count": 50,
+      "percentage": 0.005
+    },
+    {
+      "rush_notes": 62100,
+      "count": 50,
+      "percentage": 0.005
+    },
+    {
+      "rush_notes": 62400,
+      "count": 58,
+      "percentage": 0.0058
+    },
+    {
+      "rush_notes": 62700,
+      "count": 61,
+      "percentage": 0.0060999999999999995
+    },
+    {
+      "rush_notes": 63000,
+      "count": 55,
+      "percentage": 0.0055000000000000005
+    },
+    {
+      "rush_notes": 63300,
+      "count": 41,
+      "percentage": 0.0041
+    },
+    {
+      "rush_notes": 63600,
+      "count": 57,
+      "percentage": 0.0057
+    },
+    {
+      "rush_notes": 63900,
+      "count": 38,
+      "percentage": 0.0038000000000000004
+    },
+    {
+      "rush_notes": 64200,
+      "count": 53,
+      "percentage": 0.0053
+    },
+    {
+      "rush_notes": 64500,
+      "count": 35,
+      "percentage": 0.0034999999999999996
+    },
+    {
+      "rush_notes": 64800,
+      "count": 37,
+      "percentage": 0.0036999999999999997
+    },
+    {
+      "rush_notes": 65100,
+      "count": 34,
+      "percentage": 0.0034
+    },
+    {
+      "rush_notes": 65400,
+      "count": 27,
+      "percentage": 0.0026999999999999997
+    },
+    {
+      "rush_notes": 65700,
+      "count": 48,
+      "percentage": 0.0048000000000000004
+    },
+    {
+      "rush_notes": 66000,
+      "count": 33,
+      "percentage": 0.0033000000000000004
+    },
+    {
+      "rush_notes": 66300,
+      "count": 34,
+      "percentage": 0.0034
+    },
+    {
+      "rush_notes": 66600,
+      "count": 34,
+      "percentage": 0.0034
+    },
+    {
+      "rush_notes": 66900,
+      "count": 30,
+      "percentage": 0.003
+    },
+    {
+      "rush_notes": 67200,
+      "count": 35,
+      "percentage": 0.0034999999999999996
+    },
+    {
+      "rush_notes": 67500,
+      "count": 36,
+      "percentage": 0.0036
+    },
+    {
+      "rush_notes": 67800,
+      "count": 29,
+      "percentage": 0.0029
+    },
+    {
+      "rush_notes": 68100,
+      "count": 18,
+      "percentage": 0.0018
+    },
+    {
+      "rush_notes": 68400,
+      "count": 31,
+      "percentage": 0.0031000000000000003
+    },
+    {
+      "rush_notes": 68700,
+      "count": 21,
+      "percentage": 0.0021
+    },
+    {
+      "rush_notes": 69000,
+      "count": 21,
+      "percentage": 0.0021
+    },
+    {
+      "rush_notes": 69300,
+      "count": 18,
+      "percentage": 0.0018
+    },
+    {
+      "rush_notes": 69600,
+      "count": 23,
+      "percentage": 0.0023
+    },
+    {
+      "rush_notes": 69900,
+      "count": 29,
+      "percentage": 0.0029
+    },
+    {
+      "rush_notes": 70200,
+      "count": 22,
+      "percentage": 0.0022
+    },
+    {
+      "rush_notes": 70500,
+      "count": 22,
+      "percentage": 0.0022
+    },
+    {
+      "rush_notes": 70800,
+      "count": 18,
+      "percentage": 0.0018
+    },
+    {
+      "rush_notes": 71100,
+      "count": 32,
+      "percentage": 0.0031999999999999997
+    },
+    {
+      "rush_notes": 71400,
+      "count": 24,
+      "percentage": 0.0024000000000000002
+    },
+    {
+      "rush_notes": 71700,
+      "count": 18,
+      "percentage": 0.0018
+    },
+    {
+      "rush_notes": 72000,
+      "count": 27,
+      "percentage": 0.0026999999999999997
+    },
+    {
+      "rush_notes": 72300,
+      "count": 17,
+      "percentage": 0.0017
+    },
+    {
+      "rush_notes": 72600,
+      "count": 16,
+      "percentage": 0.0015999999999999999
+    },
+    {
+      "rush_notes": 72900,
+      "count": 19,
+      "percentage": 0.0019000000000000002
+    },
+    {
+      "rush_notes": 73200,
+      "count": 21,
+      "percentage": 0.0021
+    },
+    {
+      "rush_notes": 73500,
+      "count": 18,
+      "percentage": 0.0018
+    },
+    {
+      "rush_notes": 73800,
+      "count": 11,
+      "percentage": 0.0011
+    },
+    {
+      "rush_notes": 74100,
+      "count": 18,
+      "percentage": 0.0018
+    },
+    {
+      "rush_notes": 74400,
+      "count": 12,
+      "percentage": 0.0012000000000000001
+    },
+    {
+      "rush_notes": 74700,
+      "count": 17,
+      "percentage": 0.0017
+    },
+    {
+      "rush_notes": 75000,
+      "count": 12,
+      "percentage": 0.0012000000000000001
+    },
+    {
+      "rush_notes": 75300,
+      "count": 14,
+      "percentage": 0.0014
+    },
+    {
+      "rush_notes": 75600,
+      "count": 8,
+      "percentage": 0.0007999999999999999
+    },
+    {
+      "rush_notes": 75900,
+      "count": 16,
+      "percentage": 0.0015999999999999999
+    },
+    {
+      "rush_notes": 76200,
+      "count": 8,
+      "percentage": 0.0007999999999999999
+    },
+    {
+      "rush_notes": 76500,
+      "count": 21,
+      "percentage": 0.0021
+    },
+    {
+      "rush_notes": 76800,
+      "count": 14,
+      "percentage": 0.0014
+    },
+    {
+      "rush_notes": 77100,
+      "count": 11,
+      "percentage": 0.0011
+    },
+    {
+      "rush_notes": 77400,
+      "count": 10,
+      "percentage": 0.001
+    },
+    {
+      "rush_notes": 77700,
+      "count": 11,
+      "percentage": 0.0011
+    },
+    {
+      "rush_notes": 78000,
+      "count": 14,
+      "percentage": 0.0014
+    },
+    {
+      "rush_notes": 78300,
+      "count": 11,
+      "percentage": 0.0011
+    },
+    {
+      "rush_notes": 78600,
+      "count": 16,
+      "percentage": 0.0015999999999999999
+    },
+    {
+      "rush_notes": 78900,
+      "count": 8,
+      "percentage": 0.0007999999999999999
+    },
+    {
+      "rush_notes": 79200,
+      "count": 12,
+      "percentage": 0.0012000000000000001
+    },
+    {
+      "rush_notes": 79500,
+      "count": 11,
+      "percentage": 0.0011
+    },
+    {
+      "rush_notes": 79800,
+      "count": 9,
+      "percentage": 0.0009
+    },
+    {
+      "rush_notes": 80100,
+      "count": 6,
+      "percentage": 0.0006000000000000001
+    },
+    {
+      "rush_notes": 80400,
+      "count": 7,
+      "percentage": 0.0007
+    },
+    {
+      "rush_notes": 80700,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "rush_notes": 81000,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "rush_notes": 81300,
+      "count": 9,
+      "percentage": 0.0009
+    },
+    {
+      "rush_notes": 81600,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 81900,
+      "count": 11,
+      "percentage": 0.0011
+    },
+    {
+      "rush_notes": 82200,
+      "count": 7,
+      "percentage": 0.0007
+    },
+    {
+      "rush_notes": 82500,
+      "count": 7,
+      "percentage": 0.0007
+    },
+    {
+      "rush_notes": 82800,
+      "count": 10,
+      "percentage": 0.001
+    },
+    {
+      "rush_notes": 83100,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "rush_notes": 83400,
+      "count": 8,
+      "percentage": 0.0007999999999999999
+    },
+    {
+      "rush_notes": 83700,
+      "count": 10,
+      "percentage": 0.001
+    },
+    {
+      "rush_notes": 84000,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "rush_notes": 84300,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "rush_notes": 84600,
+      "count": 4,
+      "percentage": 0.00039999999999999996
+    },
+    {
+      "rush_notes": 84900,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "rush_notes": 85200,
+      "count": 8,
+      "percentage": 0.0007999999999999999
+    },
+    {
+      "rush_notes": 85500,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 85800,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 86100,
+      "count": 4,
+      "percentage": 0.00039999999999999996
+    },
+    {
+      "rush_notes": 86400,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 86700,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "rush_notes": 87000,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "rush_notes": 87300,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "rush_notes": 87600,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "rush_notes": 87900,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 88200,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "rush_notes": 88500,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "rush_notes": 88800,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "rush_notes": 89100,
+      "count": 4,
+      "percentage": 0.00039999999999999996
+    },
+    {
+      "rush_notes": 89400,
+      "count": 7,
+      "percentage": 0.0007
+    },
+    {
+      "rush_notes": 89700,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 90000,
+      "count": 6,
+      "percentage": 0.0006000000000000001
+    },
+    {
+      "rush_notes": 90300,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 90600,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 90900,
+      "count": 4,
+      "percentage": 0.00039999999999999996
+    },
+    {
+      "rush_notes": 91200,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "rush_notes": 91500,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "rush_notes": 91800,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "rush_notes": 92100,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 92400,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 92700,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "rush_notes": 93000,
+      "count": 4,
+      "percentage": 0.00039999999999999996
+    },
+    {
+      "rush_notes": 93300,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 93600,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "rush_notes": 94200,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 94800,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 95100,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "rush_notes": 95400,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 95700,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 96300,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 96900,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "rush_notes": 97200,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 97500,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 98100,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 98400,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 98700,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 99000,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 99300,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 100200,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 100500,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 101100,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 101400,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 102000,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 102600,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 102900,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 103200,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 103500,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 104100,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 104400,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 104700,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 107100,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 107700,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 108000,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 108600,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 108900,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 110100,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 110700,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 111300,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 111600,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 112200,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 115800,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 116100,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 126600,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "rush_notes": 130200,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "rush_notes": 135000,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    }
+  ],
+  "total_notes_distribution": [
+    {
+      "total_notes": 300,
+      "count": 50745,
+      "percentage": 5.0745
+    },
+    {
+      "total_notes": 600,
+      "count": 8246,
+      "percentage": 0.8246
+    },
+    {
+      "total_notes": 900,
+      "count": 1291,
+      "percentage": 0.1291
+    },
+    {
+      "total_notes": 1200,
+      "count": 201,
+      "percentage": 0.0201
+    },
+    {
+      "total_notes": 1500,
+      "count": 105860,
+      "percentage": 10.586
+    },
+    {
+      "total_notes": 1800,
+      "count": 37906,
+      "percentage": 3.7906000000000004
+    },
+    {
+      "total_notes": 2100,
+      "count": 9405,
+      "percentage": 0.9405
+    },
+    {
+      "total_notes": 2400,
+      "count": 2035,
+      "percentage": 0.2035
+    },
+    {
+      "total_notes": 2700,
+      "count": 384,
+      "percentage": 0.038400000000000004
+    },
+    {
+      "total_notes": 3000,
+      "count": 71158,
+      "percentage": 7.1158
+    },
+    {
+      "total_notes": 3300,
+      "count": 33252,
+      "percentage": 3.3251999999999997
+    },
+    {
+      "total_notes": 3600,
+      "count": 9851,
+      "percentage": 0.9851000000000001
+    },
+    {
+      "total_notes": 3900,
+      "count": 2475,
+      "percentage": 0.24750000000000003
+    },
+    {
+      "total_notes": 4200,
+      "count": 645,
+      "percentage": 0.0645
+    },
+    {
+      "total_notes": 4500,
+      "count": 45340,
+      "percentage": 4.534
+    },
+    {
+      "total_notes": 4800,
+      "count": 29312,
+      "percentage": 2.9312
+    },
+    {
+      "total_notes": 5100,
+      "count": 10698,
+      "percentage": 1.0697999999999999
+    },
+    {
+      "total_notes": 5400,
+      "count": 3164,
+      "percentage": 0.3164
+    },
+    {
+      "total_notes": 5700,
+      "count": 758,
+      "percentage": 0.0758
+    },
+    {
+      "total_notes": 6000,
+      "count": 38092,
+      "percentage": 3.8092
+    },
+    {
+      "total_notes": 6300,
+      "count": 27187,
+      "percentage": 2.7187
+    },
+    {
+      "total_notes": 6600,
+      "count": 11037,
+      "percentage": 1.1037
+    },
+    {
+      "total_notes": 6900,
+      "count": 3549,
+      "percentage": 0.3549
+    },
+    {
+      "total_notes": 7200,
+      "count": 1001,
+      "percentage": 0.1001
+    },
+    {
+      "total_notes": 7500,
+      "count": 31064,
+      "percentage": 3.1064000000000003
+    },
+    {
+      "total_notes": 7800,
+      "count": 23894,
+      "percentage": 2.3893999999999997
+    },
+    {
+      "total_notes": 8100,
+      "count": 10702,
+      "percentage": 1.0702
+    },
+    {
+      "total_notes": 8400,
+      "count": 3873,
+      "percentage": 0.38730000000000003
+    },
+    {
+      "total_notes": 8700,
+      "count": 1274,
+      "percentage": 0.12739999999999999
+    },
+    {
+      "total_notes": 9000,
+      "count": 24210,
+      "percentage": 2.421
+    },
+    {
+      "total_notes": 9300,
+      "count": 20582,
+      "percentage": 2.0582
+    },
+    {
+      "total_notes": 9600,
+      "count": 10330,
+      "percentage": 1.0330000000000001
+    },
+    {
+      "total_notes": 9900,
+      "count": 4002,
+      "percentage": 0.40020000000000006
+    },
+    {
+      "total_notes": 10200,
+      "count": 1346,
+      "percentage": 0.1346
+    },
+    {
+      "total_notes": 10500,
+      "count": 18655,
+      "percentage": 1.8655000000000002
+    },
+    {
+      "total_notes": 10800,
+      "count": 17662,
+      "percentage": 1.7662
+    },
+    {
+      "total_notes": 11100,
+      "count": 9636,
+      "percentage": 0.9636
+    },
+    {
+      "total_notes": 11400,
+      "count": 4089,
+      "percentage": 0.4089
+    },
+    {
+      "total_notes": 11700,
+      "count": 1508,
+      "percentage": 0.1508
+    },
+    {
+      "total_notes": 12000,
+      "count": 14635,
+      "percentage": 1.4635
+    },
+    {
+      "total_notes": 12300,
+      "count": 14942,
+      "percentage": 1.4942
+    },
+    {
+      "total_notes": 12600,
+      "count": 8963,
+      "percentage": 0.8963000000000001
+    },
+    {
+      "total_notes": 12900,
+      "count": 4075,
+      "percentage": 0.4075
+    },
+    {
+      "total_notes": 13200,
+      "count": 1572,
+      "percentage": 0.1572
+    },
+    {
+      "total_notes": 13500,
+      "count": 11606,
+      "percentage": 1.1606
+    },
+    {
+      "total_notes": 13800,
+      "count": 12459,
+      "percentage": 1.2459
+    },
+    {
+      "total_notes": 14100,
+      "count": 8079,
+      "percentage": 0.8079
+    },
+    {
+      "total_notes": 14400,
+      "count": 3863,
+      "percentage": 0.38630000000000003
+    },
+    {
+      "total_notes": 14700,
+      "count": 1635,
+      "percentage": 0.1635
+    },
+    {
+      "total_notes": 15000,
+      "count": 9269,
+      "percentage": 0.9269
+    },
+    {
+      "total_notes": 15300,
+      "count": 10744,
+      "percentage": 1.0744
+    },
+    {
+      "total_notes": 15600,
+      "count": 7273,
+      "percentage": 0.7273
+    },
+    {
+      "total_notes": 15900,
+      "count": 3843,
+      "percentage": 0.38430000000000003
+    },
+    {
+      "total_notes": 16200,
+      "count": 1641,
+      "percentage": 0.16410000000000002
+    },
+    {
+      "total_notes": 16500,
+      "count": 7481,
+      "percentage": 0.7481
+    },
+    {
+      "total_notes": 16800,
+      "count": 9049,
+      "percentage": 0.9048999999999999
+    },
+    {
+      "total_notes": 17100,
+      "count": 6445,
+      "percentage": 0.6445000000000001
+    },
+    {
+      "total_notes": 17400,
+      "count": 3523,
+      "percentage": 0.3523
+    },
+    {
+      "total_notes": 17700,
+      "count": 1615,
+      "percentage": 0.16149999999999998
+    },
+    {
+      "total_notes": 18000,
+      "count": 5995,
+      "percentage": 0.5995
+    },
+    {
+      "total_notes": 18300,
+      "count": 7557,
+      "percentage": 0.7557
+    },
+    {
+      "total_notes": 18600,
+      "count": 5910,
+      "percentage": 0.5910000000000001
+    },
+    {
+      "total_notes": 18900,
+      "count": 3377,
+      "percentage": 0.3377
+    },
+    {
+      "total_notes": 19200,
+      "count": 1552,
+      "percentage": 0.1552
+    },
+    {
+      "total_notes": 19500,
+      "count": 4701,
+      "percentage": 0.4701
+    },
+    {
+      "total_notes": 19800,
+      "count": 6387,
+      "percentage": 0.6387
+    },
+    {
+      "total_notes": 20100,
+      "count": 5097,
+      "percentage": 0.5097
+    },
+    {
+      "total_notes": 20400,
+      "count": 3022,
+      "percentage": 0.30219999999999997
+    },
+    {
+      "total_notes": 20700,
+      "count": 1549,
+      "percentage": 0.1549
+    },
+    {
+      "total_notes": 21000,
+      "count": 3837,
+      "percentage": 0.38370000000000004
+    },
+    {
+      "total_notes": 21300,
+      "count": 5213,
+      "percentage": 0.5213
+    },
+    {
+      "total_notes": 21600,
+      "count": 4415,
+      "percentage": 0.44149999999999995
+    },
+    {
+      "total_notes": 21900,
+      "count": 2764,
+      "percentage": 0.2764
+    },
+    {
+      "total_notes": 22200,
+      "count": 1423,
+      "percentage": 0.1423
+    },
+    {
+      "total_notes": 22500,
+      "count": 3165,
+      "percentage": 0.3165
+    },
+    {
+      "total_notes": 22800,
+      "count": 4291,
+      "percentage": 0.4291
+    },
+    {
+      "total_notes": 23100,
+      "count": 3845,
+      "percentage": 0.3845
+    },
+    {
+      "total_notes": 23400,
+      "count": 2528,
+      "percentage": 0.25279999999999997
+    },
+    {
+      "total_notes": 23700,
+      "count": 1389,
+      "percentage": 0.1389
+    },
+    {
+      "total_notes": 24000,
+      "count": 2587,
+      "percentage": 0.2587
+    },
+    {
+      "total_notes": 24300,
+      "count": 3592,
+      "percentage": 0.3592
+    },
+    {
+      "total_notes": 24600,
+      "count": 3271,
+      "percentage": 0.3271
+    },
+    {
+      "total_notes": 24900,
+      "count": 2211,
+      "percentage": 0.2211
+    },
+    {
+      "total_notes": 25200,
+      "count": 1331,
+      "percentage": 0.1331
+    },
+    {
+      "total_notes": 25500,
+      "count": 2078,
+      "percentage": 0.20779999999999998
+    },
+    {
+      "total_notes": 25800,
+      "count": 3033,
+      "percentage": 0.3033
+    },
+    {
+      "total_notes": 26100,
+      "count": 2835,
+      "percentage": 0.2835
+    },
+    {
+      "total_notes": 26400,
+      "count": 2090,
+      "percentage": 0.209
+    },
+    {
+      "total_notes": 26700,
+      "count": 1181,
+      "percentage": 0.1181
+    },
+    {
+      "total_notes": 27000,
+      "count": 1779,
+      "percentage": 0.1779
+    },
+    {
+      "total_notes": 27300,
+      "count": 2509,
+      "percentage": 0.2509
+    },
+    {
+      "total_notes": 27600,
+      "count": 2326,
+      "percentage": 0.2326
+    },
+    {
+      "total_notes": 27900,
+      "count": 1860,
+      "percentage": 0.186
+    },
+    {
+      "total_notes": 28200,
+      "count": 1064,
+      "percentage": 0.10640000000000001
+    },
+    {
+      "total_notes": 28500,
+      "count": 1498,
+      "percentage": 0.1498
+    },
+    {
+      "total_notes": 28800,
+      "count": 2108,
+      "percentage": 0.21080000000000002
+    },
+    {
+      "total_notes": 29100,
+      "count": 2170,
+      "percentage": 0.217
+    },
+    {
+      "total_notes": 29400,
+      "count": 1603,
+      "percentage": 0.1603
+    },
+    {
+      "total_notes": 29700,
+      "count": 1044,
+      "percentage": 0.1044
+    },
+    {
+      "total_notes": 30000,
+      "count": 1244,
+      "percentage": 0.12440000000000001
+    },
+    {
+      "total_notes": 30300,
+      "count": 1773,
+      "percentage": 0.1773
+    },
+    {
+      "total_notes": 30600,
+      "count": 1815,
+      "percentage": 0.1815
+    },
+    {
+      "total_notes": 30900,
+      "count": 1407,
+      "percentage": 0.1407
+    },
+    {
+      "total_notes": 31200,
+      "count": 951,
+      "percentage": 0.0951
+    },
+    {
+      "total_notes": 31500,
+      "count": 1086,
+      "percentage": 0.10859999999999999
+    },
+    {
+      "total_notes": 31800,
+      "count": 1457,
+      "percentage": 0.1457
+    },
+    {
+      "total_notes": 32100,
+      "count": 1500,
+      "percentage": 0.15
+    },
+    {
+      "total_notes": 32400,
+      "count": 1249,
+      "percentage": 0.12489999999999998
+    },
+    {
+      "total_notes": 32700,
+      "count": 860,
+      "percentage": 0.086
+    },
+    {
+      "total_notes": 33000,
+      "count": 913,
+      "percentage": 0.09129999999999999
+    },
+    {
+      "total_notes": 33300,
+      "count": 1211,
+      "percentage": 0.1211
+    },
+    {
+      "total_notes": 33600,
+      "count": 1285,
+      "percentage": 0.1285
+    },
+    {
+      "total_notes": 33900,
+      "count": 1031,
+      "percentage": 0.1031
+    },
+    {
+      "total_notes": 34200,
+      "count": 773,
+      "percentage": 0.07730000000000001
+    },
+    {
+      "total_notes": 34500,
+      "count": 756,
+      "percentage": 0.0756
+    },
+    {
+      "total_notes": 34800,
+      "count": 1021,
+      "percentage": 0.1021
+    },
+    {
+      "total_notes": 35100,
+      "count": 1129,
+      "percentage": 0.1129
+    },
+    {
+      "total_notes": 35400,
+      "count": 982,
+      "percentage": 0.0982
+    },
+    {
+      "total_notes": 35700,
+      "count": 654,
+      "percentage": 0.0654
+    },
+    {
+      "total_notes": 36000,
+      "count": 655,
+      "percentage": 0.0655
+    },
+    {
+      "total_notes": 36300,
+      "count": 822,
+      "percentage": 0.08220000000000001
+    },
+    {
+      "total_notes": 36600,
+      "count": 880,
+      "percentage": 0.08800000000000001
+    },
+    {
+      "total_notes": 36900,
+      "count": 810,
+      "percentage": 0.08099999999999999
+    },
+    {
+      "total_notes": 37200,
+      "count": 596,
+      "percentage": 0.05959999999999999
+    },
+    {
+      "total_notes": 37500,
+      "count": 586,
+      "percentage": 0.058600000000000006
+    },
+    {
+      "total_notes": 37800,
+      "count": 684,
+      "percentage": 0.0684
+    },
+    {
+      "total_notes": 38100,
+      "count": 811,
+      "percentage": 0.08109999999999999
+    },
+    {
+      "total_notes": 38400,
+      "count": 731,
+      "percentage": 0.0731
+    },
+    {
+      "total_notes": 38700,
+      "count": 529,
+      "percentage": 0.052899999999999996
+    },
+    {
+      "total_notes": 39000,
+      "count": 456,
+      "percentage": 0.0456
+    },
+    {
+      "total_notes": 39300,
+      "count": 646,
+      "percentage": 0.0646
+    },
+    {
+      "total_notes": 39600,
+      "count": 687,
+      "percentage": 0.0687
+    },
+    {
+      "total_notes": 39900,
+      "count": 570,
+      "percentage": 0.056999999999999995
+    },
+    {
+      "total_notes": 40200,
+      "count": 479,
+      "percentage": 0.0479
+    },
+    {
+      "total_notes": 40500,
+      "count": 460,
+      "percentage": 0.046
+    },
+    {
+      "total_notes": 40800,
+      "count": 491,
+      "percentage": 0.0491
+    },
+    {
+      "total_notes": 41100,
+      "count": 540,
+      "percentage": 0.054
+    },
+    {
+      "total_notes": 41400,
+      "count": 540,
+      "percentage": 0.054
+    },
+    {
+      "total_notes": 41700,
+      "count": 404,
+      "percentage": 0.0404
+    },
+    {
+      "total_notes": 42000,
+      "count": 408,
+      "percentage": 0.0408
+    },
+    {
+      "total_notes": 42300,
+      "count": 423,
+      "percentage": 0.0423
+    },
+    {
+      "total_notes": 42600,
+      "count": 489,
+      "percentage": 0.0489
+    },
+    {
+      "total_notes": 42900,
+      "count": 438,
+      "percentage": 0.043800000000000006
+    },
+    {
+      "total_notes": 43200,
+      "count": 353,
+      "percentage": 0.0353
+    },
+    {
+      "total_notes": 43500,
+      "count": 339,
+      "percentage": 0.0339
+    },
+    {
+      "total_notes": 43800,
+      "count": 377,
+      "percentage": 0.0377
+    },
+    {
+      "total_notes": 44100,
+      "count": 418,
+      "percentage": 0.041800000000000004
+    },
+    {
+      "total_notes": 44400,
+      "count": 409,
+      "percentage": 0.0409
+    },
+    {
+      "total_notes": 44700,
+      "count": 287,
+      "percentage": 0.0287
+    },
+    {
+      "total_notes": 45000,
+      "count": 269,
+      "percentage": 0.026899999999999997
+    },
+    {
+      "total_notes": 45300,
+      "count": 328,
+      "percentage": 0.0328
+    },
+    {
+      "total_notes": 45600,
+      "count": 337,
+      "percentage": 0.0337
+    },
+    {
+      "total_notes": 45900,
+      "count": 329,
+      "percentage": 0.0329
+    },
+    {
+      "total_notes": 46200,
+      "count": 319,
+      "percentage": 0.0319
+    },
+    {
+      "total_notes": 46500,
+      "count": 273,
+      "percentage": 0.0273
+    },
+    {
+      "total_notes": 46800,
+      "count": 256,
+      "percentage": 0.025599999999999998
+    },
+    {
+      "total_notes": 47100,
+      "count": 281,
+      "percentage": 0.0281
+    },
+    {
+      "total_notes": 47400,
+      "count": 266,
+      "percentage": 0.026600000000000002
+    },
+    {
+      "total_notes": 47700,
+      "count": 229,
+      "percentage": 0.0229
+    },
+    {
+      "total_notes": 48000,
+      "count": 218,
+      "percentage": 0.0218
+    },
+    {
+      "total_notes": 48300,
+      "count": 212,
+      "percentage": 0.0212
+    },
+    {
+      "total_notes": 48600,
+      "count": 274,
+      "percentage": 0.0274
+    },
+    {
+      "total_notes": 48900,
+      "count": 246,
+      "percentage": 0.0246
+    },
+    {
+      "total_notes": 49200,
+      "count": 215,
+      "percentage": 0.0215
+    },
+    {
+      "total_notes": 49500,
+      "count": 224,
+      "percentage": 0.0224
+    },
+    {
+      "total_notes": 49800,
+      "count": 223,
+      "percentage": 0.0223
+    },
+    {
+      "total_notes": 50100,
+      "count": 225,
+      "percentage": 0.0225
+    },
+    {
+      "total_notes": 50400,
+      "count": 188,
+      "percentage": 0.018799999999999997
+    },
+    {
+      "total_notes": 50700,
+      "count": 180,
+      "percentage": 0.018000000000000002
+    },
+    {
+      "total_notes": 51000,
+      "count": 152,
+      "percentage": 0.015200000000000002
+    },
+    {
+      "total_notes": 51300,
+      "count": 191,
+      "percentage": 0.019100000000000002
+    },
+    {
+      "total_notes": 51600,
+      "count": 174,
+      "percentage": 0.0174
+    },
+    {
+      "total_notes": 51900,
+      "count": 171,
+      "percentage": 0.0171
+    },
+    {
+      "total_notes": 52200,
+      "count": 153,
+      "percentage": 0.015300000000000001
+    },
+    {
+      "total_notes": 52500,
+      "count": 139,
+      "percentage": 0.0139
+    },
+    {
+      "total_notes": 52800,
+      "count": 127,
+      "percentage": 0.0127
+    },
+    {
+      "total_notes": 53100,
+      "count": 158,
+      "percentage": 0.015799999999999998
+    },
+    {
+      "total_notes": 53400,
+      "count": 163,
+      "percentage": 0.016300000000000002
+    },
+    {
+      "total_notes": 53700,
+      "count": 128,
+      "percentage": 0.012799999999999999
+    },
+    {
+      "total_notes": 54000,
+      "count": 121,
+      "percentage": 0.0121
+    },
+    {
+      "total_notes": 54300,
+      "count": 128,
+      "percentage": 0.012799999999999999
+    },
+    {
+      "total_notes": 54600,
+      "count": 137,
+      "percentage": 0.0137
+    },
+    {
+      "total_notes": 54900,
+      "count": 117,
+      "percentage": 0.0117
+    },
+    {
+      "total_notes": 55200,
+      "count": 107,
+      "percentage": 0.0107
+    },
+    {
+      "total_notes": 55500,
+      "count": 112,
+      "percentage": 0.0112
+    },
+    {
+      "total_notes": 55800,
+      "count": 116,
+      "percentage": 0.0116
+    },
+    {
+      "total_notes": 56100,
+      "count": 101,
+      "percentage": 0.0101
+    },
+    {
+      "total_notes": 56400,
+      "count": 127,
+      "percentage": 0.0127
+    },
+    {
+      "total_notes": 56700,
+      "count": 100,
+      "percentage": 0.01
+    },
+    {
+      "total_notes": 57000,
+      "count": 95,
+      "percentage": 0.0095
+    },
+    {
+      "total_notes": 57300,
+      "count": 106,
+      "percentage": 0.0106
+    },
+    {
+      "total_notes": 57600,
+      "count": 85,
+      "percentage": 0.0085
+    },
+    {
+      "total_notes": 57900,
+      "count": 77,
+      "percentage": 0.0077
+    },
+    {
+      "total_notes": 58200,
+      "count": 88,
+      "percentage": 0.0088
+    },
+    {
+      "total_notes": 58500,
+      "count": 93,
+      "percentage": 0.0093
+    },
+    {
+      "total_notes": 58800,
+      "count": 81,
+      "percentage": 0.0081
+    },
+    {
+      "total_notes": 59100,
+      "count": 80,
+      "percentage": 0.008
+    },
+    {
+      "total_notes": 59400,
+      "count": 90,
+      "percentage": 0.009000000000000001
+    },
+    {
+      "total_notes": 59700,
+      "count": 82,
+      "percentage": 0.0082
+    },
+    {
+      "total_notes": 60000,
+      "count": 57,
+      "percentage": 0.0057
+    },
+    {
+      "total_notes": 60300,
+      "count": 72,
+      "percentage": 0.0072
+    },
+    {
+      "total_notes": 60600,
+      "count": 70,
+      "percentage": 0.006999999999999999
+    },
+    {
+      "total_notes": 60900,
+      "count": 83,
+      "percentage": 0.0083
+    },
+    {
+      "total_notes": 61200,
+      "count": 76,
+      "percentage": 0.007600000000000001
+    },
+    {
+      "total_notes": 61500,
+      "count": 67,
+      "percentage": 0.0067
+    },
+    {
+      "total_notes": 61800,
+      "count": 63,
+      "percentage": 0.0063
+    },
+    {
+      "total_notes": 62100,
+      "count": 74,
+      "percentage": 0.0073999999999999995
+    },
+    {
+      "total_notes": 62400,
+      "count": 46,
+      "percentage": 0.0046
+    },
+    {
+      "total_notes": 62700,
+      "count": 70,
+      "percentage": 0.006999999999999999
+    },
+    {
+      "total_notes": 63000,
+      "count": 65,
+      "percentage": 0.0065
+    },
+    {
+      "total_notes": 63300,
+      "count": 47,
+      "percentage": 0.004699999999999999
+    },
+    {
+      "total_notes": 63600,
+      "count": 60,
+      "percentage": 0.006
+    },
+    {
+      "total_notes": 63900,
+      "count": 55,
+      "percentage": 0.0055000000000000005
+    },
+    {
+      "total_notes": 64200,
+      "count": 54,
+      "percentage": 0.005399999999999999
+    },
+    {
+      "total_notes": 64500,
+      "count": 49,
+      "percentage": 0.0049
+    },
+    {
+      "total_notes": 64800,
+      "count": 39,
+      "percentage": 0.0039
+    },
+    {
+      "total_notes": 65100,
+      "count": 47,
+      "percentage": 0.004699999999999999
+    },
+    {
+      "total_notes": 65400,
+      "count": 39,
+      "percentage": 0.0039
+    },
+    {
+      "total_notes": 65700,
+      "count": 50,
+      "percentage": 0.005
+    },
+    {
+      "total_notes": 66000,
+      "count": 55,
+      "percentage": 0.0055000000000000005
+    },
+    {
+      "total_notes": 66300,
+      "count": 33,
+      "percentage": 0.0033000000000000004
+    },
+    {
+      "total_notes": 66600,
+      "count": 38,
+      "percentage": 0.0038000000000000004
+    },
+    {
+      "total_notes": 66900,
+      "count": 32,
+      "percentage": 0.0031999999999999997
+    },
+    {
+      "total_notes": 67200,
+      "count": 41,
+      "percentage": 0.0041
+    },
+    {
+      "total_notes": 67500,
+      "count": 38,
+      "percentage": 0.0038000000000000004
+    },
+    {
+      "total_notes": 67800,
+      "count": 33,
+      "percentage": 0.0033000000000000004
+    },
+    {
+      "total_notes": 68100,
+      "count": 39,
+      "percentage": 0.0039
+    },
+    {
+      "total_notes": 68400,
+      "count": 29,
+      "percentage": 0.0029
+    },
+    {
+      "total_notes": 68700,
+      "count": 34,
+      "percentage": 0.0034
+    },
+    {
+      "total_notes": 69000,
+      "count": 34,
+      "percentage": 0.0034
+    },
+    {
+      "total_notes": 69300,
+      "count": 26,
+      "percentage": 0.0026
+    },
+    {
+      "total_notes": 69600,
+      "count": 16,
+      "percentage": 0.0015999999999999999
+    },
+    {
+      "total_notes": 69900,
+      "count": 32,
+      "percentage": 0.0031999999999999997
+    },
+    {
+      "total_notes": 70200,
+      "count": 32,
+      "percentage": 0.0031999999999999997
+    },
+    {
+      "total_notes": 70500,
+      "count": 21,
+      "percentage": 0.0021
+    },
+    {
+      "total_notes": 70800,
+      "count": 22,
+      "percentage": 0.0022
+    },
+    {
+      "total_notes": 71100,
+      "count": 21,
+      "percentage": 0.0021
+    },
+    {
+      "total_notes": 71400,
+      "count": 27,
+      "percentage": 0.0026999999999999997
+    },
+    {
+      "total_notes": 71700,
+      "count": 28,
+      "percentage": 0.0028
+    },
+    {
+      "total_notes": 72000,
+      "count": 26,
+      "percentage": 0.0026
+    },
+    {
+      "total_notes": 72300,
+      "count": 24,
+      "percentage": 0.0024000000000000002
+    },
+    {
+      "total_notes": 72600,
+      "count": 31,
+      "percentage": 0.0031000000000000003
+    },
+    {
+      "total_notes": 72900,
+      "count": 20,
+      "percentage": 0.002
+    },
+    {
+      "total_notes": 73200,
+      "count": 19,
+      "percentage": 0.0019000000000000002
+    },
+    {
+      "total_notes": 73500,
+      "count": 23,
+      "percentage": 0.0023
+    },
+    {
+      "total_notes": 73800,
+      "count": 16,
+      "percentage": 0.0015999999999999999
+    },
+    {
+      "total_notes": 74100,
+      "count": 22,
+      "percentage": 0.0022
+    },
+    {
+      "total_notes": 74400,
+      "count": 23,
+      "percentage": 0.0023
+    },
+    {
+      "total_notes": 74700,
+      "count": 22,
+      "percentage": 0.0022
+    },
+    {
+      "total_notes": 75000,
+      "count": 23,
+      "percentage": 0.0023
+    },
+    {
+      "total_notes": 75300,
+      "count": 14,
+      "percentage": 0.0014
+    },
+    {
+      "total_notes": 75600,
+      "count": 14,
+      "percentage": 0.0014
+    },
+    {
+      "total_notes": 75900,
+      "count": 10,
+      "percentage": 0.001
+    },
+    {
+      "total_notes": 76200,
+      "count": 8,
+      "percentage": 0.0007999999999999999
+    },
+    {
+      "total_notes": 76500,
+      "count": 8,
+      "percentage": 0.0007999999999999999
+    },
+    {
+      "total_notes": 76800,
+      "count": 13,
+      "percentage": 0.0013
+    },
+    {
+      "total_notes": 77100,
+      "count": 10,
+      "percentage": 0.001
+    },
+    {
+      "total_notes": 77400,
+      "count": 17,
+      "percentage": 0.0017
+    },
+    {
+      "total_notes": 77700,
+      "count": 10,
+      "percentage": 0.001
+    },
+    {
+      "total_notes": 78000,
+      "count": 17,
+      "percentage": 0.0017
+    },
+    {
+      "total_notes": 78300,
+      "count": 15,
+      "percentage": 0.0015
+    },
+    {
+      "total_notes": 78600,
+      "count": 11,
+      "percentage": 0.0011
+    },
+    {
+      "total_notes": 78900,
+      "count": 9,
+      "percentage": 0.0009
+    },
+    {
+      "total_notes": 79200,
+      "count": 9,
+      "percentage": 0.0009
+    },
+    {
+      "total_notes": 79500,
+      "count": 16,
+      "percentage": 0.0015999999999999999
+    },
+    {
+      "total_notes": 79800,
+      "count": 7,
+      "percentage": 0.0007
+    },
+    {
+      "total_notes": 80100,
+      "count": 16,
+      "percentage": 0.0015999999999999999
+    },
+    {
+      "total_notes": 80400,
+      "count": 11,
+      "percentage": 0.0011
+    },
+    {
+      "total_notes": 80700,
+      "count": 12,
+      "percentage": 0.0012000000000000001
+    },
+    {
+      "total_notes": 81000,
+      "count": 6,
+      "percentage": 0.0006000000000000001
+    },
+    {
+      "total_notes": 81300,
+      "count": 8,
+      "percentage": 0.0007999999999999999
+    },
+    {
+      "total_notes": 81600,
+      "count": 11,
+      "percentage": 0.0011
+    },
+    {
+      "total_notes": 81900,
+      "count": 7,
+      "percentage": 0.0007
+    },
+    {
+      "total_notes": 82200,
+      "count": 6,
+      "percentage": 0.0006000000000000001
+    },
+    {
+      "total_notes": 82500,
+      "count": 11,
+      "percentage": 0.0011
+    },
+    {
+      "total_notes": 82800,
+      "count": 6,
+      "percentage": 0.0006000000000000001
+    },
+    {
+      "total_notes": 83100,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 83400,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "total_notes": 83700,
+      "count": 4,
+      "percentage": 0.00039999999999999996
+    },
+    {
+      "total_notes": 84000,
+      "count": 9,
+      "percentage": 0.0009
+    },
+    {
+      "total_notes": 84300,
+      "count": 12,
+      "percentage": 0.0012000000000000001
+    },
+    {
+      "total_notes": 84600,
+      "count": 7,
+      "percentage": 0.0007
+    },
+    {
+      "total_notes": 84900,
+      "count": 10,
+      "percentage": 0.001
+    },
+    {
+      "total_notes": 85200,
+      "count": 10,
+      "percentage": 0.001
+    },
+    {
+      "total_notes": 85500,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 85800,
+      "count": 4,
+      "percentage": 0.00039999999999999996
+    },
+    {
+      "total_notes": 86100,
+      "count": 4,
+      "percentage": 0.00039999999999999996
+    },
+    {
+      "total_notes": 86400,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 86700,
+      "count": 10,
+      "percentage": 0.001
+    },
+    {
+      "total_notes": 87000,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 87300,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "total_notes": 87600,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "total_notes": 87900,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "total_notes": 88200,
+      "count": 6,
+      "percentage": 0.0006000000000000001
+    },
+    {
+      "total_notes": 88500,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 88800,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 89100,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "total_notes": 89400,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "total_notes": 89700,
+      "count": 8,
+      "percentage": 0.0007999999999999999
+    },
+    {
+      "total_notes": 90000,
+      "count": 4,
+      "percentage": 0.00039999999999999996
+    },
+    {
+      "total_notes": 90300,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 90600,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 90900,
+      "count": 4,
+      "percentage": 0.00039999999999999996
+    },
+    {
+      "total_notes": 91200,
+      "count": 6,
+      "percentage": 0.0006000000000000001
+    },
+    {
+      "total_notes": 91500,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "total_notes": 91800,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "total_notes": 92100,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 92400,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 92700,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "total_notes": 93000,
+      "count": 4,
+      "percentage": 0.00039999999999999996
+    },
+    {
+      "total_notes": 93300,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 93900,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 94200,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "total_notes": 94500,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 94800,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 95100,
+      "count": 5,
+      "percentage": 0.0005
+    },
+    {
+      "total_notes": 95700,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 96000,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 96300,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 96600,
+      "count": 4,
+      "percentage": 0.00039999999999999996
+    },
+    {
+      "total_notes": 97200,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "total_notes": 97800,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 98400,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "total_notes": 98700,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 99000,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 99300,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 99600,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 99900,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 100200,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "total_notes": 100500,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 100800,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 101100,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 101400,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 101700,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 102000,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 103500,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "total_notes": 104100,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 104400,
+      "count": 3,
+      "percentage": 0.00030000000000000003
+    },
+    {
+      "total_notes": 105000,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 105900,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 106200,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 108300,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 108900,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 109200,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 110100,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 110400,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 111600,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 112200,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 112800,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 113100,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 113700,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 117600,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 118800,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 126900,
+      "count": 2,
+      "percentage": 0.00019999999999999998
+    },
+    {
+      "total_notes": 130500,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    },
+    {
+      "total_notes": 136500,
+      "count": 1,
+      "percentage": 9.999999999999999e-05
+    }
+  ],
+  "average_initial_notes_theoretical": 1521.1054030154705,
+  "average_initial_notes_simulated": 1522.4376,
+  "average_rush_hits_theoretical": 4.234119607543101,
+  "average_rush_hits_simulated": 4.227855,
+  "average_rush_notes_theoretical": 8510.580411161633,
+  "average_rush_notes_simulated": 8493.7284,
+  "average_total_notes_theoretical": 10031.685814177103,
+  "average_total_notes_simulated": 10016.166,
+  "average_rush_spins_simulated": 308.909462,
+  "rank_counts": {
+    "SSS+": 2576,
+    "SSS": 3967,
+    "SS+": 5011,
+    "SS": 6089,
+    "S+": 7585,
+    "S": 11199,
+    "AAA+": 15299,
+    "AAA": 20188,
+    "AA+": 24855,
+    "AA": 30502,
+    "A+": 37603,
+    "A": 39592,
+    "BBB": 40863,
+    "BB": 53617,
+    "B": 71533,
+    "CCC": 94865,
+    "CC": 115852,
+    "C": 131573,
+    "D": 120888,
+    "E": 105860,
+    "F": 60483
+  },
+  "histogram": [
+    {
+      "rank": "SSS+",
+      "count": 2576,
+      "percentage": 0.2576
+    },
+    {
+      "rank": "SSS",
+      "count": 3967,
+      "percentage": 0.3967
+    },
+    {
+      "rank": "SS+",
+      "count": 5011,
+      "percentage": 0.5011
+    },
+    {
+      "rank": "SS",
+      "count": 6089,
+      "percentage": 0.6089
+    },
+    {
+      "rank": "S+",
+      "count": 7585,
+      "percentage": 0.7585
+    },
+    {
+      "rank": "S",
+      "count": 11199,
+      "percentage": 1.1199000000000001
+    },
+    {
+      "rank": "AAA+",
+      "count": 15299,
+      "percentage": 1.5299
+    },
+    {
+      "rank": "AAA",
+      "count": 20188,
+      "percentage": 2.0188
+    },
+    {
+      "rank": "AA+",
+      "count": 24855,
+      "percentage": 2.4855
+    },
+    {
+      "rank": "AA",
+      "count": 30502,
+      "percentage": 3.0502000000000002
+    },
+    {
+      "rank": "A+",
+      "count": 37603,
+      "percentage": 3.7603
+    },
+    {
+      "rank": "A",
+      "count": 39592,
+      "percentage": 3.9592
+    },
+    {
+      "rank": "BBB",
+      "count": 40863,
+      "percentage": 4.0863
+    },
+    {
+      "rank": "BB",
+      "count": 53617,
+      "percentage": 5.3617
+    },
+    {
+      "rank": "B",
+      "count": 71533,
+      "percentage": 7.1533
+    },
+    {
+      "rank": "CCC",
+      "count": 94865,
+      "percentage": 9.486500000000001
+    },
+    {
+      "rank": "CC",
+      "count": 115852,
+      "percentage": 11.5852
+    },
+    {
+      "rank": "C",
+      "count": 131573,
+      "percentage": 13.1573
+    },
+    {
+      "rank": "D",
+      "count": 120888,
+      "percentage": 12.088799999999999
+    },
+    {
+      "rank": "E",
+      "count": 105860,
+      "percentage": 10.586
+    },
+    {
+      "rank": "F",
+      "count": 60483,
+      "percentage": 6.0483
+    }
+  ],
+  "max_total_notes": 136500,
+  "rank_thresholds": [
+    {
+      "rank": "SSS+",
+      "minimum_notes": 60000
+    },
+    {
+      "rank": "SSS",
+      "minimum_notes": 50400
+    },
+    {
+      "rank": "SS+",
+      "minimum_notes": 44700
+    },
+    {
+      "rank": "SS",
+      "minimum_notes": 40500
+    },
+    {
+      "rank": "S+",
+      "minimum_notes": 36900
+    },
+    {
+      "rank": "S",
+      "minimum_notes": 33300
+    },
+    {
+      "rank": "AAA+",
+      "minimum_notes": 29700
+    },
+    {
+      "rank": "AAA",
+      "minimum_notes": 26400
+    },
+    {
+      "rank": "AA+",
+      "minimum_notes": 23400
+    },
+    {
+      "rank": "AA",
+      "minimum_notes": 20700
+    },
+    {
+      "rank": "A+",
+      "minimum_notes": 18300
+    },
+    {
+      "rank": "A",
+      "minimum_notes": 15900
+    },
+    {
+      "rank": "BBB",
+      "minimum_notes": 14100
+    },
+    {
+      "rank": "BB",
+      "minimum_notes": 12300
+    },
+    {
+      "rank": "B",
+      "minimum_notes": 9900
+    },
+    {
+      "rank": "CCC",
+      "minimum_notes": 7800
+    },
+    {
+      "rank": "CC",
+      "minimum_notes": 5400
+    },
+    {
+      "rank": "C",
+      "minimum_notes": 3300
+    },
+    {
+      "rank": "D",
+      "minimum_notes": 1800
+    },
+    {
+      "rank": "E",
+      "minimum_notes": 1500
+    },
+    {
+      "rank": "F",
+      "minimum_notes": 300
+    }
+  ],
+  "simulation_method": "fixed 1,799-value OVERALL pool; 150 consecutive misses trigger Pity Time; RUSH 1/73 with 116 main ST spins + up to 4 reserve draws (max 120)",
+  "files": {
+    "individual_trials": "pachinko_simulation_1m.csv.gz",
+    "summary": "pachinko_simulation_1m_summary.json",
+    "histogram": "pachinko_rank_histogram_1m.csv"
+  }
+}

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import csv
 
 import config
@@ -120,7 +121,7 @@ class CSVWriter:
             writer = csv.writer(f)
 
             writer.writerow([
-                datetime.now().strftime(
+                datetime.now(ZoneInfo("Asia/Tokyo")).strftime(
                     "%Y-%m-%d %H:%M:%S"
                 ),
                 music,

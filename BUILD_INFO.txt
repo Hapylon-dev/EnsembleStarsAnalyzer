@@ -1,0 +1,41 @@
+ensemble-stars-analyzer 3.3.3-dev
+Build date: 2026-11-12
+Base source: user-uploaded 3.3.3-dev source archive
+Changes: completed normal-time presentation layer with STANDARD / FORESHADOW / QUICK modes, staged hold/tease/reach/final cues; completed RUSH presentation layer; STANDARD / SHADOW VISITOR / IMPACT / ONE PUSH modes; hold-arrival foreshadowing; escalating chain presentation at 1-3 / 4-7 / 8-11 / 12+; payout-tier-specific reveals (300/1500/3000/4500/6000); adaptive-height saved result card; responsive RUSH mode selector; visual spin animation uses isolated visual RNG
+Pity Time game logic: unchanged; 150 consecutive misses; +6000 NOTES; RUSH entry
+RUSH payout: unchanged; 20/50/15/10/5; mean 2010 NOTES
+Hold color transformation probability: unchanged; 1/50
+Normal hit probability: unchanged; 1/34.6
+RUSH hit probability: unchanged; 1/73
+ST本体: 116 spins + up to 4 stored reserve holds (max 120 total draws)
+RANK thresholds: unchanged
+Simulation dataset: unchanged
+Supabase schema, RPC, and registration payload: unchanged
+Player name / anonymous identifier: not displayed or sent by browser registration payload
+X weighted length guard: unchanged; 220 characters
+Normal-time presentation modes: STANDARD / FORESHADOW / QUICK; presentation-only and isolated from game draw RNG
+Pity Time demo/sample button: absent; no new sample entry point added
+
+User-test revision (2026-11-12): fixed PREMIUM presentation; removed narrated normal-spin text; added Pity Time countdown from 50 remaining spins; moved SHADOW VISITOR / IMPACT / ONE PUSH cues before number reveal; set conditional cue confidence to 40% with per-color initial cue rates; added original synthesized hit-only mode cues; intensified low-ST visuals; removed result-card achievement area and fixed date footer.
+Dedicated cue rates (provisional): blue 1.3%, green 7.4%, red 9%, gold 11.5%; rainbow excluded. Weighted cue occurrence 1.92735% per hold; conditional hit confidence 40%. See docs/OVERALL_PACHINKO_PRESENTATION_MANUAL.md.
+
+User-test revision (2026-11-12, follow-up): ST main segment changed to 116 spins plus up to 4 already-stored reserve holds; new holds are blocked after main ST completion. The final ten opportunities (main spins 111-116 plus up to four reserve holds) use slower consumption and a dedicated jackpot celebration. Added an eight-chapter beginner guide in-app and as docs/OVERALL_PACHINKO_BEGINNER_MANUAL.md.
+
+2026-11-12 UI/UX refinement
+- Current RANK + next-tier NOTES progress display added.
+- Live RUSH consumed-spin counter added.
+- Final zone: last 10 ST spins + up to 4 reserve holds (maximum 14 draws), slowed cadence and synthesized original BGM.
+- Final-zone jackpot celebration added.
+- Beginner manual chapter navigation links removed; collapsible chapters retained and glossary/FAQ expanded.
+- Result card QR/web-app URL and RESULT CARD label removed; card title is OVERALL PACHINKO.
+- Main page title: ensemble-stars-analyzer.
+
+
+2026-11-12 scope adjustment
+- OVERALL PACHINKO remains an optional standalone mini-game inside the あんさんぶるスターズ！！Music タップタイミング解析Webアプリ; pachinko-specific online ranking display and automatic Supabase result registration were removed from this app.
+- Result card comparison panel now shows the top percentile derived from the existing 1,000,000-trial total-NOTES distribution (ties included).
+- Removed the bottom OVERALL PACHINKO total-NOTES leaderboard.
+- Updated the in-app and standalone beginner manuals: fixed RANK explanation, removed the obsolete ranking comparison FAQ/glossary entry, and removed the unnecessary blackout glossary entry.
+- Core pachinko draw/payout code, rank thresholds, and the 1,000,000-trial simulation data were not modified.
+- Supabase schema/RPC files are retained as legacy project assets but are no longer called by the current OVERALL PACHINKO UI.
+Application name update (2026-11-12): visible application identity is ensemble-stars-analyzer. Descriptive app references use あんさんぶるスターズ！！Music タップタイミング解析 or タップタイミング解析Webアプリ. Mini-game name remains OVERALL PACHINKO.

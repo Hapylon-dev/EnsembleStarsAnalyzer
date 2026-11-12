@@ -1,0 +1,20 @@
+# 100万件シミュレーション出力
+
+生成条件：
+- 試行件数：1,000,000件
+- 乱数シード：20261111
+- 通常時抽選プール：`output/ranking_batch_results.csv` の1,799件
+- 初当たり対象：小数点以下3桁がゾロ目の52件
+- 遊タイム：150回転連続未当たりで6,000 NOTESを付与しRUSH突入
+- RUSH：1/73、ST116回転＋残保留最大4個（理論計算では最大120回の抽選機会）、当たり時ST116回転に再セット
+- RUSH出玉：300 / 1,500 / 3,000 / 4,500 / 6,000 NOTES = 20 / 50 / 15 / 10 / 5%
+
+ファイル：
+- `pachinko_simulation_1m.csv.gz`: 個別試行1,000,000件
+- `pachinko_simulation_1m_summary.json`: 理論値と実測値、件数・平均値、初当たり出玉別件数、RUSH出玉別件数、RUSH大当たり回数分布、RUSH獲得NOTES分布、総獲得NOTES分布
+- `pachinko_rank_histogram_1m.csv`: 第3版の最終RANKボーダーによるヒストグラム
+
+再生成：
+```powershell
+python src/pachinko_simulation.py
+```

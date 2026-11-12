@@ -1,6 +1,6 @@
 """
 app.py
-あんさんぶるスターズ！！Music タップタイミング解析ツール
+ensemble-stars-analyzer — あんさんぶるスターズ！！Music タップタイミング解析
 
 Ensemble Stars!! Music
 Tap Timing Analyzer
@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import re
 import os
 import tempfile
@@ -27,9 +28,13 @@ import config
 
 from analyzer import analyze
 from score import score
-from result_card import create_result_card, generate_play_badge
+from result_card import create_result_card, generate_play_badge, generate_comment
+from achievements import generate_achievement_titles
 from share import create_tweet_url
 from ranking import load_ranking_base, calculate_ranking, build_rank_distribution
+from pachinko import load_overall_values
+from pachinko_ui import render_pachinko
+from pachinko_simulation import load_simulation_summary, DEFAULT_OUTPUT_DIR
 
 # ==========================================================
 # Release Validation Settings
@@ -44,7 +49,7 @@ MAX_UPLOAD_SIZE_BYTES = MAX_UPLOAD_SIZE_MB * 1024 * 1024
 # ==========================================================
 
 st.set_page_config(
-    page_title="あんさんぶるスターズ！！Music タップタイミング解析ツール",
+    page_title="ensemble-stars-analyzer",
     page_icon="🎵",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -1152,1162 +1157,1242 @@ div[data-baseweb="select"] svg {
 
 
 # ==========================================================
-# Header
+# Main Tabs
 # ==========================================================
 
-st.markdown(
-    f"""
-<div class="app-hero">
-  <div class="app-hero-inner">
-    <div class="app-kicker">✦ TAP TIMING ANALYZER</div>
-    <div class="app-title">あんさんぶるスターズ！！Music</div>
-    <div class="app-subtitle">タップタイミング解析</div>
-    <div class="app-fan-tool">あんさんぶるスターズ！！Music 非公式ファンツール</div>
-    <div class="app-description">
-      タップタイミング棒グラフを解析し、判定分布・精密度・安定度・総合評価などを
-      独自アルゴリズムで推定します。
+tab_analysis, tab_pachinko = st.tabs(["🎵 タップタイミング解析", "🎰 OVERALL PACHINKO"])
+
+with tab_analysis:
+
+    # ==========================================================
+    # Header
+    # ==========================================================
+
+    st.markdown(
+        f"""
+    <div class="app-hero">
+      <div class="app-hero-inner">
+        <div class="app-kicker">✦ TAP TIMING ANALYZER</div>
+        <div class="app-title">あんさんぶるスターズ！！Music</div>
+        <div class="app-subtitle">タップタイミング解析</div>
+        <div class="app-fan-tool">あんさんぶるスターズ！！Music 非公式ファンツール</div>
+        <div class="app-description">
+          タップタイミング棒グラフを解析し、判定分布・精密度・安定度・総合評価などを
+          独自アルゴリズムで推定します。
+        </div>
+        <div class="hero-rule"></div>
+      </div>
     </div>
-    <div class="hero-rule"></div>
-  </div>
-</div>
-""",
-    unsafe_allow_html=True,
-)
-
-# ==========================================================
-# Layout Utility
-# ==========================================================
-
-# ==========================================================
-# Input Layout
-# ==========================================================
-
-INPUT_LEFT_RATIO = 1.15
-INPUT_RIGHT_RATIO = 1.0
-
-
-def create_input_columns():
-    """
-    入力画面レイアウト
-    """
-
-    left, right = st.columns(
-        [INPUT_LEFT_RATIO, INPUT_RIGHT_RATIO],
-        vertical_alignment="top",
+    """,
+        unsafe_allow_html=True,
     )
 
-    return left, right
+    # ==========================================================
+    # Layout Utility
+    # ==========================================================
 
-def create_result_columns():
-    """
-    Result表示レイアウト
-    """
+    # ==========================================================
+    # Input Layout
+    # ==========================================================
 
-    image_col, result_col = st.columns(
-        [1.05, 1.15],
-        vertical_alignment="top",
-    )
-
-    return image_col, result_col
-
-def create_share_columns():
-    """
-    共有ボタンレイアウト
-    """
-
-    if IS_PC:
-        return st.columns(2)
-
-    return (
-        st.container(),
-        st.container(),
-    )
+    INPUT_LEFT_RATIO = 1.15
+    INPUT_RIGHT_RATIO = 1.0
 
 
-def _ranking_value(row, key, default=""):
-    """ランキングCSV由来の値を安全に取得する。"""
-    value = row.get(key, default) if isinstance(row, dict) else default
-    return default if value is None else value
+    def create_input_columns():
+        """
+        入力画面レイアウト
+        """
 
-
-def _safe_float(value, default=None):
-    """ランキング表示用。N/A・空欄・不正値を安全に扱う。"""
-    if value is None:
-        return default
-    if isinstance(value, str) and value.strip().upper() in {"", "N/A", "NA", "NONE", "NULL"}:
-        return default
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return default
-
-
-def _format_ranking_table(rows, current_position=None):
-    """ランキング一覧をレスポンシブHTMLテーブルへ変換する。"""
-    html = [
-        '<div class="ranking-table-wrap"><table class="ranking-table">',
-        '<thead><tr><th>順位</th><th>Overall</th><th>Rank</th><th>Precision</th><th>Balance</th><th>プレイ傾向</th></tr></thead><tbody>'
-    ]
-
-    for row in rows:
-        try:
-            position = int(_ranking_value(row, "ranking_position", 0))
-        except (TypeError, ValueError):
-            position = 0
-
-        overall_value = _safe_float(_ranking_value(row, "overall_score", 0), 0.0)
-        precision_value = _safe_float(_ranking_value(row, "precision", 0), 0.0)
-        balance_value = _safe_float(_ranking_value(row, "balance", None), None)
-
-        overall = f"{overall_value:.3f}" if overall_value is not None else "N/A"
-        precision = f"{precision_value:.3f}" if precision_value is not None else "N/A"
-        balance = f"{balance_value:.3f}" if balance_value is not None else "N/A"
-
-        rank = str(_ranking_value(row, "rank", "-"))
-        tendency = str(_ranking_value(row, "play_tendency", "N/A"))
-        is_me = bool(row.get("is_current_user", False))
-        classes = ' class="me"' if is_me else ''
-        position_label = f"{position}位" + (" ★あなた" if is_me else "")
-        html.append(
-            f'<tr{classes}>'
-            f'<td class="rank-pos">{position_label}</td>'
-            f'<td class="rank-top">{overall}</td>'
-            f'<td><span class="rank-badge">{rank}</span></td>'
-            f'<td>{precision}</td>'
-            f'<td>{balance}</td>'
-            f'<td>{tendency}</td>'
-            '</tr>'
+        left, right = st.columns(
+            [INPUT_LEFT_RATIO, INPUT_RIGHT_RATIO],
+            vertical_alignment="top",
         )
 
-    html.append('</tbody></table></div>')
-    return "".join(html)
+        return left, right
+
+    def create_result_columns():
+        """
+        Result表示レイアウト
+        """
+
+        image_col, result_col = st.columns(
+            [1.05, 1.15],
+            vertical_alignment="top",
+        )
+
+        return image_col, result_col
+
+    def create_share_columns():
+        """
+        共有ボタンレイアウト
+        """
+
+        if IS_PC:
+            return st.columns(2)
+
+        return (
+            st.container(),
+            st.container(),
+        )
 
 
-def _build_ranking_page(ranking_base, ranking_result, page_number, page_size=50):
-    """固定1,799件に現在結果を一時挿入して、1800件表示用のページを作る。"""
-    base_rows = []
-    current_position = int(ranking_result["ranking_position"])
-    current_score = float(ranking_result["overall_score"]) if "overall_score" in ranking_result else None
+    def _ranking_value(row, key, default=""):
+        """ランキングCSV由来の値を安全に取得する。"""
+        value = row.get(key, default) if isinstance(row, dict) else default
+        return default if value is None else value
 
-    for row in ranking_base:
-        item = dict(row)
+
+    def _safe_float(value, default=None):
+        """ランキング表示用。N/A・空欄・不正値を安全に扱う。"""
+        if value is None:
+            return default
+        if isinstance(value, str) and value.strip().upper() in {"", "N/A", "NA", "NONE", "NULL"}:
+            return default
         try:
-            item["ranking_position"] = int(item.get("ranking_position", 0))
+            return float(value)
         except (TypeError, ValueError):
-            continue
-        item["is_current_user"] = False
-        base_rows.append(item)
-
-    base_rows.sort(key=lambda r: r["ranking_position"])
-
-    # 現在ユーザーの行は保存せず、この画面の表示時だけ挿入する。
-    current_row = {
-        "ranking_position": current_position,
-        "overall_score": current_score if current_score is not None else 0.0,
-        "rank": ranking_result.get("rank", "-"),
-        "precision": ranking_result.get("precision", 0.0),
-        "balance": ranking_result.get("balance", None),
-        "play_tendency": ranking_result.get("play_tendency", "N/A"),
-        "is_current_user": True,
-    }
-
-    visible = []
-    for row in base_rows:
-        pos = row["ranking_position"]
-        if pos >= current_position:
-            row = dict(row)
-            row["ranking_position"] = pos + 1
-        visible.append(row)
-    visible.insert(current_position - 1, current_row)
-
-    total = len(visible)
-    page_count = max(1, (total + page_size - 1) // page_size)
-    page_number = max(1, min(page_number, page_count))
-    start = (page_number - 1) * page_size
-    end = min(start + page_size, total)
-    return visible[start:end], page_count, total, current_position
+            return default
 
 
-def render_guide_and_policies():
-    """解析前から確認できる利用ガイド・注意事項・権利・プライバシー情報。"""
+    def _format_ranking_table(rows, current_position=None):
+        """ランキング一覧をレスポンシブHTMLテーブルへ変換する。"""
+        html = [
+            '<div class="ranking-table-wrap"><table class="ranking-table">',
+            '<thead><tr><th>順位</th><th>Overall</th><th>Rank</th><th>Precision</th><th>Balance</th><th>プレイ傾向</th></tr></thead><tbody>'
+        ]
+
+        for row in rows:
+            try:
+                position = int(_ranking_value(row, "ranking_position", 0))
+            except (TypeError, ValueError):
+                position = 0
+
+            overall_value = _safe_float(_ranking_value(row, "overall_score", 0), 0.0)
+            precision_value = _safe_float(_ranking_value(row, "precision", 0), 0.0)
+            balance_value = _safe_float(_ranking_value(row, "balance", None), None)
+
+            overall = f"{overall_value:.3f}" if overall_value is not None else "N/A"
+            precision = f"{precision_value:.3f}" if precision_value is not None else "N/A"
+            balance = f"{balance_value:.3f}" if balance_value is not None else "N/A"
+
+            rank = str(_ranking_value(row, "rank", "-"))
+            tendency = str(_ranking_value(row, "play_tendency", "N/A"))
+            is_me = bool(row.get("is_current_user", False))
+            classes = ' class="me"' if is_me else ''
+            position_label = f"{position}位" + (" ★あなた" if is_me else "")
+            html.append(
+                f'<tr{classes}>'
+                f'<td class="rank-pos">{position_label}</td>'
+                f'<td class="rank-top">{overall}</td>'
+                f'<td><span class="rank-badge">{rank}</span></td>'
+                f'<td>{precision}</td>'
+                f'<td>{balance}</td>'
+                f'<td>{tendency}</td>'
+                '</tr>'
+            )
+
+        html.append('</tbody></table></div>')
+        return "".join(html)
+
+
+    def _build_ranking_page(ranking_base, ranking_result, page_number, page_size=50):
+        """固定1,799件に現在結果を一時挿入して、1800件表示用のページを作る。"""
+        base_rows = []
+        current_position = int(ranking_result["ranking_position"])
+        current_score = float(ranking_result["overall_score"]) if "overall_score" in ranking_result else None
+
+        for row in ranking_base:
+            item = dict(row)
+            try:
+                item["ranking_position"] = int(item.get("ranking_position", 0))
+            except (TypeError, ValueError):
+                continue
+            item["is_current_user"] = False
+            base_rows.append(item)
+
+        base_rows.sort(key=lambda r: r["ranking_position"])
+
+        # 現在ユーザーの行は保存せず、この画面の表示時だけ挿入する。
+        current_row = {
+            "ranking_position": current_position,
+            "overall_score": current_score if current_score is not None else 0.0,
+            "rank": ranking_result.get("rank", "-"),
+            "precision": ranking_result.get("precision", 0.0),
+            "balance": ranking_result.get("balance", None),
+            "play_tendency": ranking_result.get("play_tendency", "N/A"),
+            "is_current_user": True,
+        }
+
+        visible = []
+        for row in base_rows:
+            pos = row["ranking_position"]
+            if pos >= current_position:
+                row = dict(row)
+                row["ranking_position"] = pos + 1
+            visible.append(row)
+        visible.insert(current_position - 1, current_row)
+
+        total = len(visible)
+        page_count = max(1, (total + page_size - 1) // page_size)
+        page_number = max(1, min(page_number, page_count))
+        start = (page_number - 1) * page_size
+        end = min(start + page_size, total)
+        return visible[start:end], page_count, total, current_position
+
+
+    def render_guide_and_policies():
+        """解析前から確認できる利用ガイド・注意事項・権利・プライバシー情報。"""
+        st.divider()
+        st.markdown(
+            """<div class="section-heading">
+            <div><h2>📚 ご利用ガイド・ポリシー</h2><p>はじめに、使い方・注意事項・利用規約・プライバシー・公式ガイドラインをご確認ください。</p></div>
+            </div>""",
+            unsafe_allow_html=True,
+        )
+
+        st.markdown(
+            """<div class="guide-grid">
+            <a class="guide-tile" href="#guide-use" style="text-decoration:none;">
+              <div class="icon">📖</div><div class="title">ご利用ガイド</div><div class="desc">使い方・入力項目・リザルトカード・ランキング・共有。</div>
+            </a>
+            <a class="guide-tile" href="#guide-notice" style="text-decoration:none;">
+              <div class="icon">⚠️</div><div class="title">ご利用上の注意</div><div class="desc">対応画像・推定値・画像に含まれる情報をご確認ください。</div>
+            </a>
+            <a class="guide-tile" href="#guide-terms" style="text-decoration:none;">
+              <div class="icon">📜</div><div class="title">利用規約</div><div class="desc">利用条件・禁止事項・サービス変更・権利関係など。</div>
+            </a>
+            <a class="guide-tile" href="#guide-privacy" style="text-decoration:none;">
+              <div class="icon">🔒</div><div class="title">プライバシー</div><div class="desc">画像・入力情報・解析データの取り扱い。</div>
+            </a>
+            <a class="guide-tile" href="#guide-guideline" style="text-decoration:none;">
+              <div class="icon">©️</div><div class="title">ガイドライン</div><div class="desc">非公式表示・権利関係・コンテンツ利用について。</div>
+            </a>
+            <a class="guide-tile" href="#guide-disclaimer" style="text-decoration:none;">
+              <div class="icon">❗</div><div class="title">免責事項</div><div class="desc">推定値であることと正確性等の非保証について。</div>
+            </a>
+            </div>""",
+            unsafe_allow_html=True,
+        )
+
+        st.markdown('<div id="guide-use"></div>', unsafe_allow_html=True)
+        with st.expander("📖 ご利用ガイド", expanded=False):
+            st.markdown("""
+    ### 1. このツールについて
+    『あんさんぶるスターズ！！Music』のリザルト画面に表示されるタップタイミング棒グラフを解析し、判定分布やタップタイミングの傾向を独自アルゴリズムで推定する非公式ファンツールです。Happy Elements 株式会社とは関係ありません。
+
+    ### 2. 使い方
+    1. ゲームから撮影したリザルト画像を用意します。
+    2. 画像をアップロードします。
+    3. 楽曲名・難易度・レベル・総ノーツ数を入力します。
+    4. 「解析開始」を押します。
+    5. リザルトカード、総合評価ランキングを確認します。
+
+    ### 3. 入力できる総ノーツ数
+    総ノーツ数は **60～1800** の範囲で入力してください。
+
+    ### 4. 解析結果
+    達成率、精密度、安定度、総合評価、ランク、プレイ傾向などは本ツール独自の推定・評価です。ゲーム内部の正式な判定値ではありません。
+
+    ### 5. ランキング
+    ランキングは固定された1,799件の基準データと今回の解析結果を比較して表示します。今回の解析結果は基準データへ保存・追加しません。
+
+    ### 6. リザルトカード とX共有
+    リザルトカードは画像として保存できます。X共有では解析結果の共有を行います。投稿前に内容をご確認ください。
+            """)
+
+        st.markdown('<div id="guide-notice"></div>', unsafe_allow_html=True)
+        with st.expander("⚠️ ご利用上の注意", expanded=False):
+            st.markdown("""
+    ### 対応画像について
+    - ゲームから直接撮影したスクリーンショットを推奨します。
+    - 画像編集・加工を行っていない、十分な解像度の画像を使用してください。
+    - タップタイミング棒グラフが明確に表示されている必要があります。
+    - 現在の解析対象は、Webアプリ画面に表示されている対応条件を満たすリザルト画像です。
+
+    ### 解析結果について
+    画像から推定した結果であり、ゲーム内部の正式な判定・計算方法を再現するものではありません。画像の状態によっては正しく解析できない場合があります。
+
+    ### 画像に含まれる情報
+    アップロード前に、個人情報が画像に含まれていないか確認してください。
+            """)
+
+        st.markdown('<div id="guide-terms"></div>', unsafe_allow_html=True)
+        with st.expander("📜 利用規約", expanded=False):
+            st.markdown("""
+    **制定日：2026年9月7日**
+
+    #### 第1条　本サービス
+    本サービスは、『あんさんぶるスターズ！！Music』のリザルト画像を解析し、タップタイミング等に関する情報を推定・可視化する非公式ファンツールです。本サービスはHappy Elements株式会社およびその関連会社等とは関係ありません。
+
+    #### 第2条　解析結果
+    本サービスの解析結果は推定値です。ゲーム公式の判定結果、スコア、評価等を保証するものではありません。
+
+    #### 第3条　利用者の責任
+    利用者は、本サービスへのアップロードが適切であると判断した画像を使用するものとします。第三者が公開した画像を使用する場合は、画像に個人情報等が含まれていないか確認し、第三者の権利や利用条件等に配慮してください。
+
+    #### 第4条　禁止事項
+    不正な目的での利用、サービスへ過度な負荷を与える行為、正常な動作を妨害する行為、不正アクセスを試みる行為、第三者の権利を侵害する行為、その他サービスの運営を妨げる行為を禁止します。
+
+    #### 第5条　サービスの変更・停止
+    メンテナンス、障害、仕様変更その他の事情により、サービスの内容を変更、または停止する場合があります。
+
+    #### 第6条　免責
+    本サービスは、解析結果の正確性、完全性、有用性等を保証するものではありません。サービスの利用または利用できなかったことによって生じた損害について、法令上許される範囲で責任を負わないものとします。
+
+    #### 第7条　権利
+    ゲームおよび関連する名称、画像、ロゴ、キャラクター等の権利は、それぞれの権利者に帰属します。本サービスはそれらの権利を取得するものではありません。
+
+    #### 第8条　規約の変更
+    本規約は、必要に応じて変更する場合があります。変更後の内容は、本Webアプリ上に掲載した時点から適用します。
+            """)
+
+        st.markdown('<div id="guide-privacy"></div>', unsafe_allow_html=True)
+        with st.expander("🔒 プライバシーポリシー", expanded=False):
+            st.markdown("""
+    **制定日：2026年9月7日**  
+    **最終更新日：2026年9月10日**
+
+    #### 1．取得する情報
+    本サービスでは、主に以下の情報を利用します。
+    - 利用者がアップロードしたリザルト画像
+    - 利用者が入力した楽曲名、難易度、レベル、総ノーツ数
+    - 本サービスが解析によって生成する解析結果
+
+    個人情報を入力する機能は設けていません。ただし、画像に個人情報が含まれている場合、その情報も処理対象となる可能性があります。
+
+    #### 2．利用目的
+    取得した情報は、リザルト画像の解析、タップタイミング・判定分布の推定、解析結果の算出、リザルトカードの生成を目的として利用します。
+
+    #### 3．アップロード画像・解析データの保持
+    アップロードされた画像は、解析および解析結果の表示のために一時的に取り扱います。解析結果を表示している間は、アプリのセッション内で画像データや解析結果が一時的に保持される場合があります。
+
+    本アプリには、アップロード画像や解析結果をユーザー履歴として継続的に保存したり、ランキング基準データへ自動的に追加したりする機能はありません。
+
+    解析処理のために作成した一時ファイルは、処理後に削除する処理を行います。
+
+    なお、ブラウザやホスティング基盤側で行われるログ・キャッシュその他の取り扱いについては、本アプリの実装だけで保証するものではありません。
+
+    #### 4．解析結果
+    解析結果は本サービス独自の推定値です。ゲーム内部の正式な判定・計算方法を取得または再現したものではありません。
+
+    #### 5．第三者への提供
+    本アプリには、利用者がアップロードした画像や入力情報を第三者へ提供・販売するための機能はありません。
+
+    ただし、Streamlit Community Cloud等のホスティング基盤、ブラウザその他の外部サービスが独自に取得・処理する情報については、本アプリの実装だけで保証するものではありません。
+
+    必要な場合を除き、開発者が利用者の情報を第三者へ提供することを目的とした運用は行いません。
+
+    #### 6．変更
+    サービス内容や利用環境の変更等に応じて、本ポリシーを変更する場合があります。変更した場合は本Webアプリ上で確認できるようにします。
+            """)
+
+        st.markdown('<div id="guide-guideline"></div>', unsafe_allow_html=True)
+        with st.expander("©️ コンテンツ利用ガイドライン・権利について", expanded=False):
+            st.markdown("""
+    本サービスは『あんさんぶるスターズ！！Music』の**非公式ファンツール**です。Happy Elements株式会社および公式・公認のサービスではありません。
+
+    Happy Elements株式会社のコンテンツ利用ガイドラインでは、非営利目的でのWebサイト利用について一定の利用が認められています。一方、公式・公認と誤認させる表示や、各タイトルの個別ガイドラインに反する利用は禁止されています。『あんさんぶるスターズ！！』にはタイトル固有のガイドラインがあり、内容が異なる場合はタイトル固有のガイドラインが優先されます。
+
+    本サービスでは、利用者が用意したリザルト画像を解析対象とし、ゲーム画像を素材として配布することを目的としていません。元画像をXへ自動投稿する機能も本サービスの共有機能には含めません。
+
+
+    **公式情報**  
+    - Happy Elements コンテンツ利用ガイドライン  
+      https://www.happyelements.co.jp/contents-guideline/
+    - 『あんさんぶるスターズ！！』コンテンツ利用ガイドライン案内  
+      https://ensemble-stars-music.zendesk.com/hc/ja/articles/39158218386201-%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E5%88%A9%E7%94%A8%E3%82%AC%E3%82%A4%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3
+            """)
+
+        st.markdown('<div id="guide-disclaimer"></div>', unsafe_allow_html=True)
+        with st.expander("❗ 免責事項", expanded=False):
+            st.markdown("""
+    本Webアプリは、『あんさんぶるスターズ！！Music』の非公式ファンツールです。Happy Elements株式会社とは関係ありません。
+
+    本ツールはゲーム内部のデータを取得・改変するものではなく、利用者が用意したリザルト画像を独自の方法で解析し、推定値を表示するものです。
+
+    表示される判定分布、達成率、精密度、安定度、総合評価、ランク、ランキング等は、本ツール独自の解析・評価結果であり、ゲーム公式の判定値・評価・ランキングではありません。
+
+    解析結果の正確性、完全性、有用性を保証するものではありません。サービスの利用または利用できなかったことによって生じた損害について、法令上許される範囲で責任を負わないものとします。
+            """)
+
+    with st.expander("❓ よくある質問", expanded=False):
+
+        st.markdown("""
+    **Q. このツールは無料ですか？**  
+    はい。現在、無料で利用できます。会員登録も必要ありません。
+
+    **Q. スマートフォンでも解析できますか？**  
+    はい。スマートフォンからも利用できます。スマートフォンのブラウザからリザルト画像をアップロードして解析できます。
+
+    **Q. 解析できるリザルト画像には条件がありますか？**  
+    はい。新ライブUI（2025年4月29日以降）のライブリザルト画面を使用してください。
+
+    画像は編集・加工していない高解像度のスクリーンショットで、タップタイミング棒グラフが明確に表示されている必要があります。
+
+    また、ライブチャレンジでは「ALL AMAZING（100.000%）」、ノーマルライブ・あんさんぶるライブ・ソロライブでは「PERFECT COMBO」が表示され、棒グラフが対応条件を満たしている必要があります。
+
+    詳しい条件は「解析可能な画像」をご確認ください。
+
+    **Q. なぜ総ノーツ数を入力する必要がありますか？**  
+    本ツールでは、リザルト画像のタップタイミング棒グラフから判定分布を推定しています。
+
+    棒グラフの割合を実際のノーツ数に換算するため、ゲームのリザルト画面に表示されている総ノーツ数を入力してください。
+
+    誤った総ノーツ数を入力すると、判定数や解析結果も正しくならない場合があります。
+
+    **Q. 解析結果はゲーム公式の数値ですか？**  
+    いいえ。本ツールがリザルト画像から独自に推定・算出した結果です。
+
+    ゲーム内部で使用されている判定・評価・計算方法を取得または再現したものではありません。そのため、ゲーム公式の数値として扱わないでください。
+
+    **Q. ランキングは公式ランキングですか？**  
+    いいえ。本ツール独自の基準データを使用したランキングです。ゲーム公式のランキングではありません。
+
+    **Q. ランキングに解析結果は保存されますか？**  
+    今回の解析結果を固定1,799件のランキング基準データへ保存・追加することはありません。画面上では1,800件目として一時的に表示します。
+
+    **Q. なぜ解析結果を新しいランキング記録として登録しないのですか？**  
+    ランキングの公平性を保つためです。解析結果を繰り返し登録できる仕組みにすると、一部の利用者による過度な登録などによってランキング分布が不自然に偏る可能性があります。そのため、今回の解析結果はランキング基準データへ新規登録せず、現在の解析結果として一時的に表示しています。
+
+    **Q. 1,799件のランキング基準データはどのように取得したのですか？**  
+    開発者本人が過去に記録したリザルトや、SNSのフォロワーから提供していただいたリザルトをもとに作成しています。
+
+    **Q. 解析画像に個人情報が写っていても大丈夫ですか？**  
+    個人情報が含まれる画像について、安全性を保証することはできません。
+
+    アップロード前に、個人を特定できる可能性のある情報が画像に含まれていないか確認してください。
+
+    個人情報が含まれている場合は、必要に応じて個人情報が写らない画像を使用してください。
+
+    **Q. アップロードした画像は保存されますか？**  
+    本アプリには、アップロード画像をユーザー履歴として継続的に保存する機能はありません。
+
+    一方、解析や解析結果の表示に必要な間は、アプリのセッション内で画像データが一時的に保持される場合があります。解析処理のために作成した一時ファイルは、処理後に削除する処理を行います。
+
+    なお、ブラウザやホスティング基盤側のログ・キャッシュ等については、本アプリの実装だけで保証するものではありません。
+
+    **Q. X共有すると、アップロードしたリザルト画像も投稿されますか？**  
+    いいえ。X共有では、解析結果をもとに作成した共有用の文章とWebアプリのURLを投稿します。
+
+    アップロードしたリザルト画像そのものをXへ自動投稿する機能はありません。
+
+    投稿前に、表示される内容を確認してから共有してください。
+
+    **Q. 解析結果が正しく表示されない場合はどうすればよいですか？**  
+    まず「解析可能な画像」の条件を確認してください。
+
+    条件を満たしている場合でも、画像の解像度や状態、入力した総ノーツ数などによって正しく解析できない場合があります。
+    """)
+
+
+    render_guide_and_policies()
+
+    # ==========================================================
+    # User Manual Link
+    # ==========================================================
+
+    st.link_button(
+        "📖 ご利用マニュアル",
+        "https://hapylon-dev.github.io/EnsembleStarsAnalyzer/",
+        width="stretch",
+    )
+
     st.divider()
-    st.markdown(
-        """<div class="section-heading">
-        <div><h2>📚 ご利用ガイド・ポリシー</h2><p>はじめに、使い方・注意事項・利用規約・プライバシー・公式ガイドラインをご確認ください。</p></div>
-        </div>""",
-        unsafe_allow_html=True,
-    )
 
-    st.markdown(
-        """<div class="guide-grid">
-        <a class="guide-tile" href="#guide-use" style="text-decoration:none;">
-          <div class="icon">📖</div><div class="title">ご利用ガイド</div><div class="desc">使い方・入力項目・リザルトカード・ランキング・共有。</div>
-        </a>
-        <a class="guide-tile" href="#guide-notice" style="text-decoration:none;">
-          <div class="icon">⚠️</div><div class="title">ご利用上の注意</div><div class="desc">対応画像・推定値・画像に含まれる情報をご確認ください。</div>
-        </a>
-        <a class="guide-tile" href="#guide-terms" style="text-decoration:none;">
-          <div class="icon">📜</div><div class="title">利用規約</div><div class="desc">利用条件・禁止事項・サービス変更・権利関係など。</div>
-        </a>
-        <a class="guide-tile" href="#guide-privacy" style="text-decoration:none;">
-          <div class="icon">🔒</div><div class="title">プライバシー</div><div class="desc">画像・入力情報・解析データの取り扱い。</div>
-        </a>
-        <a class="guide-tile" href="#guide-guideline" style="text-decoration:none;">
-          <div class="icon">©️</div><div class="title">ガイドライン</div><div class="desc">非公式表示・権利関係・コンテンツ利用について。</div>
-        </a>
-        <a class="guide-tile" href="#guide-disclaimer" style="text-decoration:none;">
-          <div class="icon">❗</div><div class="title">免責事項</div><div class="desc">推定値であることと正確性等の非保証について。</div>
-        </a>
-        </div>""",
-        unsafe_allow_html=True,
-    )
-
-    st.markdown('<div id="guide-use"></div>', unsafe_allow_html=True)
-    with st.expander("📖 ご利用ガイド", expanded=False):
-        st.markdown("""
-### 1. このツールについて
-『あんさんぶるスターズ！！Music』のリザルト画面に表示されるタップタイミング棒グラフを解析し、判定分布やタップタイミングの傾向を独自アルゴリズムで推定する非公式ファンツールです。Happy Elements 株式会社とは関係ありません。
-
-### 2. 使い方
-1. ゲームから撮影したリザルト画像を用意します。
-2. 画像をアップロードします。
-3. 楽曲名・難易度・レベル・総ノーツ数を入力します。
-4. 「解析開始」を押します。
-5. リザルトカード、総合評価ランキングを確認します。
-
-### 3. 入力できる総ノーツ数
-総ノーツ数は **60～1800** の範囲で入力してください。
-
-### 4. 解析結果
-達成率、精密度、安定度、総合評価、ランク、プレイ傾向などは本ツール独自の推定・評価です。ゲーム内部の正式な判定値ではありません。
-
-### 5. ランキング
-ランキングは固定された1,799件の基準データと今回の解析結果を比較して表示します。今回の解析結果は基準データへ保存・追加しません。
-
-### 6. リザルトカード とX共有
-リザルトカードは画像として保存できます。X共有では解析結果の共有を行います。投稿前に内容をご確認ください。
-        """)
-
-    st.markdown('<div id="guide-notice"></div>', unsafe_allow_html=True)
-    with st.expander("⚠️ ご利用上の注意", expanded=False):
-        st.markdown("""
-### 対応画像について
-- ゲームから直接撮影したスクリーンショットを推奨します。
-- 画像編集・加工を行っていない、十分な解像度の画像を使用してください。
-- タップタイミング棒グラフが明確に表示されている必要があります。
-- 現在の解析対象は、Webアプリ画面に表示されている対応条件を満たすリザルト画像です。
-
-### 解析結果について
-画像から推定した結果であり、ゲーム内部の正式な判定・計算方法を再現するものではありません。画像の状態によっては正しく解析できない場合があります。
-
-### 画像に含まれる情報
-アップロード前に、個人情報が画像に含まれていないか確認してください。
-        """)
-
-    st.markdown('<div id="guide-terms"></div>', unsafe_allow_html=True)
-    with st.expander("📜 利用規約", expanded=False):
-        st.markdown("""
-**制定日：2026年9月7日**
-
-#### 第1条　本サービス
-本サービスは、『あんさんぶるスターズ！！Music』のリザルト画像を解析し、タップタイミング等に関する情報を推定・可視化する非公式ファンツールです。本サービスはHappy Elements株式会社およびその関連会社等とは関係ありません。
-
-#### 第2条　解析結果
-本サービスの解析結果は推定値です。ゲーム公式の判定結果、スコア、評価等を保証するものではありません。
-
-#### 第3条　利用者の責任
-利用者は、本サービスへのアップロードが適切であると判断した画像を使用するものとします。第三者が公開した画像を使用する場合は、画像に個人情報等が含まれていないか確認し、第三者の権利や利用条件等に配慮してください。
-
-#### 第4条　禁止事項
-不正な目的での利用、サービスへ過度な負荷を与える行為、正常な動作を妨害する行為、不正アクセスを試みる行為、第三者の権利を侵害する行為、その他サービスの運営を妨げる行為を禁止します。
-
-#### 第5条　サービスの変更・停止
-メンテナンス、障害、仕様変更その他の事情により、サービスの内容を変更、または停止する場合があります。
-
-#### 第6条　免責
-本サービスは、解析結果の正確性、完全性、有用性等を保証するものではありません。サービスの利用または利用できなかったことによって生じた損害について、法令上許される範囲で責任を負わないものとします。
-
-#### 第7条　権利
-ゲームおよび関連する名称、画像、ロゴ、キャラクター等の権利は、それぞれの権利者に帰属します。本サービスはそれらの権利を取得するものではありません。
-
-#### 第8条　規約の変更
-本規約は、必要に応じて変更する場合があります。変更後の内容は、本Webアプリ上に掲載した時点から適用します。
-        """)
-
-    st.markdown('<div id="guide-privacy"></div>', unsafe_allow_html=True)
-    with st.expander("🔒 プライバシーポリシー", expanded=False):
-        st.markdown("""
-**制定日：2026年9月7日**  
-**最終更新日：2026年9月10日**
-
-#### 1．取得する情報
-本サービスでは、主に以下の情報を利用します。
-- 利用者がアップロードしたリザルト画像
-- 利用者が入力した楽曲名、難易度、レベル、総ノーツ数
-- 本サービスが解析によって生成する解析結果
-
-個人情報を入力する機能は設けていません。ただし、画像に個人情報が含まれている場合、その情報も処理対象となる可能性があります。
-
-#### 2．利用目的
-取得した情報は、リザルト画像の解析、タップタイミング・判定分布の推定、解析結果の算出、リザルトカードの生成を目的として利用します。
-
-#### 3．アップロード画像・解析データの保持
-アップロードされた画像は、解析および解析結果の表示のために一時的に取り扱います。解析結果を表示している間は、アプリのセッション内で画像データや解析結果が一時的に保持される場合があります。
-
-本アプリには、アップロード画像や解析結果をユーザー履歴として継続的に保存したり、ランキング基準データへ自動的に追加したりする機能はありません。
-
-解析処理のために作成した一時ファイルは、処理後に削除する処理を行います。
-
-なお、ブラウザやホスティング基盤側で行われるログ・キャッシュその他の取り扱いについては、本アプリの実装だけで保証するものではありません。
-
-#### 4．解析結果
-解析結果は本サービス独自の推定値です。ゲーム内部の正式な判定・計算方法を取得または再現したものではありません。
-
-#### 5．第三者への提供
-本アプリには、利用者がアップロードした画像や入力情報を第三者へ提供・販売するための機能はありません。
-
-ただし、Streamlit Community Cloud等のホスティング基盤、ブラウザその他の外部サービスが独自に取得・処理する情報については、本アプリの実装だけで保証するものではありません。
-
-必要な場合を除き、開発者が利用者の情報を第三者へ提供することを目的とした運用は行いません。
-
-#### 6．変更
-サービス内容や利用環境の変更等に応じて、本ポリシーを変更する場合があります。変更した場合は本Webアプリ上で確認できるようにします。
-        """)
-
-    st.markdown('<div id="guide-guideline"></div>', unsafe_allow_html=True)
-    with st.expander("©️ コンテンツ利用ガイドライン・権利について", expanded=False):
-        st.markdown("""
-本サービスは『あんさんぶるスターズ！！Music』の**非公式ファンツール**です。Happy Elements株式会社および公式・公認のサービスではありません。
-
-Happy Elements株式会社のコンテンツ利用ガイドラインでは、非営利目的でのWebサイト利用について一定の利用が認められています。一方、公式・公認と誤認させる表示や、各タイトルの個別ガイドラインに反する利用は禁止されています。『あんさんぶるスターズ！！』にはタイトル固有のガイドラインがあり、内容が異なる場合はタイトル固有のガイドラインが優先されます。
-
-本サービスでは、利用者が用意したリザルト画像を解析対象とし、ゲーム画像を素材として配布することを目的としていません。元画像をXへ自動投稿する機能も本サービスの共有機能には含めません。
-
-
-**公式情報**  
-- Happy Elements コンテンツ利用ガイドライン  
-  https://www.happyelements.co.jp/contents-guideline/
-- 『あんさんぶるスターズ！！』コンテンツ利用ガイドライン案内  
-  https://ensemble-stars-music.zendesk.com/hc/ja/articles/39158218386201-%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E5%88%A9%E7%94%A8%E3%82%AC%E3%82%A4%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3
-        """)
-
-    st.markdown('<div id="guide-disclaimer"></div>', unsafe_allow_html=True)
-    with st.expander("❗ 免責事項", expanded=False):
-        st.markdown("""
-本Webアプリは、『あんさんぶるスターズ！！Music』の非公式ファンツールです。Happy Elements株式会社とは関係ありません。
-
-本ツールはゲーム内部のデータを取得・改変するものではなく、利用者が用意したリザルト画像を独自の方法で解析し、推定値を表示するものです。
-
-表示される判定分布、達成率、精密度、安定度、総合評価、ランク、ランキング等は、本ツール独自の解析・評価結果であり、ゲーム公式の判定値・評価・ランキングではありません。
-
-解析結果の正確性、完全性、有用性を保証するものではありません。サービスの利用または利用できなかったことによって生じた損害について、法令上許される範囲で責任を負わないものとします。
-        """)
-
-with st.expander("❓ よくある質問", expanded=False):
+    # ==========================================================
+    # Input Area
+    # ==========================================================
 
     st.markdown("""
-**Q. このツールは無料ですか？**  
-はい。現在、無料で利用できます。会員登録も必要ありません。
+    <div style="
+    padding:18px;
+    border-radius:12px;
+    border:2px solid #8E44AD;
+    background:#f8f9fb;
+    color:#424954;
+    ">
 
-**Q. スマートフォンでも解析できますか？**  
-はい。スマートフォンからも利用できます。スマートフォンのブラウザからリザルト画像をアップロードして解析できます。
+    <h3 style="color:#353b46;margin-top:0;">
+    解析可能な画像
+    </h3>
 
-**Q. 解析できるリザルト画像には条件がありますか？**  
-はい。新ライブUI（2025年4月29日以降）のライブリザルト画面を使用してください。
+    <p><b>以下の条件を満たすライブリザルト画像を使用してください。</b></p>
 
-画像は編集・加工していない高解像度のスクリーンショットで、タップタイミング棒グラフが明確に表示されている必要があります。
+    <ul style="line-height:1.8;">
+    <li>新ライブUI（2025年4月29日以降）のリザルト画面</li>
+    <li>ライブリザルトのスクリーンショット</li>
+    <li>編集・加工していない高解像度の画像</li>
+    <li>タップタイミング棒グラフが表示されている</li>
+    <li>棒グラフが中央1本＋左右各1本の合計3本以内に収まっている</li>
+    <li>ALL AMAZING（内部判定を含む）に相当する結果</li>
+    <li>MISSがなく、総ノーツ数と最高判定数が一致している</li>
+    </ul>
 
-また、ライブチャレンジでは「ALL AMAZING（100.000%）」、ノーマルライブ・あんさんぶるライブ・ソロライブでは「PERFECT COMBO」が表示され、棒グラフが対応条件を満たしている必要があります。
+    <p><b>ライブチャレンジ</b><br>
+    「ALL AMAZING（100.000%）」と表示されているリザルトが対象です。</p>
 
-詳しい条件は「解析可能な画像」をご確認ください。
+    <p><b>ノーマルライブ・あんさんぶるライブ・ソロライブ</b><br>
+    「PERFECT COMBO」と表示され、棒グラフが中央1本＋左右各1本の合計3本以内に収まっているリザルトが対象です。これらのライブでは、画面上に「AMAZING」が最高判定として表示されないため、棒グラフから内部的なALL AMAZING相当かを判断します。</p>
 
-**Q. なぜ総ノーツ数を入力する必要がありますか？**  
-本ツールでは、リザルト画像のタップタイミング棒グラフから判定分布を推定しています。
+    <p><b>棒グラフについて</b><br>
+    棒グラフは中央に近いほど、より正確なタイミングでタップできています。中央の1本と、その左右1本ずつまでがAMAZING判定の範囲です。</p>
 
-棒グラフの割合を実際のノーツ数に換算するため、ゲームのリザルト画面に表示されている総ノーツ数を入力してください。
+    <p><b>MISSについて</b><br>
+    MISSはタップタイミング棒グラフには表示されないため、総ノーツ数と最高判定数が一致していることも確認してください。</p>
 
-誤った総ノーツ数を入力すると、判定数や解析結果も正しくならない場合があります。
+    <b style="color:#C0392B;">
+    ※条件を満たさない画像は解析対象外です。条件を満たしている場合でも、画像の状態や入力内容によって正しく解析できない場合があります。
+    </b>
 
-**Q. 解析結果はゲーム公式の数値ですか？**  
-いいえ。本ツールがリザルト画像から独自に推定・算出した結果です。
+    </div>
+    """, unsafe_allow_html=True)
 
-ゲーム内部で使用されている判定・評価・計算方法を取得または再現したものではありません。そのため、ゲーム公式の数値として扱わないでください。
+    # ==========================================================
+    # Input Card
+    # ==========================================================
 
-**Q. ランキングは公式ランキングですか？**  
-いいえ。本ツール独自の基準データを使用したランキングです。ゲーム公式のランキングではありません。
+    st.markdown("""
+    <div style="
+    border:1px solid #E2D8F5;
+    border-radius:12px;
+    padding:24px;
+    background:#ffffff !important;
+    color:#424954 !important;
+    ">
 
-**Q. ランキングに解析結果は保存されますか？**  
-今回の解析結果を固定1,799件のランキング基準データへ保存・追加することはありません。画面上では1,800件目として一時的に表示します。
+    <h3 style="
+    margin-top:0;
+    color:#5d4a92 !important;
+    ">
+    ⚙️ 解析設定
+    </h3>
 
-**Q. なぜ解析結果を新しいランキング記録として登録しないのですか？**  
-ランキングの公平性を保つためです。解析結果を繰り返し登録できる仕組みにすると、一部の利用者による過度な登録などによってランキング分布が不自然に偏る可能性があります。そのため、今回の解析結果はランキング基準データへ新規登録せず、現在の解析結果として一時的に表示しています。
+    <p style="
+    margin-top:6px;
+    color:#66707d !important;
+    font-size:15px;
+    line-height:1.6;
+    ">
 
-**Q. 1,799件のランキング基準データはどのように取得したのですか？**  
-開発者本人が過去に記録したリザルトや、SNSのフォロワーから提供していただいたリザルトをもとに作成しています。
+    楽曲情報・難易度・レベル・
+    総ノーツ数を入力してください。
 
-**Q. 解析画像に個人情報が写っていても大丈夫ですか？**  
-個人情報が含まれる画像について、安全性を保証することはできません。
+    </p>
 
-アップロード前に、個人を特定できる可能性のある情報が画像に含まれていないか確認してください。
+    </div>
+    """, unsafe_allow_html=True)
 
-個人情報が含まれている場合は、必要に応じて個人情報が写らない画像を使用してください。
-
-**Q. アップロードした画像は保存されますか？**  
-本アプリには、アップロード画像をユーザー履歴として継続的に保存する機能はありません。
-
-一方、解析や解析結果の表示に必要な間は、アプリのセッション内で画像データが一時的に保持される場合があります。解析処理のために作成した一時ファイルは、処理後に削除する処理を行います。
-
-なお、ブラウザやホスティング基盤側のログ・キャッシュ等については、本アプリの実装だけで保証するものではありません。
-
-**Q. X共有すると、アップロードしたリザルト画像も投稿されますか？**  
-いいえ。X共有では、解析結果をもとに作成した共有用の文章とWebアプリのURLを投稿します。
-
-アップロードしたリザルト画像そのものをXへ自動投稿する機能はありません。
-
-投稿前に、表示される内容を確認してから共有してください。
-
-**Q. 解析結果が正しく表示されない場合はどうすればよいですか？**  
-まず「解析可能な画像」の条件を確認してください。
-
-条件を満たしている場合でも、画像の解像度や状態、入力した総ノーツ数などによって正しく解析できない場合があります。
-""")
-
-
-render_guide_and_policies()
-
-# ==========================================================
-# User Manual Link
-# ==========================================================
-
-st.link_button(
-    "📖 ご利用マニュアル",
-    "https://hapylon-dev.github.io/EnsembleStarsAnalyzer/",
-    width="stretch",
-)
-
-st.divider()
-
-# ==========================================================
-# Input Area
-# ==========================================================
-
-st.markdown("""
-<div style="
-padding:18px;
-border-radius:12px;
-border:2px solid #8E44AD;
-background:#f8f9fb;
-color:#424954;
-">
-
-<h3 style="color:#353b46;margin-top:0;">
-解析可能な画像
-</h3>
-
-<p><b>以下の条件を満たすライブリザルト画像を使用してください。</b></p>
-
-<ul style="line-height:1.8;">
-<li>新ライブUI（2025年4月29日以降）のリザルト画面</li>
-<li>ライブリザルトのスクリーンショット</li>
-<li>編集・加工していない高解像度の画像</li>
-<li>タップタイミング棒グラフが表示されている</li>
-<li>棒グラフが中央1本＋左右各1本の合計3本以内に収まっている</li>
-<li>ALL AMAZING（内部判定を含む）に相当する結果</li>
-<li>MISSがなく、総ノーツ数と最高判定数が一致している</li>
-</ul>
-
-<p><b>ライブチャレンジ</b><br>
-「ALL AMAZING（100.000%）」と表示されているリザルトが対象です。</p>
-
-<p><b>ノーマルライブ・あんさんぶるライブ・ソロライブ</b><br>
-「PERFECT COMBO」と表示され、棒グラフが中央1本＋左右各1本の合計3本以内に収まっているリザルトが対象です。これらのライブでは、画面上に「AMAZING」が最高判定として表示されないため、棒グラフから内部的なALL AMAZING相当かを判断します。</p>
-
-<p><b>棒グラフについて</b><br>
-棒グラフは中央に近いほど、より正確なタイミングでタップできています。中央の1本と、その左右1本ずつまでがAMAZING判定の範囲です。</p>
-
-<p><b>MISSについて</b><br>
-MISSはタップタイミング棒グラフには表示されないため、総ノーツ数と最高判定数が一致していることも確認してください。</p>
-
-<b style="color:#C0392B;">
-※条件を満たさない画像は解析対象外です。条件を満たしている場合でも、画像の状態や入力内容によって正しく解析できない場合があります。
-</b>
-
-</div>
-""", unsafe_allow_html=True)
-
-# ==========================================================
-# Input Card
-# ==========================================================
-
-st.markdown("""
-<div style="
-border:1px solid #E2D8F5;
-border-radius:12px;
-padding:24px;
-background:#ffffff !important;
-color:#424954 !important;
-">
-
-<h3 style="
-margin-top:0;
-color:#5d4a92 !important;
-">
-⚙️ 解析設定
-</h3>
-
-<p style="
-margin-top:6px;
-color:#66707d !important;
-font-size:15px;
-line-height:1.6;
-">
-
-楽曲情報・難易度・レベル・
-総ノーツ数を入力してください。
-
-</p>
-
-</div>
-""", unsafe_allow_html=True)
-
-upload_col, info_col = create_input_columns()
-
-# ----------------------------------------------------------
-# Upload
-# ----------------------------------------------------------
-
-with upload_col:
-
-    st.markdown("### 🖼️ リザルト画像")
-
-    st.caption(
-        "解析するリザルト画面のスクリーンショットを選択してください。"
-    )
-
-    st.info(
-        "📷 PNG・JPG・JPEG・WebP形式のスクリーンショットに対応しています。"
-    )
-
-    uploaded_file = st.file_uploader(
-        "リザルト画像",
-        type=["png", "jpg", "jpeg", "webp"],
-        label_visibility="collapsed",
-    )
+    upload_col, info_col = create_input_columns()
 
     # ----------------------------------------------------------
-    # Ranking Titles
+    # Upload
     # ----------------------------------------------------------
 
-    ranking_title_image = (
-        Path(__file__).resolve().parent
-        / "assets"
-        / "ranking_titles"
-        / "ranking.png"
-    )
+    with upload_col:
 
-    with st.expander("🏆 ランキング称号一覧", expanded=False):
-        st.caption("ランキング順位に応じた称号一覧です。")
+        st.markdown("### 🖼️ リザルト画像")
 
-        if ranking_title_image.is_file():
-            with open(ranking_title_image, "rb") as f:
-                ranking_title_bytes = f.read()
-
-            st.image(
-                ranking_title_bytes,
-                use_container_width=True,
-            )
-        else:
-            st.warning(
-                "ランキング称号一覧の画像を表示できませんでした。"
-            )
-
-# ----------------------------------------------------------
-# Song Information
-# ----------------------------------------------------------
-with info_col:
-
-    st.markdown("### 🎼 楽曲情報")
-
-    st.caption(
-        "リザルト画面（下の「解析対象となるリザルト画像」）に表示されている内容を入力してください。"
-    )
-
-    music = st.text_input(
-        "🎵 楽曲名",
-        placeholder="例：BRAND NEW STARS!!",
-        max_chars=MAX_MUSIC_LENGTH,
-        help=f"最大{MAX_MUSIC_LENGTH}文字まで入力できます。"
-    )
-
-    difficulty = st.selectbox(
-        "🎼 難易度",
-
-        [
-
-            "Easy",
-
-            "Normal",
-
-            "Hard",
-
-            "Expert",
-
-            "Special"
-
-        ],
-
-        index=3
-
-    )
-
-    # ==========================================================
-    # Level List
-    # ==========================================================
-
-    LEVEL_LIST = {
-        "Easy": [
-            "5", "6", "7", "8", "9", "10"
-        ],
-
-        "Normal": [
-            "11", "12", "13", "14", "15", "16", "17"
-        ],
-
-        "Hard": [
-            "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"
-        ],
-
-        "Expert": [
-            "23",
-            "24",
-            "25",
-            "26", "26+",
-            "27", "27+",
-            "28", "28+",
-            "29", "29+",
-            "30", "30+",
-        ],
-
-        "Special": [
-            "26", "26+",
-            "27", "27+",
-            "28", "28+",
-            "29", "29+",
-            "30", "30+",
-            "31", "31+",
-            "♪1", "♪2", "♪3", "♪4", "♪5", "♪6",
-        ],
-    }
-
-    level_list = LEVEL_LIST[difficulty]
-
-    level = st.selectbox(
-        "⭐ レベル",
-        level_list,
-    )
-
-    st.markdown("#### 🔢 総ノーツ数")
-
-    total_notes = st.number_input(
-        "総ノーツ数",
-        min_value=60,
-        max_value=1800,
-        value=60,
-        step=1,
-        help=(
-            "ライブの総ノーツ数を入力してください。\n\n"
-            "ゲームのリザルト画面に表示される総ノーツ数を入力してください。\n"
-            "60～1800の範囲で入力してください。\n"
-            "誤った値では正しい解析結果になりません。"
-        )
-    )
-
-    st.divider()
-
-# ==========================================================
-# Uploaded Image Preview
-# ==========================================================
-
-if uploaded_file is not None:
-    st.markdown("### 🖼️ 解析対象となるリザルト画像")
-    st.caption("解析対象となるリザルト画像です。")
-    st.image(uploaded_file.getvalue(), use_container_width=True)
-
-# ==========================================================
-# Analyze
-# ==========================================================
-st.markdown("""
-<div style="
-padding:12px 16px;
-border-radius:12px;
-background:#f8f9fb;
-border:1px solid #3b3b4a;
-margin-bottom:10px;
-">
-
-<b style="color:#5d4a92;">
-ℹ 解析の流れ
-</b>
-
-<div style="margin-top:6px; color:#66707d; line-height:1.7;">
-
-・タップタイミング棒グラフ解析<br>
-・判定分布の推定<br>
-・リザルトカード生成
-
-</div>
-
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div style="
-padding:12px 16px;
-border-radius:12px;
-background:#fff7e8;
-border:1px solid #5a4a2a;
-margin-bottom:18px;
-">
-
-<b style="color:#7a4f00;">
-⚠ 解析可能な画像をご確認ください
-</b>
-
-<div style="margin-top:6px;color:#66707d;">
-条件を満たさない画像では
-正しい解析結果が得られない場合があります。
-</div>
-
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("## ▶ タップタイミング解析")
-
-st.caption(
-    "スクリーンショットから判定分布を推定し、リザルトカード を生成します。"
-)
-
-st.write("")
-
-analyze_button = st.button(
-    "▶ 解析開始",
-    type="primary",
-    width="stretch"
-)
-
-if analyze_button:
-
-    st.session_state.pop("analysis_result", None)
-
-    # ==========================================================
-    # Input Validation
-    # ==========================================================
-
-    errors = []
-
-    if not music.strip():
-        errors.append("🎵 楽曲名")
-
-    if uploaded_file is None:
-        errors.append("📷 リザルト画像")
-
-    if errors:
-
-        st.error(
-            "以下の項目を入力してください。"
+        st.caption(
+            "解析するリザルト画面のスクリーンショットを選択してください。"
         )
 
-        for item in errors:
-            st.markdown(f"- {item}")
-
-        st.stop()
-
-    if uploaded_file.size > MAX_UPLOAD_SIZE_BYTES:
-        st.error(
-            "❌ 画像ファイルのサイズが大きすぎます。"
-        )
         st.info(
-            f"アップロードできる画像は最大{MAX_UPLOAD_SIZE_MB}MBです。"
-            "より小さい画像を使用してください。"
-        )
-        st.stop()
-
-    suffix = Path(
-        uploaded_file.name
-    ).suffix
-
-    with tempfile.NamedTemporaryFile(
-        delete=False,
-        suffix=suffix
-    ) as temp_file:
-
-        temp_file.write(
-            uploaded_file.getbuffer()
+            "📷 PNG・JPG・JPEG・WebP形式のスクリーンショットに対応しています。"
         )
 
-        image_path = temp_file.name
-
-    try:
-
-        # ==========================================================
-        # Progress UI
-        # ==========================================================
-
-        progress_container = st.container()
-
-        with progress_container:
-
-            progress_title = st.empty()
-            progress_bar = st.progress(0)
-            progress_status = st.empty()
-
-        progress_title.markdown("""
-        ### 🔄 タップタイミング解析中
-
-        リザルトカードを生成しています。
-        処理には時間がかかる場合があります。
-        """)
-
-        progress_status.markdown("""
-        **現在の処理**
-
-        ⏳ リザルト画像読込
-
-        ⬜ 棒グラフ解析
-
-        ⬜ 判定推定
-
-        ⬜ リザルトカード生成
-        """)
-
-        progress_bar.progress(10)
-
-        progress_status.markdown("""
-        **現在の処理**
-
-        ✅ リザルト画像読込
-
-        ⏳ 棒グラフ解析
-
-        ⬜ 判定推定
-
-        ⬜ リザルトカード生成
-        """)
-
-        progress_bar.progress(35)
-
-        estimate_result, graph_image = analyze(
-            image_path=image_path,
-            total_notes=total_notes,
-            return_graph=True,
+        uploaded_file = st.file_uploader(
+            "リザルト画像",
+            type=["png", "jpg", "jpeg", "webp"],
+            label_visibility="collapsed",
         )
 
-        progress_status.markdown("""
-        **現在の処理**
+        # ----------------------------------------------------------
+        # Ranking Titles
+        # ----------------------------------------------------------
 
-        ✅ リザルト画像読込
-
-        ✅ 棒グラフ解析
-
-        ⏳ 判定推定
-
-        ⬜ リザルトカード生成
-        """)
-
-        progress_bar.progress(65)
-
-        analysis_score = score(
-            estimate_result,
-            total_notes=total_notes,
+        ranking_title_image = (
+            Path(__file__).resolve().parent
+            / "assets"
+            / "ranking_titles"
+            / "ranking.png"
         )
 
-        # ==========================================================
-        # Ranking Calculation
-        # ==========================================================
-        # 固定1,799件の基準データと比較するだけで、
-        # 今回の解析結果はランキング基準データへ追加・保存しない。
-        ranking_base = load_ranking_base()
-        ranking_result = calculate_ranking(
-            analysis_score.overall_score,
-            ranking_base,
-        )
-        ranking_result = dict(ranking_result)
-        # リザルトカード と同じ判定ロジックを共有する。
-        play_tendency, _, _ = generate_play_badge(
-            precision=analysis_score.precision,
-            balance=analysis_score.balance,
-            balance_available=analysis_score.balance_available,
-            fast=estimate_result.fast,
-            slow=estimate_result.slow,
-            amazing_plus=estimate_result.amazing_plus,
-        )
+        with st.expander("🏆 ランキング称号一覧", expanded=False):
+            st.caption("ランキング順位に応じた称号一覧です。")
 
-        ranking_result.update({
-            "overall_score": analysis_score.overall_score,
-            "rank": analysis_score.rank,
-            "precision": analysis_score.precision,
-            "balance": analysis_score.balance if analysis_score.balance_available else None,
-            "play_tendency": play_tendency,
-            "ranking_analysis_date": datetime.now().strftime("%Y年%m月%d日"),
-        })
-        ranking_distribution = build_rank_distribution(ranking_base)
+            if ranking_title_image.is_file():
+                with open(ranking_title_image, "rb") as f:
+                    ranking_title_bytes = f.read()
 
-        achievement = analysis_score.achievement
-
-        if config.DEBUG_MODE:
-            st.write("=== DEBUG: EstimateResult ===")
-            st.write("total_notes:", total_notes)
-            st.write("distribution:", estimate_result.distribution)
-            st.write("amazing_plus:", estimate_result.amazing_plus)
-            st.write("amazing:", estimate_result.amazing)
-            st.write("perfect:", estimate_result.perfect)
-            st.write("fast:", estimate_result.fast)
-            st.write("slow:", estimate_result.slow)
-
-            st.write("=== DEBUG: AnalysisScore ===")
-            st.write("achievement:", analysis_score.achievement)
-            st.write("precision:", analysis_score.precision)
-            st.write("balance:", analysis_score.balance)
-            st.write("overall_score:", analysis_score.overall_score)
-            st.write("rank:", analysis_score.rank)
-
-            amazing = 0
-            perfect = 0
-
-        progress_status.markdown("""
-        **現在の処理**
-
-        ✅ リザルト画像読込
-
-        ✅ 棒グラフ解析
-
-        ✅ 判定推定
-
-        ⏳ リザルトカード生成
-        """)
-
-        progress_bar.progress(90)
-
-        # ==========================================================
-        # Calculate Result Values
-        # ==========================================================
-
-        amazing_plus = estimate_result.distribution.get(
-            "AMAZING+",
-            0
-        )
-
-        amazing = (
-            estimate_result.fast
-            + estimate_result.slow
-        )
-
-        # ==========================================================
-        # リザルトカード
-        # ==========================================================
-
-        card_path = create_result_card(
-
-            music=music,
-
-            difficulty=difficulty,
-
-            level=level,
-
-            amazing_plus=amazing_plus,
-
-            amazing=amazing,
-
-            perfect=0,
-
-            great=0,
-
-            good=0,
-
-            bad=0,
-
-            miss=0,
-
-            total_notes=total_notes,
-
-            fast=estimate_result.fast,
-
-            slow=estimate_result.slow,
-
-            slow_available=(
-                "AMAZING(SLOW)" in estimate_result.distribution
-                or "PERFECT(SLOW)" in estimate_result.distribution
-            ),
-
-            fast_available=(
-                "AMAZING(FAST)" in estimate_result.distribution
-                or "PERFECT(FAST)" in estimate_result.distribution
-            ),
-
-            achievement=analysis_score.achievement,
-
-            precision=analysis_score.precision,
-
-            precision_grade=analysis_score.precision_grade,
-
-            balance=analysis_score.balance,
-
-            balance_grade=analysis_score.balance_grade,
-
-            balance_available=analysis_score.balance_available,
-
-            overall_score=analysis_score.overall_score,
-
-            rank=analysis_score.rank,
-
-            ranking_position=ranking_result["ranking_position"],
-            ranking_comparison_total=ranking_result["comparison_total"],
-            ranking_top_percent=ranking_result["ranking_top_percent"],
-            ranking_title=ranking_result["ranking_title"],
-            ranking_rank=analysis_score.rank,
-            ranking_distribution=ranking_distribution,
-            ranking_analysis_date=datetime.now().strftime("%Y年%m月%d日"),
-
-        )
-
-        # リザルトカードをメモリへ読み込む
-        with open(card_path, "rb") as file:
-            card_data = file.read()
-
-        # リザルトカードの一時ファイルを削除
-        try:
-            os.remove(card_path)
-        except FileNotFoundError:
-            pass
-        except OSError:
-            if config.DEBUG_MODE:
-                st.caption(
-                    "リザルトカードの一時ファイルを削除できませんでした。"
+                st.image(
+                    ranking_title_bytes,
+                    use_container_width=True,
+                )
+            else:
+                st.warning(
+                    "ランキング称号一覧の画像を表示できませんでした。"
                 )
 
-        progress_status.markdown("""
-        **現在の処理**
+    # ----------------------------------------------------------
+    # Song Information
+    # ----------------------------------------------------------
+    with info_col:
 
-        ✅ リザルト画像読込
+        st.markdown("### 🎼 楽曲情報")
 
-        ✅ 棒グラフ解析
-
-        ✅ 判定推定
-
-        ✅ リザルトカード生成
-        """)
-
-        progress_bar.progress(100)
-
-        progress_container.empty()
-
-        st.success(
-            "✅ 解析が正常に完了しました。"
+        st.caption(
+            "リザルト画面（下の「解析対象となるリザルト画像」）に表示されている内容を入力してください。"
         )
 
-        tweet_url = create_tweet_url(
+        music = st.text_input(
+            "🎵 楽曲名",
+            placeholder="例：BRAND NEW STARS!!",
+            max_chars=MAX_MUSIC_LENGTH,
+            help=f"最大{MAX_MUSIC_LENGTH}文字まで入力できます。"
+        )
 
-            music=music,
+        difficulty = st.selectbox(
+            "🎼 難易度",
 
-            difficulty=difficulty,
+            [
 
-            level=level,
+                "Easy",
 
-            amazing_plus=amazing_plus,
+                "Normal",
 
-            amazing=amazing,
+                "Hard",
 
-            fast=estimate_result.fast,
+                "Expert",
 
-            slow=estimate_result.slow,
+                "Special"
 
-            achievement=analysis_score.achievement,
+            ],
 
-            precision=analysis_score.precision,
-
-            balance=analysis_score.balance,
-
-            overall_score=analysis_score.overall_score,
-
-            rank=analysis_score.rank,
-
-            ranking_position=ranking_result["ranking_position"],
-
-            ranking_comparison_total=ranking_result["comparison_total"],
-
-            ranking_top_percent=ranking_result["ranking_top_percent"],
-
-            ranking_title=ranking_result["ranking_title"]
+            index=3
 
         )
 
-        # Streamlitのページ移動で再実行されても解析結果を保持する。
-        st.session_state["analysis_result"] = {
-            "music": music,
-            "difficulty": difficulty,
-            "level": level,
-            "total_notes": total_notes,
-            "card_data": card_data,
-            "uploaded_image_bytes": uploaded_file.getvalue(),
-            "graph_image": graph_image,
-            "estimate_result": estimate_result,
-            "analysis_score": analysis_score,
-            "ranking_base": ranking_base,
-            "ranking_result": ranking_result,
-            "ranking_distribution": ranking_distribution,
-            "tweet_url": tweet_url,
+        # ==========================================================
+        # Level List
+        # ==========================================================
+
+        LEVEL_LIST = {
+            "Easy": [
+                "5", "6", "7", "8", "9", "10"
+            ],
+
+            "Normal": [
+                "11", "12", "13", "14", "15", "16", "17"
+            ],
+
+            "Hard": [
+                "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"
+            ],
+
+            "Expert": [
+                "23",
+                "24",
+                "25",
+                "26", "26+",
+                "27", "27+",
+                "28", "28+",
+                "29", "29+",
+                "30", "30+",
+            ],
+
+            "Special": [
+                "26", "26+",
+                "27", "27+",
+                "28", "28+",
+                "29", "29+",
+                "30", "30+",
+                "31", "31+",
+                "♪1", "♪2", "♪3", "♪4", "♪5", "♪6",
+            ],
         }
-        st.session_state["ranking_page"] = max(
-            1,
-            (int(ranking_result["ranking_position"]) + 49) // 50,
+
+        level_list = LEVEL_LIST[difficulty]
+
+        st.caption("レベルは一覧から選択できます。入力欄に数字や記号を手入力すると、候補を絞り込めます。")
+        level = st.selectbox(
+            "⭐ レベル（入力して候補を絞り込み）",
+            level_list,
         )
 
-    except ValueError as error:
+        st.markdown("#### 🔢 総ノーツ数")
 
-        progress_container.empty()
+        total_notes = st.number_input(
+            "総ノーツ数",
+            min_value=60,
+            max_value=1800,
+            value=60,
+            step=1,
+            help=(
+                "ライブの総ノーツ数を入力してください。\n\n"
+                "ゲームのリザルト画面に表示される総ノーツ数を入力してください。\n"
+                "60～1800の範囲で入力してください。\n"
+                "誤った値では正しい解析結果になりません。"
+            )
+        )
 
-        error_message = str(error)
+        st.divider()
 
-        if "画像の解像度が低すぎるため" in error_message:
+    # ==========================================================
+    # Uploaded Image Preview
+    # ==========================================================
+
+    if uploaded_file is not None:
+        st.markdown("### 🖼️ 解析対象となるリザルト画像")
+        st.caption("解析対象となるリザルト画像です。")
+        st.image(uploaded_file.getvalue(), use_container_width=True)
+
+    # ==========================================================
+    # Analyze
+    # ==========================================================
+    st.markdown("""
+    <div style="
+    padding:12px 16px;
+    border-radius:12px;
+    background:#f8f9fb;
+    border:1px solid #3b3b4a;
+    margin-bottom:10px;
+    ">
+
+    <b style="color:#5d4a92;">
+    ℹ 解析の流れ
+    </b>
+
+    <div style="margin-top:6px; color:#66707d; line-height:1.7;">
+
+    ・タップタイミング棒グラフ解析<br>
+    ・判定分布の推定<br>
+    ・リザルトカード生成
+
+    </div>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div style="
+    padding:12px 16px;
+    border-radius:12px;
+    background:#fff7e8;
+    border:1px solid #5a4a2a;
+    margin-bottom:18px;
+    ">
+
+    <b style="color:#7a4f00;">
+    ⚠ 解析可能な画像をご確認ください
+    </b>
+
+    <div style="margin-top:6px;color:#66707d;">
+    条件を満たさない画像では
+    正しい解析結果が得られない場合があります。
+    </div>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("## ▶ タップタイミング解析")
+
+    with st.expander("初めての方へ：3ステップで解析", expanded=True):
+        st.markdown("1. **対象画像を確認**：ALL AMAZING相当で、棒グラフが中央1本＋左右各1本の画像を用意します。\n2. **楽曲情報と画像を入力**：楽曲名・難易度・レベル・リザルト画像を指定します。\n3. **解析開始**：推定結果とランキング、リザルトカードを確認します。")
+        st.caption("解析値は棒グラフの高さ等から算出する推定値（参考値）です。公式表示の実数や正確なプレイ記録ではありません。")
+
+    st.caption(
+        "スクリーンショットから判定分布を推定し、リザルトカードを生成します。"
+    )
+
+    st.write("")
+
+    analyze_button = st.button(
+        "▶ 解析開始",
+        type="primary",
+        width="stretch"
+    )
+
+    if analyze_button:
+
+        st.session_state.pop("analysis_result", None)
+
+        # ==========================================================
+        # Input Validation
+        # ==========================================================
+
+        errors = []
+
+        if not music.strip():
+            errors.append("🎵 楽曲名")
+
+        if uploaded_file is None:
+            errors.append("📷 リザルト画像")
+
+        if errors:
 
             st.error(
-                "❌ 画像の解像度が低すぎます。"
+                "以下の項目を入力してください。"
             )
 
-            st.warning(
-                "タイミンググラフを正確に解析できないため、"
-                "解析を中止しました。"
-            )
+            for item in errors:
+                st.markdown(f"- {item}")
 
-            st.info(
-                "より高解像度のリザルト画像を使用してください。"
-            )
+            st.stop()
 
-            if config.DEBUG_MODE:
-
-                st.caption(error_message)
-
-        elif "解析対象は1～3本ですが" in error_message:
-
+        if uploaded_file.size > MAX_UPLOAD_SIZE_BYTES:
             st.error(
-                "❌ タップタイミンググラフを正しく解析できませんでした。"
+                "❌ 画像ファイルのサイズが大きすぎます。"
             )
-
-            st.warning(
-                "解析対象となる1～3本のタイミングバーを"
-                "正しく検出できなかったため、解析を中止しました。"
-            )
-
             st.info(
-                "タップタイミング棒グラフ全体が"
-                "はっきり表示されたリザルト画像を使用してください。"
+                f"アップロードできる画像は最大{MAX_UPLOAD_SIZE_MB}MBです。"
+                "より小さい画像を使用してください。"
             )
+            st.stop()
+
+        suffix = Path(
+            uploaded_file.name
+        ).suffix
+
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=suffix
+        ) as temp_file:
+
+            temp_file.write(
+                uploaded_file.getbuffer()
+            )
+
+            image_path = temp_file.name
+
+        try:
+
+            # ==========================================================
+            # Progress UI
+            # ==========================================================
+
+            progress_container = st.container()
+
+            with progress_container:
+
+                progress_title = st.empty()
+                progress_bar = st.progress(0)
+                progress_status = st.empty()
+
+            progress_title.markdown("""
+            ### 🔄 タップタイミング解析中
+
+            リザルトカードを生成しています。
+            処理には時間がかかる場合があります。
+            """)
+
+            progress_status.markdown("""
+            **現在の処理**
+
+            ⏳ リザルト画像読込
+
+            ⬜ 棒グラフ解析
+
+            ⬜ 判定推定
+
+            ⬜ リザルトカード生成
+            """)
+
+            progress_bar.progress(10)
+
+            progress_status.markdown("""
+            **現在の処理**
+
+            ✅ リザルト画像読込
+
+            ⏳ 棒グラフ解析
+
+            ⬜ 判定推定
+
+            ⬜ リザルトカード生成
+            """)
+
+            progress_bar.progress(35)
+
+            estimate_result, graph_image = analyze(
+                image_path=image_path,
+                total_notes=total_notes,
+                return_graph=True,
+            )
+
+            progress_status.markdown("""
+            **現在の処理**
+
+            ✅ リザルト画像読込
+
+            ✅ 棒グラフ解析
+
+            ⏳ 判定推定
+
+            ⬜ リザルトカード生成
+            """)
+
+            progress_bar.progress(65)
+
+            analysis_score = score(
+                estimate_result,
+                total_notes=total_notes,
+            )
+
+            # ==========================================================
+            # Ranking Calculation
+            # ==========================================================
+            # 固定1,799件の基準データと比較するだけで、
+            # 今回の解析結果はランキング基準データへ追加・保存しない。
+            ranking_base = load_ranking_base()
+            ranking_result = calculate_ranking(
+                analysis_score.overall_score,
+                ranking_base,
+            )
+            ranking_result = dict(ranking_result)
+            # リザルトカード と同じ判定ロジックを共有する。
+            play_tendency, _, _ = generate_play_badge(
+                precision=analysis_score.precision,
+                balance=analysis_score.balance,
+                balance_available=analysis_score.balance_available,
+                fast=estimate_result.fast,
+                slow=estimate_result.slow,
+                amazing_plus=estimate_result.amazing_plus,
+            )
+
+            ranking_result.update({
+                "overall_score": analysis_score.overall_score,
+                "rank": analysis_score.rank,
+                "precision": analysis_score.precision,
+                "balance": analysis_score.balance if analysis_score.balance_available else None,
+                "play_tendency": play_tendency,
+                "ranking_analysis_date": datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y年%m月%d日"),
+            })
+            ranking_distribution = build_rank_distribution(ranking_base)
+
+            achievement = analysis_score.achievement
 
             if config.DEBUG_MODE:
+                st.write("=== DEBUG: EstimateResult ===")
+                st.write("total_notes:", total_notes)
+                st.write("distribution:", estimate_result.distribution)
+                st.write("amazing_plus:", estimate_result.amazing_plus)
+                st.write("amazing:", estimate_result.amazing)
+                st.write("perfect:", estimate_result.perfect)
+                st.write("fast:", estimate_result.fast)
+                st.write("slow:", estimate_result.slow)
 
-                st.caption(error_message)
+                st.write("=== DEBUG: AnalysisScore ===")
+                st.write("achievement:", analysis_score.achievement)
+                st.write("precision:", analysis_score.precision)
+                st.write("balance:", analysis_score.balance)
+                st.write("overall_score:", analysis_score.overall_score)
+                st.write("rank:", analysis_score.rank)
 
-        else:
+                amazing = 0
+                perfect = 0
+
+            progress_status.markdown("""
+            **現在の処理**
+
+            ✅ リザルト画像読込
+
+            ✅ 棒グラフ解析
+
+            ✅ 判定推定
+
+            ⏳ リザルトカード生成
+            """)
+
+            progress_bar.progress(90)
+
+            # ==========================================================
+            # Calculate Result Values
+            # ==========================================================
+
+            amazing_plus = estimate_result.distribution.get(
+                "AMAZING+",
+                0
+            )
+
+            amazing = (
+                estimate_result.fast
+                + estimate_result.slow
+            )
+
+            # ==========================================================
+            # リザルトカード・称号
+            # ==========================================================
+
+            achievement_titles = generate_achievement_titles(
+                amazing_plus=estimate_result.amazing_plus,
+                amazing=amazing,
+                precision=analysis_score.precision,
+                balance=analysis_score.balance,
+                balance_available=analysis_score.balance_available,
+                fast=estimate_result.fast,
+                slow=estimate_result.slow,
+                rank=analysis_score.rank,
+            )
+            analysis_comment = generate_comment(
+                achievement=analysis_score.achievement,
+                precision=analysis_score.precision,
+                balance=analysis_score.balance,
+                balance_available=analysis_score.balance_available,
+                rank=analysis_score.rank,
+                fast=estimate_result.fast,
+                slow=estimate_result.slow,
+            )
+            if achievement_titles:
+                analysis_comment += "\n◆ 獲得称号：" + " / ".join(achievement_titles)
+
+            # 固定1,799件の基準データに今回の結果を加えた1,800件の平均。
+            ranking_scores = [
+                float(row["overall_score"])
+                for row in ranking_base
+                if row.get("overall_score") not in (None, "")
+            ]
+            ranking_scores.append(float(analysis_score.overall_score))
+            ranking_average_score = (
+                sum(ranking_scores) / len(ranking_scores)
+                if ranking_scores else None
+            )
+
+            # 解析ごとに固有の一時ファイルを使い、同時利用時の上書きを防ぐ。
+            with tempfile.NamedTemporaryFile(
+                prefix="ensemble_result_",
+                suffix=".png",
+                delete=False,
+            ) as card_temp_file:
+                card_path = Path(card_temp_file.name)
+
+            card_path = create_result_card(
+
+                music=music,
+
+                difficulty=difficulty,
+
+                level=level,
+
+                amazing_plus=amazing_plus,
+
+                amazing=amazing,
+
+                perfect=0,
+
+                great=0,
+
+                good=0,
+
+                bad=0,
+
+                miss=0,
+
+                total_notes=total_notes,
+
+                fast=estimate_result.fast,
+
+                slow=estimate_result.slow,
+
+                slow_available=(
+                    "AMAZING(SLOW)" in estimate_result.distribution
+                    or "PERFECT(SLOW)" in estimate_result.distribution
+                ),
+
+                fast_available=(
+                    "AMAZING(FAST)" in estimate_result.distribution
+                    or "PERFECT(FAST)" in estimate_result.distribution
+                ),
+
+                achievement=analysis_score.achievement,
+
+                precision=analysis_score.precision,
+
+                precision_grade=analysis_score.precision_grade,
+
+                balance=analysis_score.balance,
+
+                balance_grade=analysis_score.balance_grade,
+
+                balance_available=analysis_score.balance_available,
+
+                overall_score=analysis_score.overall_score,
+
+                rank=analysis_score.rank,
+
+                ranking_position=ranking_result["ranking_position"],
+                ranking_comparison_total=ranking_result["comparison_total"],
+                ranking_top_percent=ranking_result["ranking_top_percent"],
+                ranking_title=ranking_result["ranking_title"],
+                ranking_rank=analysis_score.rank,
+                ranking_average_score=ranking_average_score,
+                ranking_analysis_date=datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y年%m月%d日"),
+                comment=analysis_comment,
+                achievement_titles=achievement_titles,
+                save_path=card_path,
+
+            )
+
+            # リザルトカードをメモリへ読み込む
+            with open(card_path, "rb") as file:
+                card_data = file.read()
+
+            # リザルトカードの一時ファイルを削除
+            try:
+                os.remove(card_path)
+            except FileNotFoundError:
+                pass
+            except OSError:
+                if config.DEBUG_MODE:
+                    st.caption(
+                        "リザルトカードの一時ファイルを削除できませんでした。"
+                    )
+
+            progress_status.markdown("""
+            **現在の処理**
+
+            ✅ リザルト画像読込
+
+            ✅ 棒グラフ解析
+
+            ✅ 判定推定
+
+            ✅ リザルトカード生成
+            """)
+
+            progress_bar.progress(100)
+
+            progress_container.empty()
+
+            st.success(
+                "✅ 解析が正常に完了しました。"
+            )
+
+            tweet_url = create_tweet_url(
+
+                music=music,
+
+                difficulty=difficulty,
+
+                level=level,
+
+                amazing_plus=amazing_plus,
+
+                amazing=amazing,
+
+                fast=estimate_result.fast,
+
+                slow=estimate_result.slow,
+
+                achievement=analysis_score.achievement,
+
+                precision=analysis_score.precision,
+
+                balance=analysis_score.balance,
+
+                overall_score=analysis_score.overall_score,
+
+                rank=analysis_score.rank,
+
+                ranking_position=ranking_result["ranking_position"],
+
+                ranking_comparison_total=ranking_result["comparison_total"],
+
+                ranking_top_percent=ranking_result["ranking_top_percent"],
+
+                ranking_title=ranking_result["ranking_title"]
+
+            )
+
+            # Streamlitのページ移動で再実行されても解析結果を保持する。
+            st.session_state["analysis_result"] = {
+                "music": music,
+                "difficulty": difficulty,
+                "level": level,
+                "total_notes": total_notes,
+                "card_data": card_data,
+                "uploaded_image_bytes": uploaded_file.getvalue(),
+                "graph_image": graph_image,
+                "estimate_result": estimate_result,
+                "analysis_score": analysis_score,
+                "ranking_base": ranking_base,
+                "ranking_result": ranking_result,
+                "ranking_distribution": ranking_distribution,
+                "tweet_url": tweet_url,
+                "achievement_titles": achievement_titles,
+            }
+            st.session_state["ranking_page"] = max(
+                1,
+                (int(ranking_result["ranking_position"]) + 49) // 50,
+            )
+
+        except ValueError as error:
+
+            progress_container.empty()
+
+            error_message = str(error)
+
+            if "画像の解像度が低すぎるため" in error_message:
+
+                st.error(
+                    "❌ 画像の解像度が低すぎます。"
+                )
+
+                st.warning(
+                    "タイミンググラフを正確に解析できないため、"
+                    "解析を中止しました。"
+                )
+
+                st.info(
+                    "より高解像度のリザルト画像を使用してください。"
+                )
+
+                if config.DEBUG_MODE:
+
+                    st.caption(error_message)
+
+            elif "解析対象は1～3本ですが" in error_message:
+
+                st.error(
+                    "❌ タップタイミンググラフを正しく解析できませんでした。"
+                )
+
+                st.warning(
+                    "解析対象となる1～3本のタイミングバーを"
+                    "正しく検出できなかったため、解析を中止しました。"
+                )
+
+                st.info(
+                    "タップタイミング棒グラフ全体が"
+                    "はっきり表示されたリザルト画像を使用してください。"
+                )
+
+                if config.DEBUG_MODE:
+
+                    st.caption(error_message)
+
+            else:
+
+                if config.DEBUG_MODE:
+
+                    st.exception(error)
+
+                else:
+
+                    st.error(
+                        "❌ 解析中にエラーが発生しました。"
+                    )
+
+                    st.info(
+                        "入力内容や画像をご確認のうえ、"
+                        "もう一度解析してください。"
+                    )
+
+            st.stop()
+
+        except Exception as error:
+
+            progress_container.empty()
 
             if config.DEBUG_MODE:
 
@@ -2322,387 +2407,509 @@ if analyze_button:
                 st.info(
                     "入力内容や画像をご確認のうえ、"
                     "もう一度解析してください。"
+    )
+
+            st.stop()
+
+        finally:
+            # 解析用に作成した一時画像を必ず削除する
+            if "card_path" in locals() and card_path:
+                try:
+                    Path(card_path).unlink(missing_ok=True)
+                except OSError:
+                    if config.DEBUG_MODE:
+                        st.caption("リザルトカードの一時ファイルを削除できませんでした。")
+
+            if "image_path" in locals():
+                try:
+                    os.remove(image_path)
+                except FileNotFoundError:
+                    pass
+                except OSError:
+                    if config.DEBUG_MODE:
+                        st.caption("一時画像ファイルを削除できませんでした。")
+
+
+    def render_analysis_results(result_payload):
+        """解析成功後の表示。ページ移動によるStreamlit再実行後も再表示できる。"""
+        music = result_payload["music"]
+        difficulty = result_payload["difficulty"]
+        level = result_payload["level"]
+        total_notes = result_payload["total_notes"]
+        card_data = result_payload["card_data"]
+        uploaded_image_bytes = result_payload["uploaded_image_bytes"]
+        graph_image = result_payload["graph_image"]
+        estimate_result = result_payload["estimate_result"]
+        analysis_score = result_payload["analysis_score"]
+        ranking_base = result_payload["ranking_base"]
+        ranking_result = result_payload["ranking_result"]
+        ranking_distribution = result_payload["ranking_distribution"]
+        tweet_url = result_payload["tweet_url"]
+
+        # ==========================================================
+        # リザルトカード Preview
+        # ==========================================================
+
+        st.markdown("## 📊 解析結果")
+        rank_value = str(analysis_score.rank).upper()
+        rank_accent = ("#ffffff" if rank_value in {"SSS", "SSS+"} else
+                       "#f5c84b" if rank_value in {"SS+", "SS", "S+", "S"} else
+                       "#f04b55" if rank_value.startswith("A") else
+                       "#419bff" if rank_value in {"BBB", "BB", "B"} else
+                       "#4bcd7d" if rank_value in {"CCC", "CC", "C"} else
+                       "#ff91be" if rank_value == "D" else
+                       "#b478dc" if rank_value == "E" else "#9196a0")
+        st.markdown(
+            f"""<div style="margin:10px 0 18px;padding:18px;text-align:center;border:1px solid {rank_accent};border-radius:16px;background:linear-gradient(120deg,#10182b,#241936,#10182b);animation:rankReveal 1.2s ease-out both;box-shadow:0 0 22px {rank_accent}44;">
+            <div style="font-size:12px;letter-spacing:.22em;color:#b8b8c8;">ANALYSIS RANK</div>
+            <div style="font-size:42px;font-weight:950;letter-spacing:.08em;color:{rank_accent};text-shadow:0 0 16px {rank_accent}88;">{rank_value}</div>
+            <div style="font-size:12px;color:#c9c4d5;">解析ランクを獲得しました</div></div>
+            <style>@keyframes rankReveal{{0%{{opacity:0;transform:scale(.86);filter:brightness(2)}}65%{{opacity:1;transform:scale(1.04)}}100%{{opacity:1;transform:scale(1);filter:brightness(1)}}}}</style>""",
+            unsafe_allow_html=True,
+        )
+
+        st.caption(
+            "解析結果カードを生成しました。数値は画像からの推定値（参考値）です。"
+        )
+        achievement_titles = result_payload.get("achievement_titles", [])
+        if achievement_titles:
+            st.markdown("### ✦ 獲得称号")
+            badge_files = {
+                "AMAZING Specialist": "amazing_specialist.png",
+                "Precision Master": "precision_master.png",
+                "Perfect Balance": "perfect_balance.png",
+                "Rhythm Master": "rhythm_master.png",
+                "SSS Collector": "sss_collector.png",
+            }
+            badge_cols = st.columns(min(3, len(achievement_titles)))
+            for badge_index, badge_title in enumerate(achievement_titles):
+                badge_path = Path(__file__).parent / "assets" / "achievement_titles" / badge_files[badge_title]
+                with badge_cols[badge_index % len(badge_cols)]:
+                    if badge_path.is_file():
+                        st.image(str(badge_path), width=190)
+                    else:
+                        st.markdown(f"**🏅 {badge_title}**")
+
+        st.markdown("## 🖼️ リザルトカード")
+
+        st.caption(
+            "生成されたリザルトカードです。クリックすると拡大表示できます。"
+        )
+
+        if card_data is not None:
+            # リザルトカードの4:3比率を保ち、Webアプリ側でも独立した
+            # プレビュー領域として表示する。
+            with st.container(border=True):
+                st.image(card_data, use_container_width=True)
+        else:
+            st.warning("リザルトカード画像を表示できませんでした。解析をもう一度実行してください。")
+
+        st.markdown("## 💾 保存・共有")
+        st.caption("リザルトカードを保存したり、𝕏 へ共有したりできます。")
+
+        share_col1, share_col2 = st.columns(
+            [1, 1],
+            gap="medium",
+        )
+
+        with share_col1:
+
+            st.markdown("#### 📥 リザルトカード保存")
+
+            st.markdown(
+                """
+                <div style="
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    color: #747d89;
+                    font-size: 12px;
+                    line-height: 1.2;
+                ">
+                    リザルトカードをPNG形式で保存できます。
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            # ----------------------------------------------------------
+            # Download File Name
+            # ----------------------------------------------------------
+
+            safe_music_name = re.sub(
+                r'[\\/:*?"<>|]',
+                "_",
+                music.strip(),
+            )
+
+            safe_music_name = safe_music_name.rstrip(" .")
+
+            if not safe_music_name:
+                safe_music_name = "Result"
+
+            # ファイル名が極端に長くならないよう制限
+            safe_music_name = safe_music_name[:80]
+
+            download_file_name = (
+                f"{safe_music_name}_ResultCard.png"
+            )
+
+            st.download_button(
+                label="📥 リザルトカードを保存",
+                data=card_data,
+                file_name=download_file_name,
+                mime="image/png",
+                width="stretch",
+            )
+
+            st.caption(
+                "※ 保存した画像はSNSなどで共有できます。"
+            )
+
+        with share_col2:
+
+            st.markdown("#### 𝕏 結果を共有")
+
+            st.markdown(
+                """
+                <div style="
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    color: #747d89;
+                    font-size: 12px;
+                    line-height: 1.2;
+                ">
+                    Xへ解析結果を投稿できます。
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            st.link_button(
+                label="𝕏 結果を共有",
+                url=tweet_url,
+                width="stretch",
+            )
+
+        # ==========================================================
+        # Fixed ranking summary (read-only baseline)
+        # ==========================================================
+        ranking_scores_for_summary = [
+            float(row["overall_score"]) for row in ranking_base
+            if row.get("overall_score") not in (None, "")
+        ] + [float(ranking_result["overall_score"])]
+        ranking_average_for_summary = (
+            sum(ranking_scores_for_summary) / len(ranking_scores_for_summary)
+            if ranking_scores_for_summary else 0.0
+        )
+        st.markdown("### 📊 ランキング統計")
+        summary_cols = st.columns(4)
+        summary_cols[0].metric("総合評価順位", f"{ranking_result['ranking_position']:,}位")
+        summary_cols[1].metric("上位割合", f"{ranking_result['ranking_top_percent']:.1f}%")
+        summary_cols[2].metric("固定基準平均（基準＋今回）", f"{ranking_average_for_summary:.3f}点")
+        summary_cols[3].metric("比較対象", f"{ranking_result['comparison_total']:,}件")
+        st.caption(f"固定ランキング基準データ：{ranking_result['ranking_base_count']:,}件 ／ 更新日：{ranking_result['ranking_base_date']}。今回の解析結果は基準データへ保存されません。")
+        if ranking_distribution:
+            rank_order = ["SSS+", "SSS", "SS+", "SS", "S+", "S", "AAA+", "AAA", "AA+", "AA", "A+", "A", "BBB", "BB", "B", "CCC", "CC", "C", "D", "E", "F"]
+            rank_distribution_df = pd.DataFrame(
+                [{"ランク": rank_name, "件数": ranking_distribution.get(rank_name, 0)}
+                 for rank_name in rank_order if rank_name in ranking_distribution]
+            )
+            with st.expander("固定基準データのランク別分布", expanded=False):
+                # Streamlitの自動カテゴリソートに任せず、上位から下位の順序を明示する。
+                st.vega_lite_chart(
+                    rank_distribution_df,
+                    {
+                        "mark": {"type": "bar", "tooltip": True},
+                        "encoding": {
+                            "x": {
+                                "field": "ランク",
+                                "type": "ordinal",
+                                "sort": rank_order,
+                                "axis": {"title": "RANK", "labelAngle": 0},
+                            },
+                            "y": {
+                                "field": "件数",
+                                "type": "quantitative",
+                                "axis": {"title": "件数"},
+                            },
+                        },
+                        "width": "container",
+                    },
+                    use_container_width=True,
                 )
 
-        st.stop()
+        # ==========================================================
+        # Ranking Browser
+        # ==========================================================
+        st.markdown(
+            """<div class="section-heading">
+            <div><h2>🏆 総合評価ランキング</h2><p>固定1,799件の基準データに、今回の解析結果を一時的に加えた1,800件表示です。</p></div>
+            </div>""",
+            unsafe_allow_html=True,
+        )
 
-    except Exception as error:
+        ranking_page_key = "ranking_page"
+        ranking_page_count = 36
+        ranking_total = 1800
 
-        progress_container.empty()
+        if ranking_page_key not in st.session_state:
+            st.session_state[ranking_page_key] = max(1, (int(ranking_result["ranking_position"]) + 49) // 50)
+        current_page = max(1, min(int(st.session_state[ranking_page_key]), ranking_page_count))
+        st.session_state[ranking_page_key] = current_page
+
+        nav1, nav2, nav3 = st.columns([1.0, 1.25, 1.0], vertical_alignment="bottom")
+        with nav1:
+            if st.button(
+                "‹ 前のページ",
+                key="ranking_prev",
+                width="stretch",
+                disabled=current_page <= 1,
+            ):
+                st.session_state[ranking_page_key] = current_page - 1
+                st.rerun()
+
+        with nav2:
+            with st.form("ranking_page_form", clear_on_submit=False):
+                requested_page = st.number_input(
+                    "ページ",
+                    min_value=1,
+                    max_value=ranking_page_count,
+                    value=current_page,
+                    step=1,
+                    format="%d",
+                    help="1～36を入力してEnter、または下のボタンで移動できます。",
+                )
+                submitted = st.form_submit_button(
+                    "このページを表示",
+                    width="stretch",
+                )
+                if submitted:
+                    st.session_state[ranking_page_key] = int(requested_page)
+                    st.rerun()
+
+        with nav3:
+            if st.button(
+                "次のページ ›",
+                key="ranking_next",
+                width="stretch",
+                disabled=current_page >= ranking_page_count,
+            ):
+                st.session_state[ranking_page_key] = current_page + 1
+                st.rerun()
+
+        st.caption(f"{current_page} / {ranking_page_count}ページ　・　50件 / ページ　・　全 {ranking_total:,}件")
+
+        ranking_page_rows, ranking_page_count_actual, ranking_total_actual, _ = _build_ranking_page(
+            ranking_base,
+            ranking_result,
+            int(st.session_state[ranking_page_key]),
+            page_size=50,
+        )
+
+        st.markdown(
+            f"""<div class="ranking-shell"><div class="ranking-inner">
+            <div class="ranking-hero-row">
+              <div><div class="ranking-eyebrow">総合評価ランキング</div>
+              <div class="ranking-title">あなたの順位：{ranking_result["ranking_position"]}位 / {ranking_result["comparison_total"]:,}件中</div>
+              <div class="ranking-meta">上位 {ranking_result["ranking_top_percent"]:.1f}% ・ 解析日 {ranking_result["ranking_analysis_date"]}</div></div>
+              <div class="ranking-stat"><div class="num">{ranking_result["ranking_top_percent"]:.1f}%</div><div class="label">上位割合</div></div>
+            </div>
+            {_format_ranking_table(ranking_page_rows)}
+            </div></div>""",
+            unsafe_allow_html=True,
+        )
+
+        st.caption("※ 今回の解析結果はランキング基準データへ保存・追加されません。ランキング一覧の「★あなた」は現在の解析結果を一時表示したものです。")
+
+        # ==========================================================
+        # 開発者向け情報
+        # ==========================================================
 
         if config.DEBUG_MODE:
 
-            st.exception(error)
+            with st.expander(
+                "🛠️ 開発者向け情報",
+                expanded=False,
+            ):
 
-        else:
+                st.caption(
+                    "開発・デバッグ用の情報です。通常は確認する必要はありません。"
+                )
 
-            st.error(
-                "❌ 解析中にエラーが発生しました。"
-            )
+                dev_col1, dev_col2 = st.columns(2)
 
-            st.info(
-                "入力内容や画像をご確認のうえ、"
-                "もう一度解析してください。"
-)
+                with dev_col1:
 
-        st.stop()
+                    st.metric(
+                        "推定ノーツ合計",
+                        sum(estimate_result.estimated_notes)
+                    )
 
-    finally:
-        # 解析用に作成した一時画像を必ず削除する
-        if "image_path" in locals():
-            try:
-                os.remove(image_path)
-            except FileNotFoundError:
-                pass
-            except OSError:
-                if config.DEBUG_MODE:
-                    st.caption("一時画像ファイルを削除できませんでした。")
+                    st.metric(
+                        "推定精度",
+                        f"{estimate_result.estimated_accuracy:.2f}%"
+                    )
 
+                with dev_col2:
 
-def render_analysis_results(result_payload):
-    """解析成功後の表示。ページ移動によるStreamlit再実行後も再表示できる。"""
-    music = result_payload["music"]
-    difficulty = result_payload["difficulty"]
-    level = result_payload["level"]
-    total_notes = result_payload["total_notes"]
-    card_data = result_payload["card_data"]
-    uploaded_image_bytes = result_payload["uploaded_image_bytes"]
-    graph_image = result_payload["graph_image"]
-    estimate_result = result_payload["estimate_result"]
-    analysis_score = result_payload["analysis_score"]
-    ranking_base = result_payload["ranking_base"]
-    ranking_result = result_payload["ranking_result"]
-    ranking_distribution = result_payload["ranking_distribution"]
-    tweet_url = result_payload["tweet_url"]
+                    st.metric(
+                        "FAST",
+                        estimate_result.fast
+                    )
 
-    # ==========================================================
-    # リザルトカード Preview
-    # ==========================================================
+                    st.metric(
+                        "SLOW",
+                        estimate_result.slow
+                    )
 
-    st.markdown("## 📊 解析結果")
+                st.write("")
 
-    st.caption(
-        "解析結果カードを生成しました。"
-    )
+                st.markdown("#### 判定分布")
 
-    st.markdown("## 🖼️ リザルトカード")
+                distribution_df = pd.DataFrame({
 
-    st.caption(
-        "生成されたリザルトカードです。クリックすると拡大表示できます。"
-    )
+                    "判定": list(estimate_result.distribution.keys()),
 
-    if card_data is not None:
-        st.image(card_data, use_container_width=True)
-    else:
-        st.warning("リザルトカード画像を表示できませんでした。解析をもう一度実行してください。")
+                    "推定数": list(estimate_result.distribution.values())
 
-    st.markdown("## 💾 保存・共有")
-    st.caption("リザルトカードを保存したり、𝕏 へ共有したりできます。")
+                })
 
-    share_col1, share_col2 = st.columns(
-        [1, 1],
-        gap="medium",
-    )
+                st.table(distribution_df)
 
-    with share_col1:
+        # ==========================================================
+        # Graph
+        # ==========================================================
 
-        st.markdown("#### 📥 リザルトカード保存")
-
-        st.markdown(
-            """
-            <div style="
-                height: 30px;
-                display: flex;
-                align-items: center;
-                color: #747d89;
-                font-size: 12px;
-                line-height: 1.2;
-            ">
-                リザルトカードをPNG形式で保存できます。
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        # ----------------------------------------------------------
-        # Download File Name
-        # ----------------------------------------------------------
-
-        safe_music_name = re.sub(
-            r'[\\/:*?"<>|]',
-            "_",
-            music.strip(),
-        )
-
-        safe_music_name = safe_music_name.rstrip(" .")
-
-        if not safe_music_name:
-            safe_music_name = "Result"
-
-        # ファイル名が極端に長くならないよう制限
-        safe_music_name = safe_music_name[:80]
-
-        download_file_name = (
-            f"{safe_music_name}_ResultCard.png"
-        )
-
-        st.download_button(
-            label="📥 リザルトカードを保存",
-            data=card_data,
-            file_name=download_file_name,
-            mime="image/png",
-            width="stretch",
-        )
-
-        st.caption(
-            "※ 保存した画像はSNSなどで共有できます。"
-        )
-
-    with share_col2:
-
-        st.markdown("#### 𝕏 結果を共有")
-
-        st.markdown(
-            """
-            <div style="
-                height: 30px;
-                display: flex;
-                align-items: center;
-                color: #747d89;
-                font-size: 12px;
-                line-height: 1.2;
-            ">
-                Xへ解析結果を投稿できます。
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        st.link_button(
-            label="𝕏 結果を共有",
-            url=tweet_url,
-            width="stretch",
-        )
-
-    # ==========================================================
-    # Ranking Browser
-    # ==========================================================
-    st.markdown(
-        """<div class="section-heading">
-        <div><h2>🏆 総合評価ランキング</h2><p>固定1,799件の基準データに、今回の解析結果を一時的に加えた1,800件表示です。</p></div>
-        </div>""",
-        unsafe_allow_html=True,
-    )
-
-    ranking_page_key = "ranking_page"
-    ranking_page_count = 36
-    ranking_total = 1800
-
-    if ranking_page_key not in st.session_state:
-        st.session_state[ranking_page_key] = max(1, (int(ranking_result["ranking_position"]) + 49) // 50)
-    current_page = max(1, min(int(st.session_state[ranking_page_key]), ranking_page_count))
-    st.session_state[ranking_page_key] = current_page
-
-    nav1, nav2, nav3 = st.columns([1.0, 1.25, 1.0], vertical_alignment="bottom")
-    with nav1:
-        if st.button(
-            "‹ 前のページ",
-            key="ranking_prev",
-            width="stretch",
-            disabled=current_page <= 1,
-        ):
-            st.session_state[ranking_page_key] = current_page - 1
-            st.rerun()
-
-    with nav2:
-        with st.form("ranking_page_form", clear_on_submit=False):
-            requested_page = st.number_input(
-                "ページ",
-                min_value=1,
-                max_value=ranking_page_count,
-                value=current_page,
-                step=1,
-                format="%d",
-                help="1～36を入力してEnter、または下のボタンで移動できます。",
-            )
-            submitted = st.form_submit_button(
-                "このページを表示",
-                width="stretch",
-            )
-            if submitted:
-                st.session_state[ranking_page_key] = int(requested_page)
-                st.rerun()
-
-    with nav3:
-        if st.button(
-            "次のページ ›",
-            key="ranking_next",
-            width="stretch",
-            disabled=current_page >= ranking_page_count,
-        ):
-            st.session_state[ranking_page_key] = current_page + 1
-            st.rerun()
-
-    st.caption(f"{current_page} / {ranking_page_count}ページ　・　50件 / ページ　・　全 {ranking_total:,}件")
-
-    ranking_page_rows, ranking_page_count_actual, ranking_total_actual, _ = _build_ranking_page(
-        ranking_base,
-        ranking_result,
-        int(st.session_state[ranking_page_key]),
-        page_size=50,
-    )
-
-    st.markdown(
-        f"""<div class="ranking-shell"><div class="ranking-inner">
-        <div class="ranking-hero-row">
-          <div><div class="ranking-eyebrow">総合評価ランキング</div>
-          <div class="ranking-title">あなたの順位：{ranking_result["ranking_position"]}位 / {ranking_result["comparison_total"]:,}件中</div>
-          <div class="ranking-meta">上位 {ranking_result["ranking_top_percent"]:.1f}% ・ 解析日 {ranking_result["ranking_analysis_date"]}</div></div>
-          <div class="ranking-stat"><div class="num">{ranking_result["ranking_top_percent"]:.1f}%</div><div class="label">上位割合</div></div>
-        </div>
-        {_format_ranking_table(ranking_page_rows)}
-        </div></div>""",
-        unsafe_allow_html=True,
-    )
-
-    st.caption("※ 今回の解析結果はランキング基準データへ保存・追加されません。ランキング一覧の「★あなた」は現在の解析結果を一時表示したものです。")
-
-    # ==========================================================
-    # 開発者向け情報
-    # ==========================================================
-
-    if config.DEBUG_MODE:
+        st.divider()
 
         with st.expander(
-            "🛠️ 開発者向け情報",
-            expanded=False,
+            "📈 解析に使用した棒グラフ",
+            expanded=False
         ):
 
             st.caption(
-                "開発・デバッグ用の情報です。通常は確認する必要はありません。"
+                "解析に使用したタップタイミング棒グラフです。"
             )
 
-            dev_col1, dev_col2 = st.columns(2)
-
-            with dev_col1:
-
-                st.metric(
-                    "推定ノーツ合計",
-                    sum(estimate_result.estimated_notes)
+            if graph_image is not None:
+                graph_image_rgb = cv2.cvtColor(
+                    graph_image,
+                    cv2.COLOR_BGR2RGB,
                 )
 
-                st.metric(
-                    "推定精度",
-                    f"{estimate_result.estimated_accuracy:.2f}%"
+                st.image(
+                    graph_image_rgb,
+                    use_container_width=True,
+                )
+            else:
+                st.warning(
+                    "解析に使用した棒グラフを表示できませんでした。"
                 )
 
-            with dev_col2:
+        st.divider()
 
-                st.metric(
-                    "FAST",
-                    estimate_result.fast
-                )
+        st.markdown("""
+        <div class="legal-box">
+        <b>© 権利・非公式表示</b><br><br>
+        本Webアプリは『あんさんぶるスターズ！！Music』を題材とした非公式ファンツールです。Happy Elements株式会社とは関係ありません。<br><br>
+        ゲームに関する名称・画像・ロゴ・キャラクター等の権利は、それぞれの権利者に帰属します。<br><br>
+        本アプリで使用されるゲーム関連コンテンツは、転載・再配布を目的としたものではありません。<br><br>
+        </div>
+        """, unsafe_allow_html=True)
 
-                st.metric(
-                    "SLOW",
-                    estimate_result.slow
-                )
+        st.divider()
 
-            st.write("")
+        st.markdown(f"""
+        <div style="
+        text-align:center;
+        padding:20px 10px;
+        color:#66707d;
+        font-size:14px;
+        ">
 
-            st.markdown("#### 判定分布")
+        <div style="
+        font-size:20px;
+        font-weight:700;
+        color:#5d4a92;
+        margin-bottom:14px;
+        ">
 
-            distribution_df = pd.DataFrame({
+        ensemble-stars-analyzer — あんさんぶるスターズ！！Music タップタイミング解析
 
-                "判定": list(estimate_result.distribution.keys()),
+        </div>
 
-                "推定数": list(estimate_result.distribution.values())
+        <div style="
+        margin-bottom:6px;
+        ">
 
-            })
+        非公式ファンツール
 
-            st.table(distribution_df)
+        </div>
 
-    # ==========================================================
-    # Graph
-    # ==========================================================
+        <div style="
+        font-size:13px;
+        color:#6d7682;
+        ">
 
-    st.divider()
+        Hapylon × ChatGPT による開発
 
-    with st.expander(
-        "📈 解析に使用した棒グラフ",
-        expanded=False
-    ):
+        </div>
 
-        st.caption(
-            "解析に使用したタップタイミング棒グラフです。"
+        </div>
+        """, unsafe_allow_html=True)
+
+    if "analysis_result" in st.session_state:
+        render_analysis_results(st.session_state["analysis_result"])
+
+
+with tab_pachinko:
+    st.markdown("## 🎰 OVERALL PACHINKO")
+    st.caption("タップタイミング解析とは独立したミニゲームです。解析用リザルト画像は不要で、1,799件のリザルトを解析して作成したOverall Scoreの基準データを使って遊べます。")
+    try:
+        pachinko_values = load_overall_values()
+        # The 1M-trial distribution is also used to show the result card's percentile.
+        simulation_summary = load_simulation_summary()
+        simulation_distribution = simulation_summary.get("total_notes_distribution", []) if simulation_summary else []
+        simulation_count = int(simulation_summary.get("count", 0)) if simulation_summary else 0
+        render_pachinko(
+            pachinko_values,
+            simulation_distribution=simulation_distribution,
+            simulation_count=simulation_count,
         )
 
-        if graph_image is not None:
-            graph_image_rgb = cv2.cvtColor(
-                graph_image,
-                cv2.COLOR_BGR2RGB,
+        # The reproducible Monte Carlo report is displayed separately from theoretical values.
+        st.markdown("### 📊 100万件シミュレーション")
+        if simulation_summary:
+            st.caption(
+                f"実測シミュレーション：{int(simulation_summary['count']):,}件"
+                f" ／ 乱数シード：{int(simulation_summary['seed'])}"
             )
-
-            st.image(
-                graph_image_rgb,
-                use_container_width=True,
+            sim_cols = st.columns(4)
+            sim_cols[0].metric("遊タイム発動", f"{int(simulation_summary['simulated_pity_count']):,}件")
+            sim_cols[1].metric("遊タイム発動割合", f"{float(simulation_summary['simulated_pity_percentage']):.4f}%")
+            sim_cols[2].metric("平均総獲得NOTES", f"{float(simulation_summary['average_total_notes_simulated']):,.2f}")
+            sim_cols[3].metric("平均RUSH大当たり", f"{float(simulation_summary['average_rush_hits_simulated']):.4f}回")
+            st.caption(
+                f"通常初当たり：{int(simulation_summary['normal_initial_count']):,}件"
+                f" ／ 遊タイム：{int(simulation_summary['simulated_pity_count']):,}件"
             )
+            st.caption(
+                f"理論値：遊タイム発動 約{float(simulation_summary['theoretical_pity_percentage']):.4f}%"
+                f" ／ 通常時出玉期待値 {float(simulation_summary['average_initial_notes_theoretical']):,.2f} NOTES"
+                f" ／ RUSH獲得期待出玉 {float(simulation_summary['average_rush_notes_theoretical']):,.2f} NOTES"
+                f" ／ 総獲得期待出玉 {float(simulation_summary['average_total_notes_theoretical']):,.2f} NOTES"
+            )
+            hist_df = pd.DataFrame(simulation_summary["histogram"])
+            hist_df = hist_df.rename(columns={"rank": "RANK", "count": "件数", "percentage": "割合(%)"})
+            # Display the rank distribution from the lowest rank (F) to the highest (SSS+).
+            rank_order = [item["rank"] for item in reversed(simulation_summary["histogram"])]
+            hist_df["RANK"] = pd.Categorical(hist_df["RANK"], categories=rank_order, ordered=True)
+            hist_df = hist_df.sort_values("RANK")
+            st.bar_chart(hist_df.set_index("RANK")[["割合(%)"]], horizontal=False)
         else:
-            st.warning(
-                "解析に使用した棒グラフを表示できませんでした。"
-            )
+            st.warning("100万件シミュレーション結果がありません。output/simulation の生成手順を確認してください。")
 
-    st.divider()
-
-    st.markdown("""
-    <div class="legal-box">
-    <b>© 権利・非公式表示</b><br><br>
-    本Webアプリは『あんさんぶるスターズ！！Music』を題材とした非公式ファンツールです。Happy Elements株式会社とは関係ありません。<br><br>
-    ゲームに関する名称・画像・ロゴ・キャラクター等の権利は、それぞれの権利者に帰属します。<br><br>
-    本アプリで使用されるゲーム関連コンテンツは、転載・再配布を目的としたものではありません。<br><br>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.divider()
-
-    st.markdown(f"""
-    <div style="
-    text-align:center;
-    padding:20px 10px;
-    color:#66707d;
-    font-size:14px;
-    ">
-
-    <div style="
-    font-size:20px;
-    font-weight:700;
-    color:#5d4a92;
-    margin-bottom:14px;
-    ">
-
-    あんさんぶるスターズ！！Music タップタイミング解析ツール
-
-    </div>
-
-    <div style="
-    margin-bottom:6px;
-    ">
-
-    非公式ファンツール
-
-    </div>
-
-    <div style="
-    font-size:13px;
-    color:#6d7682;
-    ">
-
-    Hapylon × ChatGPT による開発
-
-    </div>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-if "analysis_result" in st.session_state:
-    render_analysis_results(st.session_state["analysis_result"])
+    except Exception as error:
+        st.error(f"OVERALL PACHINKOを読み込めませんでした: {error}")

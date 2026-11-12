@@ -1,6 +1,6 @@
 """
 result_card.py
-Version : 1.3 Final
+Version : 2.0 Final
 
 Ensemble Stars!! Music
 Tap Timing Analyzer
@@ -225,8 +225,8 @@ RANKING_SECTION_HEIGHT = 300
 # Card Size
 # ==========================================================
 
-CARD_WIDTH = 1080
-CARD_HEIGHT = 1450
+CARD_WIDTH = 1600
+CARD_HEIGHT = 1200
 
 
 # ==========================================================
@@ -542,167 +542,48 @@ RESULT_TITLE = (
 )
 
 def get_rank_color(rank: str):
-    """
-    Overall Rank表示用メインカラー。
-
-    SSS系 : 虹色描画用フォールバック
-    SS系  : Gold
-    S系   : Silver
-    AAA系 : Bronze
-    AA系  : Red
-    A系   : Deep Red
-    BBB/BB/B : Amber / Gold Yellow / Yellow
-    CCC/CC/C : Blue系
-    D/E/F : Gray系
-
-    Overallの現行ランク体系に合わせ、旧 DDD / DD / EEE / EE
-    および存在しない旧Plusランクは定義しない。
-    """
-
+    """Return the unified 21-rank palette used by both result experiences."""
     colors = {
-
-        # ==================================================
-        # SSS : Rainbow
-        # ==================================================
-        # draw_rank_text() では専用Rainbow描画を使用。
-        # ここではフォールバック色としてGoldを指定。
-        "SSS+": (255, 215, 0),
-        "SSS":  (255, 215, 0),
-
-        # ==================================================
-        # SS : Gold
-        # ==================================================
-        "SS+": (255, 193, 7),
-        "SS":  (255, 193, 7),
-
-        # ==================================================
-        # S : Silver
-        # ==================================================
-        "S+": (170, 185, 205),
-        "S":  (170, 185, 205),
-
-        # ==================================================
-        # AAA : Bronze
-        # ==================================================
-        "AAA+": (205, 127, 50),
-        "AAA":  (205, 127, 50),
-
-        # ==================================================
-        # AA : Red
-        # ==================================================
-        "AA+": (239, 83, 80),
-        "AA":  (239, 83, 80),
-
-        # ==================================================
-        # A : Deep Red
-        # ==================================================
-        "A+": (229, 57, 53),
-        "A":  (229, 57, 53),
-
-        # ==================================================
-        # BBB : Amber
-        # ==================================================
-        "BBB": (230, 150, 35),
-
-        # ==================================================
-        # BB : Gold Yellow
-        # ==================================================
-        "BB": (245, 190, 45),
-
-        # ==================================================
-        # B : Yellow
-        # ==================================================
-        "B": (255, 224, 102),
-
-        # ==================================================
-        # CCC : Deep Blue
-        # ==================================================
-        "CCC": (45, 90, 170),
-
-        # ==================================================
-        # CC : Blue
-        # ==================================================
-        "CC": (55, 110, 205),
-
-        # ==================================================
-        # C : Light Blue
-        # ==================================================
-        "C": (66, 133, 244),
-
-        # ==================================================
-        # D : Light Gray
-        # ==================================================
-        "D": (145, 145, 145),
-
-        # ==================================================
-        # E : Dark Charcoal
-        # ==================================================
-        "E": (95, 95, 100),
-
-        # ==================================================
-        # F
-        # ==================================================
-        "F": (65, 65, 70),
+        "SSS+": (255, 255, 255), "SSS": (255, 255, 255),
+        "SS+": (245, 200, 75), "SS": (245, 200, 75),
+        "S+": (245, 200, 75), "S": (245, 200, 75),
+        "AAA+": (240, 75, 85), "AAA": (240, 75, 85),
+        "AA+": (240, 75, 85), "AA": (240, 75, 85),
+        "A+": (240, 75, 85), "A": (240, 75, 85),
+        "BBB": (65, 155, 255), "BB": (65, 155, 255), "B": (65, 155, 255),
+        "CCC": (75, 205, 125), "CC": (75, 205, 125), "C": (75, 205, 125),
+        "D": (255, 145, 190), "E": (180, 120, 220), "F": (145, 150, 160),
     }
-
-    return colors.get(
-        rank,
-        TITLE,
-    )
+    return colors.get(str(rank).upper(), TITLE)
 
 
 def get_rank_card_colors(rank: str):
-    """
-    Rankカード用の背景色・枠線色を返す。
-
-    Rank文字を主役にするため、
-    背景へのRank色の反映はごく薄くする。
-    """
-
-    # ==================================================
-    # SSS : Champagne Gold
-    # ==================================================
-    if rank.startswith("SSS"):
-        return (
-            (255, 247, 220),
-            (235, 198, 110),
-        )
-
-    # ==================================================
-    # SS : Pale Gold
-    # ==================================================
-    elif rank.startswith("SS"):
-        return (
-            (255, 246, 220),
-            (228, 200, 135),
-        )
-
-    # ==================================================
-    # S : Platinum
-    # ==================================================
-    elif rank.startswith("S"):
-        return (
-            (250, 252, 255),
-            (198, 208, 220),
-        )
-
-    # ==================================================
-    # AAA : Bronze
-    # ==================================================
-    elif rank.startswith("AAA"):
-        return (
-            (248, 241, 232),
-            (205, 167, 118),
-        )
-
-    # ==================================================
-    # Others
-    # ==================================================
+    """Return subtle card background/border colors matching the shared rank palette."""
+    groups = {
+        "SSS": ((250, 244, 255), (190, 125, 220)),
+        "S": ((255, 250, 225), (225, 180, 65)),
+        "A": ((255, 239, 240), (225, 90, 100)),
+        "B": ((235, 245, 255), (80, 145, 225)),
+        "C": ((235, 250, 240), (85, 185, 120)),
+        "D": ((255, 240, 247), (235, 135, 175)),
+        "E": ((248, 240, 255), (165, 115, 205)),
+        "F": ((242, 243, 245), (135, 140, 150)),
+    }
+    value = str(rank).upper()
+    if value.startswith("SSS"):
+        key = "SSS"
+    elif value.startswith("SS") or value.startswith("S"):
+        key = "S"
+    elif value.startswith("A"):
+        key = "A"
+    elif value.startswith("B"):
+        key = "B"
+    elif value.startswith("C"):
+        key = "C"
     else:
-        return (
-            (255, 250, 235),
-            (235, 220, 170),
-        )
+        key = value if value in {"D", "E", "F"} else "F"
+    return groups[key]
+
 
 def draw_rainbow_rank_text(
     draw: ImageDraw.ImageDraw,
@@ -3936,32 +3817,32 @@ def generate_comment(
 
     if precision >= 88.0:
         comments.append(
-            "タイミングのばらつきが非常に少なく、非常に精密なタップです。"
+            "推定上、中央付近の判定割合が非常に高く、精密度が高い傾向です。"
         )
 
     elif precision >= 82.0:
         comments.append(
-            "タイミングのばらつきが少なく、高い精密度です。"
+            "推定上、タイミングのばらつきが少なく、精密度が高い傾向です。"
         )
 
     elif precision >= 74.0:
         comments.append(
-            "タイミングのばらつきは比較的少なく、精密度は良好です。"
+            "推定上、タイミングのばらつきは比較的少なく、精密度は良好な傾向です。"
         )
 
     elif precision >= 68.0:
         comments.append(
-            "タイミングのばらつきは比較的抑えられています。"
+            "推定上、タイミングのばらつきは比較的抑えられています。"
         )
 
     elif precision >= 60.0:
         comments.append(
-            "タイミングにややばらつきがあります。"
+            "推定上、タイミングにややばらつきが見られます。"
         )
 
     else:
         comments.append(
-            "タイミングのばらつきが大きいため、中央判定を意識すると改善につながります。"
+            "推定上、タイミングのばらつきが大きめです。中央付近の判定割合を参考にしてください。"
         )
 
     # ----------------------------
@@ -3972,42 +3853,42 @@ def generate_comment(
 
         if balance >= 98.0:
             comments.append(
-                "SLOW/FASTの偏りが非常に少なく、非常に安定したタップです。"
+                "推定上、SLOW/FASTの偏りが非常に少なく、安定した傾向です。"
             )
 
         elif balance >= 88.0:
             comments.append(
-                "SLOW/FASTの偏りが少なく、安定したタップです。"
+                "推定上、SLOW/FASTの偏りが少なく、安定した傾向です。"
             )
 
         elif balance >= 74.0:
             comments.append(
-                "SLOW/FASTの偏りは比較的小さく、バランスは良好です。"
+                "推定上、SLOW/FASTの偏りは比較的小さく、バランスは良好な傾向です。"
             )
 
         elif balance >= 56.0:
                 comments.append(
-                    "タイミングのばらつきは比較的抑えられています。"
+                    "推定上、タイミングのばらつきは比較的抑えられています。"
                 )
 
         elif balance >= 42.0:
             comments.append(
-                "SLOW/FASTにやや偏りがあります。"
+                "推定上、SLOW/FASTにやや偏りが見られます。"
             )
 
         elif balance >= 20.0:
             comments.append(
-                "SLOW/FASTの偏りが見られます。"
+                "推定上、SLOW/FASTの偏りが見られます。"
             )
 
         elif balance >= 12.0:
             comments.append(
-                "SLOW/FASTの偏りが大きく、タップタイミングが一方向に寄っています。"
+                "推定上、SLOW/FASTの偏りが大きく、一方向に寄る傾向です。"
             )
 
         else:
             comments.append(
-                "SLOW/FASTの偏りが非常に大きく、タップタイミングが一方向へ強く寄っています。"
+                "推定上、SLOW/FASTの偏りが非常に大きく、一方向へ強く寄る傾向です。"
             )
 
     # ----------------------------
@@ -4025,12 +3906,12 @@ def generate_comment(
 
         if timing_difference >= 15.0:
             comments.append(
-                "FAST傾向が強いため、少し遅めを意識すると改善できます。"
+                "推定値ではFAST側への偏りが見られます。"
             )
 
         elif timing_difference <= -15.0:
             comments.append(
-                "SLOW傾向が強いため、少し早めを意識すると改善できます。"
+                "推定値ではSLOW側への偏りが見られます。"
             )
 
     return "\n".join(comments)
@@ -5815,148 +5696,353 @@ def create_result_card(
     ranking_top_percent: float | None = None,
     ranking_title: str | None = None,
     ranking_rank: str | None = None,
-    ranking_distribution: dict[str, int] | None = None,
+    ranking_average_score: float | None = None,
     ranking_analysis_date: str | None = None,
     comment: str = "",
+    achievement_titles: list[str] | None = None,
     show_comment: bool = True,
     save_path: Path | None = None,
 ):
-    """1080x1450の固定レイアウトで総合解析結果カードを生成する。"""
+    """DAM精密採点Ai Heartを参考にした横長4:3リザルトカードを生成する。"""
+    from pathlib import Path
+    import math
+    import numpy as np
+    from PIL import Image, ImageDraw, ImageFont, ImageFilter
+
     if save_path is None:
         save_path = CARD_PATH
 
-    image, draw = create_card(
-        ranking_title=ranking_title,
-    )
-    judges = {
-        "AMAZING+": amazing_plus,
-        "AMAZING": amazing,
-        "PERFECT": perfect,
-        "GREAT": great,
-        "GOOD": good,
-        "BAD": bad,
-        "MISS": miss,
+    W, H = 1600, 1200
+    project_root = Path(__file__).resolve().parent.parent
+    regular = project_root / "fonts" / "NotoSansJP-Regular.otf"
+    bold = project_root / "fonts" / "NotoSansJP-Bold.otf"
+
+    def ft(size, heavy=False):
+        try:
+            return ImageFont.truetype(str(bold if heavy else regular), size)
+        except Exception:
+            return ImageFont.load_default()
+
+    # Rich navy-blue background with cyan ambient lighting.
+    yy, xx = np.mgrid[0:H, 0:W]
+    t = yy / max(1, H - 1)
+    glow1 = np.maximum(0, 1 - np.sqrt(((xx - 430) / 1050) ** 2 + ((yy - 220) / 760) ** 2))
+    glow2 = np.maximum(0, 1 - np.sqrt(((xx - 1420) / 650) ** 2 + ((yy - 280) / 650) ** 2))
+    arr = np.empty((H, W, 3), dtype=np.uint8)
+    arr[:, :, 0] = np.clip(5 + 8 * t + 8 * glow1 + 4 * glow2, 0, 255)
+    arr[:, :, 1] = np.clip(14 + 20 * t + 34 * glow1 + 10 * glow2, 0, 255)
+    arr[:, :, 2] = np.clip(48 + 30 * t + 70 * glow1 + 48 * glow2, 0, 255)
+    img = Image.fromarray(arr, "RGB").convert("RGBA")
+    ambient = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ad = ImageDraw.Draw(ambient)
+    ad.ellipse((-260, -240, 850, 560), fill=(0, 190, 255, 65))
+    ad.ellipse((1050, -240, 1800, 560), fill=(75, 100, 255, 45))
+    ad.ellipse((400, 850, 1350, 1450), fill=(0, 175, 220, 30))
+    img = Image.alpha_composite(img, ambient.filter(ImageFilter.GaussianBlur(95)))
+    d = ImageDraw.Draw(img)
+
+    WHITE = (246, 251, 255)
+    MUTED = (174, 204, 226)
+    CYAN = (80, 220, 255)
+    PURPLE = (169, 104, 255)
+    PINK = (255, 91, 177)
+    GREEN = (75, 224, 174)
+    BLUE = (72, 157, 255)
+    GOLD = (255, 211, 75)
+    RED = (255, 104, 112)
+    ORANGE = (255, 170, 70)
+    RANK_COLORS = {
+        "SSS+": (255, 255, 255), "SSS": (255, 255, 255),
+        "SS+": (245, 200, 75), "SS": (245, 200, 75),
+        "S+": (245, 200, 75), "S": (245, 200, 75),
+        "AAA+": (240, 75, 85), "AAA": (240, 75, 85),
+        "AA+": (240, 75, 85), "AA": (240, 75, 85),
+        "A+": (240, 75, 85), "A": (240, 75, 85),
+        "BBB": (65, 155, 255), "BB": (65, 155, 255), "B": (65, 155, 255),
+        "CCC": (75, 205, 125), "CC": (75, 205, 125), "C": (75, 205, 125),
+        "D": (255, 145, 190), "E": (180, 120, 220), "F": (145, 150, 160),
     }
+    is_rainbow = str(rank).upper() in {"SSS", "SSS+"}
+    accent = RANK_COLORS.get(str(rank).upper(), CYAN)
+    rainbow = [(255, 65, 95), (255, 145, 55), (255, 220, 65),
+               (75, 215, 130), (55, 185, 255), (125, 105, 255), (240, 85, 210)]
 
-    # ------------------------------------------------------
-    # 1. Song Information
-    # ------------------------------------------------------
-    draw_song_card(
-        image,
-        draw,
-        music=music,
-        difficulty=difficulty,
-        level=level,
-    )
+    def rounded(rect, radius=18, fill=(5, 24, 65, 230), outline=CYAN, width=2):
+        d.rounded_rectangle(rect, radius=radius, fill=fill, outline=outline, width=width)
 
-    # ------------------------------------------------------
-    # 2. Main Panels
-    # ------------------------------------------------------
+    def draw_text(x, y, value, size=24, color=WHITE, anchor=None, heavy=False, stroke=0):
+        d.text((x, y), str(value), font=ft(size, heavy), fill=color, anchor=anchor,
+               stroke_width=stroke, stroke_fill=(2, 10, 35) if stroke else None)
 
-    left_bottom = draw_left_panel(
-        draw,
-        judges,
-        total_notes=total_notes,
-    )
+    def fitted(value, max_width, size, minimum=16, heavy=True):
+        for n in range(size, minimum - 1, -1):
+            f = ft(n, heavy)
+            if d.textbbox((0, 0), str(value), font=f)[2] <= max_width:
+                return f
+        return ft(minimum, heavy)
 
-    right_bottom = draw_right_panel(
-        draw,
-        achievement=achievement,
-        precision=precision,
-        precision_grade=precision_grade,
-        balance=balance,
-        balance_grade=balance_grade,
-        balance_available=balance_available,
-        overall_score=overall_score,
-        rank=rank,
-    )
+    def draw_rainbow_text(x, y, value, size, anchor="la"):
+        f = ft(size, True)
+        value = str(value)
+        bbox = d.textbbox((0, 0), value, font=f)
+        tw, th = max(1, bbox[2] - bbox[0]), max(1, bbox[3] - bbox[1])
+        x0 = int(x - tw / 2) if anchor == "mm" else int(x)
+        y0 = int(y)
+        d.text((x0 - bbox[0], y0 - bbox[1]), value, font=f, fill=(10, 18, 55),
+               stroke_width=5, stroke_fill=(10, 18, 55))
+        mask = Image.new("L", (tw, th), 0)
+        ImageDraw.Draw(mask).text((-bbox[0], -bbox[1]), value, font=f, fill=255)
+        grad = Image.new("RGB", (tw, th))
+        gp = grad.load()
+        for px in range(tw):
+            z = px / max(1, tw - 1) * (len(rainbow) - 1)
+            i = int(z); j = min(i + 1, len(rainbow) - 1); q = z - i
+            col = tuple(int(rainbow[i][k] * (1 - q) + rainbow[j][k] * q) for k in range(3))
+            for py in range(th):
+                gp[px, py] = col
+        img.paste(grad, (x0, y0), mask)
 
-    panel_bottom = max(
-        left_bottom,
-        right_bottom,
-    )
+    def panel(rect, label, color=CYAN):
+        rounded(rect, 18, (5, 24, 65, 232), color, 3)
+        x1, y1, x2, _ = rect
+        d.rounded_rectangle((x1 + 3, y1 + 3, x2 - 3, y1 + 49),
+                            radius=15, fill=(13, 55, 105, 238))
+        draw_text(x1 + 20, y1 + 8, label, 24, color, heavy=True)
+        d.line((x1 + 18, y1 + 53, x2 - 18, y1 + 53), fill=(*color, 185), width=2)
 
-    # ------------------------------------------------------
-    # 3. One combined SLOW / FAST card.
-    # ------------------------------------------------------
+    def draw_diamonds(x, y, value, color, count=6):
+        filled = max(0, min(count, int(round(max(0.0, min(100.0, float(value))) / 100 * count))))
+        for j in range(count):
+            cx = x + j * 49
+            cy = y
+            pts = [(cx, cy - 17), (cx + 17, cy), (cx, cy + 17), (cx - 17, cy)]
+            if j < filled:
+                d.polygon(pts, fill=color, outline=(230, 250, 255))
+            else:
+                d.polygon(pts, fill=(12, 38, 78), outline=(105, 150, 185))
 
-    fastslow_top = panel_bottom + SECTION_GAP + 20
-
-    fastslow_bottom = draw_fastslow_card(
-        draw,
-        fast=fast,
-        slow=slow,
-        slow_available=slow_available,
-        fast_available=fast_available,
-        total_notes=sum(judges.values()),
-        top=fastslow_top,
-    )
-
-    # 4. Generate analysis text once.
-    badge, badge_color, badge_fill = generate_play_badge(
-        precision=precision,
-        balance=balance,
-        balance_available=balance_available,
-        fast=fast,
-        slow=slow,
-        amazing_plus=judges.get("AMAZING+", 0),
-    )
-    if show_comment:
-        comment = generate_comment(
-            achievement=achievement,
-            precision=precision,
-            balance=balance,
-            balance_available=balance_available,
-            rank=rank,
-            fast=fast,
-            slow=slow,
-        )
+    # Header and song metadata.
+    draw_text(34, 16, "ENSEMBLE STARS!! MUSIC", 25, WHITE, heavy=True)
+    draw_text(1565, 23, "TAP TIMING ANALYSIS", 16, MUTED, anchor="ra")
+    d.line((30, 58, 1570, 58), fill=(80, 205, 245), width=2)
+    rounded((30, 72, 1570, 143), 14, (7, 36, 82, 238), (75, 205, 245), 2)
+    draw_text(52, 91, "楽曲", 18, CYAN, heavy=True)
+    d.text((125, 83), str(music), font=fitted(music, 790, 32, 19), fill=WHITE)
+    rounded((1000, 88, 1230, 129), 18, (25, 95, 145, 245), CYAN, 2)
+    draw_text(1115, 108, difficulty, 22, WHITE, anchor="mm", heavy=True)
+    level_text = str(level).strip()
+    if level_text.startswith("Lv."):
+        level_text = "Lv." + level_text[3:].strip()
     else:
-        comment = "解析コメントはありません。\n（コメント表示OFFまたは解析対象外）"
+        level_text = "Lv." + level_text
+    draw_text(1260, 91, level_text, 24, WHITE, heavy=True)
 
-    # 5. Lower cards: independent left/right placement.
-    draw_analysis_result_card(
-        draw,
-        badge=badge,
-        badge_color=badge_color,
-        badge_fill=badge_fill,
-        comment=comment,
-        rect=LOWER_LEFT_RECT,
-    )
+    # Main score and rank are presented side by side as equal-priority results.
+    panel((30, 160, 1010, 525), "TOTAL SCORE  /  総合評価", accent)
 
-    ranking_enabled = (
-        ranking_position is not None
-        and ranking_comparison_total is not None
-        and ranking_top_percent is not None
-        and bool(ranking_title)
-        and bool(ranking_rank)
-        and ranking_distribution is not None
-    )
+    # Left: overall score. Increase the numeric hierarchy and keep pt attached
+    # to the value so it reads as one score rather than a small footnote.
+    draw_text(66, 226, "総合評価スコア", 24, MUTED, heavy=True)
+    score_label = f"{float(overall_score):.3f}"
+    score_font = fitted(score_label, 510, 132, 94, True)
+    score_bbox = d.textbbox((0, 0), score_label, font=score_font, stroke_width=3)
+    score_y = 275
+    if is_rainbow:
+        draw_rainbow_text(62, score_y, score_label, score_font.size)
+    else:
+        d.text((62, score_y), score_label, font=score_font, fill=accent,
+               stroke_width=3, stroke_fill=(2, 12, 40))
+    score_width = score_bbox[2] - score_bbox[0]
+    draw_text(62 + score_width + 10, score_y + 74, "pt", 48, WHITE, heavy=True)
 
-    if ranking_enabled:
-        draw_ranking_result_card(
-            image,
-            draw,
-            ranking_position=ranking_position,
-            comparison_total=ranking_comparison_total,
-            ranking_top_percent=ranking_top_percent,
-            ranking_title=ranking_title,
-            ranking_rank=ranking_rank,
-            rank_distribution=ranking_distribution,
-            analysis_date=ranking_analysis_date,
-            top=LOWER_RIGHT_RECT[1],
-            rect=LOWER_RIGHT_RECT,
-        )
+    # Right: rank uses the same large typographic scale as the score.
+    d.line((620, 225, 620, 395), fill=(*accent, 150), width=2)
+    draw_text(795, 240, "RANK", 24, MUTED, anchor="mm", heavy=True)
+    rank_font = fitted(rank, 330, 132, 94, True)
+    if is_rainbow:
+        draw_rainbow_text(795, 278, rank, rank_font.size, anchor="mm")
+    else:
+        rank_bbox = d.textbbox((0, 0), str(rank), font=rank_font, stroke_width=3)
+        rank_width = rank_bbox[2] - rank_bbox[0]
+        rank_height = rank_bbox[3] - rank_bbox[1]
+        d.text((795 - rank_width / 2 - rank_bbox[0], 292 - rank_bbox[1]),
+               str(rank), font=rank_font, fill=accent,
+               stroke_width=3, stroke_fill=(2, 12, 40))
 
-    # 6. Footer is anchored to the bottom of the fixed 1450px canvas.
-    draw_footer(draw, top=FOOTER_RECT[1])
+    # Achievement is a prominent supporting metric beneath the two main values.
+    rounded((560, 420, 970, 500), 12, (9, 42, 88, 238), accent, 2)
+    draw_text(584, 442, "達成率", 25, accent, heavy=True)
+    draw_text(948, 438, f"{float(achievement):.3f}%", 42, WHITE, anchor="ra", heavy=True)
 
-    # Never leave stale/unused canvas below the designed layout.
-    image = image.crop((0, 0, CARD_WIDTH, CARD_HEIGHT))
+    # Solid judgement pie chart at the upper right. Percentages are relative to total notes.
+    panel((1030, 160, 1570, 525), "JUDGEMENT  /  判定内訳", CYAN)
+    jp = [("AMAZING+", max(0, int(amazing_plus)), PURPLE),
+          ("AMAZING", max(0, int(amazing)), PINK)]
+    denom = max(1, int(total_notes))
+    pie_total = sum(v for _, v, _ in jp)
+    cx, cy, radius = 1165, 340, 112
+    if pie_total > 0:
+        angle = -90.0
+        for name, value, color in jp:
+            if value <= 0:
+                continue
+            sweep = 360.0 * value / pie_total
+            d.pieslice((cx-radius, cy-radius, cx+radius, cy+radius),
+                       start=angle, end=angle+sweep, fill=color,
+                       outline=(240, 248, 255), width=3)
+            angle += sweep
+    else:
+        d.ellipse((cx-radius, cy-radius, cx+radius, cy+radius),
+                  fill=(65, 80, 110), outline=(220, 235, 250), width=3)
+    for i, (name, value, color) in enumerate(jp):
+        y0 = 266 + i * 91
+        d.ellipse((1302, y0 + 4, 1327, y0 + 29), fill=color)
+        draw_text(1340, y0, name, 18, WHITE, heavy=True)
+        pct = value / denom * 100.0
+        draw_text(1340, y0 + 31, f"{value:,}  ({pct:.1f}%)", 21, WHITE, heavy=True)
+    draw_text(1060, 469, f"TOTAL NOTES  {int(total_notes):,}", 18, MUTED, heavy=True)
 
+    # Three lower information panels.
+    panel((30, 545, 520, 790), "JUDGEMENT DETAIL  /  判定内訳", PINK)
+    for i, (name, value, color) in enumerate(jp):
+        y0 = 622 + i * 67
+        d.ellipse((62, y0 + 5, 82, y0 + 25), fill=color)
+        draw_text(98, y0 - 2, name, 22, color, heavy=True)
+        draw_text(475, y0 - 7, f"{value:,}", 28, WHITE, anchor="ra", heavy=True)
+        d.line((62, y0 + 38, 475, y0 + 38), fill=(80, 135, 180), width=2)
+    draw_text(62, 755, "PERFECT以下：0", 18, MUTED, heavy=True)
+
+    panel((540, 545, 1030, 790), "SKILL  /  技術評価", CYAN)
+    draw_text(568, 616, "精密度", 21, BLUE, heavy=True)
+    draw_text(725, 616, f"{float(precision):.3f}%", 22, WHITE, heavy=True)
+    draw_text(995, 616, precision_grade, 22, BLUE, anchor="ra", heavy=True)
+    draw_diamonds(605, 679, precision, BLUE)
+    if balance_available:
+        draw_text(568, 711, "安定度", 21, GREEN, heavy=True)
+        draw_text(725, 711, f"{float(balance):.3f}%", 22, WHITE, heavy=True)
+        draw_text(995, 711, balance_grade, 22, GREEN, anchor="ra", heavy=True)
+        draw_diamonds(605, 762, balance, GREEN)
+    else:
+        draw_text(568, 711, "安定度", 21, GREEN, heavy=True)
+        draw_text(725, 711, "算出対象外", 19, MUTED)
+
+    panel((1050, 545, 1570, 790), "RANKING  /  総合評価ランキング", GOLD)
+    if ranking_title:
+        filename = RANKING_TITLE_FILES.get(ranking_title)
+        title_path = RANKING_TITLE_DIR / filename if filename else None
+        if title_path and title_path.exists():
+            badge = Image.open(title_path).convert("RGBA")
+            max_w, max_h = 350, 72
+            scale = min(max_w / badge.width, max_h / badge.height)
+            badge = badge.resize((max(1, int(badge.width * scale)),
+                                  max(1, int(badge.height * scale))),
+                                 Image.Resampling.LANCZOS)
+            img.alpha_composite(badge, (1085, 615))
+    if ranking_position is not None and ranking_comparison_total:
+        top_pct = ranking_top_percent if ranking_top_percent is not None else 0.0
+        draw_text(1080, 704, f"{int(ranking_position):,}位 / {int(ranking_comparison_total):,}件中",
+                  20, WHITE, heavy=True)
+        draw_text(1080, 735, f"上位 {float(top_pct):.1f}%", 19, CYAN, heavy=True)
+    else:
+        draw_text(1080, 714, "ランキングデータなし", 19, MUTED)
+    if ranking_average_score is not None:
+        draw_text(1535, 704, f"1,800件平均 {float(ranking_average_score):.3f} pt",
+                  16, GOLD, anchor="ra", heavy=True)
+    if ranking_analysis_date:
+        draw_text(1535, 750, f"解析日：{ranking_analysis_date}", 16, MUTED, anchor="ra")
+
+    # SLOW / FAST counts, preserving the original analysis information without a distribution graph.
+    rounded((30, 810, 1570, 900), 18, (5, 24, 65, 232), CYAN, 3)
+    d.rounded_rectangle((33, 813, 1567, 850), radius=14, fill=(13, 55, 105, 238))
+    draw_text(50, 817, "TAP TIMING  /  タップタイミング", 20, CYAN, heavy=True)
+    d.line((48, 854, 1552, 854), fill=(*CYAN, 185), width=2)
+    draw_text(90, 861, "SLOW", 19, BLUE, heavy=True)
+    slow_text = f"{int(slow):,}" if slow_available else "—"
+    draw_text(315, 875, slow_text, 24, WHITE, anchor="mm", heavy=True)
+    draw_text(555, 861, "FAST", 19, RED, heavy=True)
+    fast_text = f"{int(fast):,}" if fast_available else "—"
+    draw_text(785, 875, fast_text, 24, WHITE, anchor="mm", heavy=True)
+    draw_text(1045, 861, "SLOW / FAST 比率", 19, MUTED, heavy=True)
+    timing_total = max(0, int(slow) if slow_available else 0) + max(0, int(fast) if fast_available else 0)
+    if timing_total > 0:
+        slow_pct = (max(0, int(slow)) / timing_total) * 100 if slow_available else 0
+        fast_pct = (max(0, int(fast)) / timing_total) * 100 if fast_available else 0
+        draw_text(1530, 875, f"{slow_pct:.1f}%  /  {fast_pct:.1f}%", 24, WHITE, anchor="rm", heavy=True)
+    else:
+        draw_text(1530, 875, "算出対象外", 19, MUTED, anchor="rm")
+
+    # Analysis report and official/non-official disclaimer.
+    panel((30, 920, 1570, 1115), "ANALYSIS REPORT  /  解析コメント", CYAN)
+    if show_comment:
+        comment_text = str(comment).strip() if str(comment).strip() else generate_comment(
+            achievement=achievement, precision=precision, balance=balance,
+            balance_available=balance_available, rank=rank, fast=fast, slow=slow)
+    else:
+        comment_text = "解析コメントは非表示です。"
+    max_line_width = 950
+    lines, line = [], ""
+    for ch in str(comment_text):
+        if ch == "\n":
+            lines.append(line); line = ""
+        elif d.textbbox((0, 0), line + ch, font=ft(22))[2] > max_line_width:
+            if line:
+                lines.append(line)
+            line = ch
+        else:
+            line += ch
+    if line:
+        lines.append(line)
+    for i, line in enumerate(lines[:3]):
+        draw_text(62, 990 + i * 34, line, 20, WHITE)
+
+    # Compact achievement title artwork (maximum five) on the result card.
+    badge_asset_names = {
+        "AMAZING Specialist": "amazing_specialist.png",
+        "Precision Master": "precision_master.png",
+        "Perfect Balance": "perfect_balance.png",
+        "Rhythm Master": "rhythm_master.png",
+        "SSS Collector": "sss_collector.png",
+    }
+    try:
+        from PIL import Image as _BadgeImage
+        badge_root = Path(__file__).resolve().parent.parent / "assets" / "achievement_titles"
+        for badge_index, badge_title in enumerate((achievement_titles or [])[:5]):
+            asset_name = badge_asset_names.get(badge_title)
+            if not asset_name:
+                continue
+            asset_path = badge_root / asset_name
+            if not asset_path.is_file():
+                continue
+            badge = _BadgeImage.open(asset_path).convert("RGBA")
+            badge.thumbnail((126, 35), _BadgeImage.Resampling.LANCZOS)
+            col = badge_index % 3
+            row = badge_index // 3
+            img.alpha_composite(badge, (1040 + col * 132, 986 + row * 42))
+    except Exception:
+        pass
+
+    d.line((30, 1135, 1570, 1135), fill=(70, 180, 225), width=2)
+    disclaimer = "※判定内訳・各スコアは解析結果から推定した値です。公式アプリが表示する値ではありません。本ツールは非公式ファンメイドツールです。"
+    draw_text(36, 1145, disclaimer, 15, MUTED)
+    draw_text(36, 1170, "https://ensemble-stars-analyzer.streamlit.app/", 13, MUTED)
+    draw_text(1560, 1145, "EnsembleStarsAnalyzer", 14, MUTED, anchor="ra")
+
+    # QR code for direct access to the web app. This is a promotional link only;
+    # it does not alter any analysis or ranking data.
+    try:
+        import qrcode
+        qr_image = qrcode.make("https://ensemble-stars-analyzer.streamlit.app/").convert("RGB")
+        qr_image = qr_image.resize((96, 96))
+        img.paste(qr_image, (1460, 1008))
+    except Exception:
+        # Keep card generation available even if the optional QR dependency is absent.
+        pass
+
+    save_path = Path(save_path)
     save_path.parent.mkdir(parents=True, exist_ok=True)
-    image.save(save_path, optimize=True)
+    img.convert("RGB").save(save_path, format="PNG", optimize=True)
     return str(save_path)
+
 
 # ==========================================================
 # End of File

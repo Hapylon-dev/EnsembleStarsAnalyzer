@@ -140,7 +140,7 @@ body[data-phase="chance-zone"] .screen{box-shadow:0 0 18px #f1c75b,inset 0 0 22p
 </details>
 <details class="guide"><summary>RANK・獲得NOTESの色分けとボーダー</summary><p><b>総獲得NOTES・RUSH獲得NOTESの色：</b>5,000未満は銀色、5,000～9,999は金色、10,000以上は虹色。<br><b>RANKカラー：</b>SSS+ / SSS＝虹色、S系＝金色、A系＝赤色、B系＝青色、C系＝緑色、D＝ピンク、E＝紫色、F＝灰色。</p><div class="rank-guide-grid"><table><tr><th>RANK</th><th>最低獲得NOTES</th></tr>
 <tr><td>SSS+</td><td>60,000</td></tr><tr><td>SSS</td><td>50,400</td></tr><tr><td>SS+</td><td>44,700</td></tr><tr><td>SS</td><td>40,500</td></tr><tr><td>S+</td><td>36,900</td></tr><tr><td>S</td><td>33,300</td></tr><tr><td>AAA+</td><td>29,700</td></tr><tr><td>AAA</td><td>26,400</td></tr><tr><td>AA+</td><td>23,400</td></tr><tr><td>AA</td><td>20,700</td></tr><tr><td>A+</td><td>18,300</td></tr><tr><td>A</td><td>15,900</td></tr><tr><td>BBB</td><td>14,100</td></tr><tr><td>BB</td><td>12,300</td></tr><tr><td>B</td><td>9,900</td></tr><tr><td>CCC</td><td>7,800</td></tr><tr><td>CC</td><td>5,400</td></tr><tr><td>C</td><td>3,300</td></tr><tr><td>D</td><td>1,800</td></tr><tr><td>E</td><td>1,500</td></tr><tr><td>F</td><td>300</td></tr></table></div></details>
-<div class="result hidden" id="result"><div class="grid" id="resultGrid"></div><div class="actions"><button class="btn" id="save">結果画像を表示・保存</button><button class="btn secondary" id="share">𝕏で共有</button><button class="btn secondary" id="replay">もう一度遊ぶ</button></div><div class="hint">スマートフォンでは表示された画像を長押しして「写真に保存」を選択できます。</div><div id="savePreview" class="save-preview hidden"><p>画像を長押しして「写真に保存」を選択してください。</p><img id="savedResultImage" alt="OVERALL PACHINKO リザルトカード画像"></div></div>
+<div class="result hidden" id="result"><div class="grid" id="resultGrid"></div><div class="actions"><button class="btn" id="save">結果画像を表示・保存</button><button class="btn secondary" id="replay">もう一度遊ぶ</button></div><div class="hint">スマートフォンでは表示された画像を長押しして「写真に保存」を選択できます。</div><div id="savePreview" class="save-preview hidden"><p>画像を長押しして「写真に保存」を選択してください。</p><img id="savedResultImage" alt="OVERALL PACHINKO リザルトカード画像"></div></div>
 </div>
 <script>
 const VALUES=__VALUES__,APP_URL=__APPURL__,PERCENTILE_DATA=__PERCENTILE_DATA__,SIMULATION_COUNT=__SIMULATION_COUNT__,RANK_TIERS=__RANK_TIERS__,RUSH_PAYOUTS=__RUSH_PAYOUTS__,PITY_SPINS=__PITY_SPINS__,PITY_PAYOUT=__PITY_PAYOUT__,ST_MAX=__ST_MAX__,RESERVE_HOLDS=4,BASE_COLORS=__BASE_COLORS__,COLOR_HIT_RATES=__COLOR_HIT_RATES__,SPECIAL_EVENT_RATES=__SPECIAL_EVENT_RATES__;
@@ -367,55 +367,6 @@ $('save').addEventListener('click',()=>{
  
  const finishCardImage=()=>{const dataUrl=c.toDataURL('image/png');$('savedResultImage').src=dataUrl;$('savePreview').classList.remove('hidden');$('savePreview').scrollIntoView({behavior:'smooth',block:'center'});if(!/iPhone|iPad|iPod/.test(navigator.userAgent)){const a=document.createElement('a');a.download='overall_pachinko_result.png';a.href=dataUrl;a.click();}};
  finishCardImage();
-});
-function xWeightedLength(text){const urlPattern=/https?:\/\/[^\s]+/g;let total=0,last=0,match;while((match=urlPattern.exec(text))!==null){total+=Array.from(text.slice(last,match.index)).reduce((n,ch)=>n+(ch.codePointAt(0)<=0x10ff?1:((ch.codePointAt(0)===0x200d||ch.codePointAt(0)===0xfe0f||ch.codePointAt(0)===0xfe0e)?0:2)),0)+23;last=match.index+match[0].length;}return total+Array.from(text.slice(last)).reduce((n,ch)=>n+(ch.codePointAt(0)<=0x10ff?1:((ch.codePointAt(0)===0x200d||ch.codePointAt(0)===0xfe0f||ch.codePointAt(0)===0xfe0e)?0:2)),0);}
-function fitXText(lines){
- const limit=220, url=lines.find(line=>/^https?:\/\//.test(line))||APP_URL;
- const tags=lines.find(line=>line.startsWith('#'))||'#LIVESCORELAB #OVERALLPACHINKO';
- const title=lines[0]||'🎰 OVERALL PACHINKO 結果';
- const score=lines[1]||`総獲得NOTES：${fmt(notes)}（${rankFor(notes)}）`;
- const optional=lines.slice(2).filter(line=>line!==url&&line!==tags);
- let kept=[title,score,...optional,tags,url];
- let text=kept.join('\n');
- // まず情報量の大きい補足行から省き、称号・タグ・URLは残す。
- const dropPrefixes=['RUSH消化：','初当たり出玉：','初当たり：','シミュレーション位置：','RUSH大当たり：'];
- for(const prefix of dropPrefixes){
-   if(xWeightedLength(text)<=limit)break;
-   const idx=kept.findIndex(line=>line.startsWith(prefix));
-   if(idx>=0){kept.splice(idx,1);text=kept.join('\n');}
- }
- // 称号は最大3件＋ほか○件。さらに必要なら称号行自体を省略する。
- if(xWeightedLength(text)>limit){
-   const idx=kept.findIndex(line=>line.startsWith('獲得称号：'));
-   if(idx>=0){kept.splice(idx,1);text=kept.join('\n');}
- }
- // URL・ハッシュタグを維持したまま本文を短縮。固定部分だけで超過する場合も安全に切り詰める。
- if(xWeightedLength(text)>limit){
-   const fixed=[title,score,tags,url].join('\n');
-   let shortScore=score;
-   while(xWeightedLength([title,shortScore,tags,url].join('\n'))>limit && Array.from(shortScore).length>8){
-     shortScore=Array.from(shortScore).slice(0,-1).join('');
-   }
-   text=[title,shortScore,tags,url].join('\n');
- }
- if(xWeightedLength(text)>limit){
-   // 最終保護：URLとハッシュタグは保持し、タイトル・スコアを短縮する。
-   const suffix='\n'+tags+'\n'+url;
-   let prefix='OVERALL '+fmt(notes)+' NOTES';
-   while(xWeightedLength(prefix+suffix)>limit&&prefix.length>1)prefix=prefix.slice(0,-1);
-   text=prefix+suffix;
- }
- return text;
-}
-$('share').addEventListener('click',()=>{
- const lines=['🎰 OVERALL PACHINKO 結果',`総獲得NOTES：${fmt(notes)}（${rankFor(notes)}）`];
- lines.push(`シミュレーション位置：${percentileLabel(notes)}`);
- const earned=achievementList();
- if(earned.length)lines.push('獲得称号：'+earned.slice(0,3).join('・')+(earned.length>3?` ほか${earned.length-3}件`:''));
- lines.push(`初当たり：${initialSpins}回転／OVERALL ${initial===null?'--.---':Number(initial).toFixed(3)}`,`初当たり出玉：${fmt(initialPayout)} NOTES（${initialCategory}）`,`RUSH大当たり：${rushHits}回／RUSH獲得：${fmt(rushNotes)} NOTES`,`RUSH消化：${rushSpins}回転`,'#LIVESCORELAB #OVERALLPACHINKO',APP_URL);
- const t=fitXText(lines),weighted=xWeightedLength(t);
- if(weighted>220){console.error('X share length guard failed',weighted);return;}
- window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(t),'_blank','noopener');
 });
 update();
 </script></body></html>'''

@@ -99,3 +99,21 @@ Date: 2026-11-11
 ## 2026-11-12 — Application naming
 - Replaced the visible LIVE SCORE LAB product name with ensemble-stars-analyzer in the local app page title, footer, README, build information, and relevant manuals.
 - Descriptive references use あんさんぶるスターズ！！Music タップタイミング解析 or タップタイミング解析Webアプリ. The pachinko mini-game name remains OVERALL PACHINKO.
+
+
+## 遊タイム・時短仕様改訂（2026-11-13）
+
+- 通常時150回転連続未当たりで時短モードへ移行。
+- 時短は131回転、当選確率は通常時と同じ52/1,799（約1/34.6）。
+- 時短突入時点ではNOTESを付与しない。
+- 時短中の大当たりはALL 6,000 NOTES＋RUSH確定。
+- 131回転で当たらなかった場合は通常時へ戻る。
+- 特図1は通常時の大当たりのみ、特図2は時短、特図3はRUSHとして表示。
+- 時短専用の青・シアン系演出を追加。
+- 最新提供版のpachinko_ui.py、README.md、result_card.pyを適用。
+- 不要な作業用バックアップ2ファイルを削除。モデル・ランキング・シミュレーションデータは用途を確認できないため保持。
+
+
+## 3.3.4-dev（2026年11月13日）
+
+遊タイムを「時短突入」に変更。時短は131回転、通常時と同じ52/1,799（約1/34.6）。時短中の大当たりでALL 6,000 NOTES＋RUSH、時短スルー時は通常時へ復帰。特図1・特図2・特図3を分離し、専用演出とシミュレーションを更新。

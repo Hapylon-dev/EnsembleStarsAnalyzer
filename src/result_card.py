@@ -3817,32 +3817,32 @@ def generate_comment(
 
     if precision >= 88.0:
         comments.append(
-            "推定上、中央付近の判定割合が非常に高く、精密度が高い傾向です。"
+            "中央付近の判定割合が非常に高く、精密度が高い傾向です。"
         )
 
     elif precision >= 82.0:
         comments.append(
-            "推定上、タイミングのばらつきが少なく、精密度が高い傾向です。"
+            "タイミングのばらつきが少なく、精密度が高い傾向です。"
         )
 
     elif precision >= 74.0:
         comments.append(
-            "推定上、タイミングのばらつきは比較的少なく、精密度は良好な傾向です。"
+            "タイミングのばらつきは比較的少なく、精密度は良好な傾向です。"
         )
 
     elif precision >= 68.0:
         comments.append(
-            "推定上、タイミングのばらつきは比較的抑えられています。"
+            "タイミングのばらつきは比較的抑えられています。"
         )
 
     elif precision >= 60.0:
         comments.append(
-            "推定上、タイミングにややばらつきが見られます。"
+            "タイミングにややばらつきが見られます。"
         )
 
     else:
         comments.append(
-            "推定上、タイミングのばらつきが大きめです。中央付近の判定割合を参考にしてください。"
+            "タイミングのばらつきが大きめです。中央付近の判定割合を参考にしてください。"
         )
 
     # ----------------------------
@@ -3853,42 +3853,42 @@ def generate_comment(
 
         if balance >= 98.0:
             comments.append(
-                "推定上、SLOW/FASTの偏りが非常に少なく、安定した傾向です。"
+                "SLOW/FASTの偏りが非常に少なく、安定した傾向です。"
             )
 
         elif balance >= 88.0:
             comments.append(
-                "推定上、SLOW/FASTの偏りが少なく、安定した傾向です。"
+                "SLOW/FASTの偏りが少なく、安定した傾向です。"
             )
 
         elif balance >= 74.0:
             comments.append(
-                "推定上、SLOW/FASTの偏りは比較的小さく、バランスは良好な傾向です。"
+                "SLOW/FASTの偏りは比較的小さく、バランスは良好な傾向です。"
             )
 
         elif balance >= 56.0:
                 comments.append(
-                    "推定上、タイミングのばらつきは比較的抑えられています。"
+                    "タイミングのばらつきは比較的抑えられています。"
                 )
 
         elif balance >= 42.0:
             comments.append(
-                "推定上、SLOW/FASTにやや偏りが見られます。"
+                "SLOW/FASTにやや偏りが見られます。"
             )
 
         elif balance >= 20.0:
             comments.append(
-                "推定上、SLOW/FASTの偏りが見られます。"
+                "SLOW/FASTの偏りが見られます。"
             )
 
         elif balance >= 12.0:
             comments.append(
-                "推定上、SLOW/FASTの偏りが大きく、一方向に寄る傾向です。"
+                "SLOW/FASTの偏りが大きく、一方向に寄る傾向です。"
             )
 
         else:
             comments.append(
-                "推定上、SLOW/FASTの偏りが非常に大きく、一方向へ強く寄る傾向です。"
+                "SLOW/FASTの偏りが非常に大きく、一方向へ強く寄る傾向です。"
             )
 
     # ----------------------------

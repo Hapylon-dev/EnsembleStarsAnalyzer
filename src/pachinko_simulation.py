@@ -17,7 +17,9 @@ DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "output" / "simulation"
 TRIALS = 1_000_000
 DEFAULT_SEED = 20261111
 PITY_SPINS = 150
-INITIAL_HIT_PROBABILITY = 1 / 34.6
+TIME_SPINS = 131
+PITY_PAYOUT = 6000
+INITIAL_HIT_PROBABILITY = 52 / 1799
 RUSH_HIT_PROBABILITY = 1 / 73
 # Aggregate simulation horizon: 116 main ST spins + up to 4 reserve draws.
 RUSH_ST = 120
@@ -51,7 +53,7 @@ def run_simulation(
     """Run a deterministic simulation matching the app's 1,799-value initial draw pool.
 
     Initial jackpots are sampled from the 52 matching OVERALL values in the fixed
-    source dataset. A 150th consecutive miss becomes Pity Time. Each RUSH segment
+    source dataset. A PITY_SPINS-th consecutive miss becomes Pity Time. Each RUSH segment
     ends at the first hit within 120 spins or after 120 misses; a hit resets ST.
     """
     if int(trials) <= 0:
@@ -64,19 +66,47 @@ def run_simulation(
     jackpot_values = np.asarray([item[0] for item in jackpots], dtype=np.float64)
     jackpot_payouts = np.asarray([item[1] for item in jackpots], dtype=np.int64)
 
-    # Match the actual browser game: one draw from the fixed 1,799-value pool per spin.
+    # Normal mode: PITY_SPINS consecutive misses trigger a 131-spin time mode.
+    # A time-mode hit awards 6,000 NOTES and guarantees RUSH; a time miss
+    # returns to normal mode and the cycle repeats.
     initial_probability = len(jackpots) / 1799
-    first_hit_spins = rng.geometric(initial_probability, size=trials)
-    pity_mask = first_hit_spins > PITY_SPINS
-    initial_spins = np.minimum(first_hit_spins, PITY_SPINS).astype(np.int16)
-    initial_type = np.where(pity_mask, "PITY TIME", "NORMAL")
+    normal_miss_probability = (1 - initial_probability) ** PITY_SPINS
+    time_hit_probability = 1 - (1 - initial_probability) ** TIME_SPINS
+    initial_spins = np.zeros(trials, dtype=np.int32)
+    initial_type = np.full(trials, "NORMAL", dtype="<U8")
     initial_overall = np.full(trials, np.nan, dtype=np.float64)
-    initial_payout = np.full(trials, 6000, dtype=np.int64)
-
-    normal_indices = np.flatnonzero(~pity_mask)
-    selected_jackpots = rng.integers(0, len(jackpots), size=len(normal_indices))
-    initial_overall[normal_indices] = jackpot_values[selected_jackpots]
-    initial_payout[normal_indices] = jackpot_payouts[selected_jackpots]
+    initial_payout = np.zeros(trials, dtype=np.int64)
+    unresolved = np.ones(trials, dtype=bool)
+    while unresolved.any():
+        idx = np.flatnonzero(unresolved)
+        normal_wait = rng.geometric(initial_probability, size=len(idx))
+        normal_hit = normal_wait <= PITY_SPINS
+        if normal_hit.any():
+            hit_idx = idx[normal_hit]
+            initial_spins[hit_idx] += normal_wait[normal_hit]
+            selected = rng.integers(0, len(jackpots), size=len(hit_idx))
+            initial_overall[hit_idx] = jackpot_values[selected]
+            initial_payout[hit_idx] = jackpot_payouts[selected]
+            unresolved[hit_idx] = False
+        pity_idx = idx[~normal_hit]
+        if pity_idx.size:
+            initial_spins[pity_idx] += PITY_SPINS
+            time_wait = rng.geometric(initial_probability, size=len(pity_idx))
+            time_hit = time_wait <= TIME_SPINS
+            if time_hit.any():
+                hit_idx = pity_idx[time_hit]
+                initial_spins[hit_idx] += time_wait[time_hit]
+                selected = rng.integers(0, len(jackpots), size=len(hit_idx))
+                initial_overall[hit_idx] = jackpot_values[selected]
+                initial_payout[hit_idx] = PITY_PAYOUT
+                initial_type[hit_idx] = "TIME"
+                unresolved[hit_idx] = False
+            time_miss_idx = pity_idx[~time_hit]
+            if time_miss_idx.size:
+                initial_spins[time_miss_idx] += TIME_SPINS
+    pity_mask = initial_type == "TIME"
+    normal_count = int((~pity_mask).sum())
+    pity_count = int(pity_mask.sum())
 
     rush_hits = np.zeros(trials, dtype=np.int16)
     rush_notes = np.zeros(trials, dtype=np.int64)
@@ -112,12 +142,15 @@ def run_simulation(
     normal_count = trials - pity_count
 
     p_theory = (1 - INITIAL_HIT_PROBABILITY) ** PITY_SPINS
+    time_hit_theory = 1 - (1 - INITIAL_HIT_PROBABILITY) ** TIME_SPINS
+    # Probability that the eventual initial jackpot comes from time mode.
+    p_time_final = (p_theory * time_hit_theory) / (1 - p_theory * (1 - time_hit_theory))
     normal_initial_ev = sum(v * w for v, w in INITIAL_PAYOUT_WEIGHTS) / sum(w for _, w in INITIAL_PAYOUT_WEIGHTS)
     rush_continuation = 1 - (1 - RUSH_HIT_PROBABILITY) ** RUSH_ST
     rush_hits_ev = rush_continuation / (1 - rush_continuation)
     rush_payout_ev = sum(v * w for v, w in RUSH_PAYOUT_WEIGHTS) / 100
     rush_notes_ev = rush_hits_ev * rush_payout_ev
-    initial_notes_ev = (1 - p_theory) * normal_initial_ev + p_theory * 6000
+    initial_notes_ev = (1 - p_time_final) * normal_initial_ev + p_time_final * 6000
 
     histogram = [
         {"rank": rank, "count": rank_counts[rank], "percentage": rank_counts[rank] / trials * 100}
@@ -134,7 +167,14 @@ def run_simulation(
         "initial_hit_probability_actual": initial_probability,
         "initial_hit_probability_display": INITIAL_HIT_PROBABILITY,
         "pity_spins": PITY_SPINS,
-        "theoretical_pity_percentage": p_theory * 100,
+        "time_spins": TIME_SPINS,
+        "time_hit_probability": time_hit_theory,
+        "time_rush_entry_probability": time_hit_theory,
+        "theoretical_time_rush_entry_percentage": time_hit_theory * 100,
+        "theoretical_time_jackpot_percentage_of_final_initial_hits": p_time_final * 100,
+        "theoretical_pity_trigger_percentage_per_normal_cycle": p_theory * 100,
+        "theoretical_pity_percentage": p_time_final * 100,
+        "theoretical_pity_trigger_probability_percentage": p_theory * 100,
         "simulated_pity_count": pity_count,
         "simulated_pity_percentage": pity_count / trials * 100,
         "normal_initial_count": normal_count,
@@ -167,7 +207,7 @@ def run_simulation(
         "histogram": histogram,
         "max_total_notes": int(total_notes.max()),
         "rank_thresholds": [{"rank": rank, "minimum_notes": minimum} for minimum, rank in RANK_THRESHOLDS],
-        "simulation_method": "fixed 1,799-value OVERALL pool; 150 consecutive misses trigger Pity Time; RUSH 1/73 with 116 main ST spins + up to 4 reserve draws (max 120)",
+        "simulation_method": f"fixed 1,799-value OVERALL pool; {PITY_SPINS} normal misses trigger 131 time spins; time hit awards 6,000 NOTES and RUSH; time miss returns to normal; RUSH 1/73 with 116 main ST spins + up to 4 reserve draws (max 120)",
     }
 
     output = Path(output_dir)

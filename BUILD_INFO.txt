@@ -1,11 +1,14 @@
-ensemble-stars-analyzer 3.3.3-dev
-Build date: 2026-11-12
+EnsembleStarsAnalyzer 3.3.6-dev
+更新日: 2026-11-14
+遊タイム: 通常時150回転連続未当選で時短131回転へ移行。時短中の大当たり期待度は約97.9％。時短当選時はALL 6,000 NOTES＋RUSH。
+特図2：時短の出玉円グラフはドーナツ状ではなく、6,000 NOTES 100%の円グラフ表示。
+Build date: 2026-11-13
 Base source: user-uploaded 3.3.3-dev source archive
 Changes: completed normal-time presentation layer with STANDARD / FORESHADOW / QUICK modes, staged hold/tease/reach/final cues; completed RUSH presentation layer; STANDARD / SHADOW VISITOR / IMPACT / ONE PUSH modes; hold-arrival foreshadowing; escalating chain presentation at 1-3 / 4-7 / 8-11 / 12+; payout-tier-specific reveals (300/1500/3000/4500/6000); adaptive-height saved result card; responsive RUSH mode selector; visual spin animation uses isolated visual RNG
-Pity Time game logic: unchanged; 150 consecutive misses; +6000 NOTES; RUSH entry
+遊タイム改訂: 150回転連続未当たりで131回転の時短へ移行。時短中の当たりで6,000 NOTES＋RUSH。時短突入時の報酬なし
 RUSH payout: unchanged; 20/50/15/10/5; mean 2010 NOTES
 Hold color transformation probability: unchanged; 1/50
-Normal hit probability: unchanged; 1/34.6
+Normal/time hit probability: 52/1,799 (about 1/34.6)
 RUSH hit probability: unchanged; 1/73
 ST本体: 116 spins + up to 4 stored reserve holds (max 120 total draws)
 RANK thresholds: unchanged
@@ -39,3 +42,7 @@ User-test revision (2026-11-12, follow-up): ST main segment changed to 116 spins
 - Core pachinko draw/payout code, rank thresholds, and the 1,000,000-trial simulation data were not modified.
 - Supabase schema/RPC files are retained as legacy project assets but are no longer called by the current OVERALL PACHINKO UI.
 Application name update (2026-11-12): visible application identity is ensemble-stars-analyzer. Descriptive app references use あんさんぶるスターズ！！Music タップタイミング解析 or タップタイミング解析Webアプリ. Mini-game name remains OVERALL PACHINKO.
+
+Version 3.3.4-dev changes (2026-11-13): time mode, three separate specs (normal/time/RUSH), dedicated cyan time-mode presentation, refreshed simulation data and manuals, updated supplied README/result_card/pachinko_ui files. Removed obsolete pre_rank_slowfast backup files. Regression tests updated.
+
+3.3.5-dev (2026-11-13): 特図2にALL 6,000 NOTES (100%) の円グラフと時短中RUSH突入期待度を表示。シミュレーション集計キーの不一致を修正し、RANK分布チャートを復旧。遊タイム発動条件を通常仕様の150回転に復帰。1,000,000件シミュレーションを再生成。

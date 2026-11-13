@@ -2886,17 +2886,20 @@ with tab_pachinko:
                 f"実測シミュレーション：{int(simulation_summary['count']):,}件"
                 f" ／ 乱数シード：{int(simulation_summary['seed'])}"
             )
-            sim_cols = st.columns(4)
-            sim_cols[0].metric("遊タイム発動", f"{int(simulation_summary['simulated_pity_count']):,}件")
-            sim_cols[1].metric("遊タイム発動割合", f"{float(simulation_summary['simulated_pity_percentage']):.4f}%")
+            sim_cols = st.columns(5)
+            sim_cols[0].metric("時短経由初当たり", f"{int(simulation_summary['simulated_pity_count']):,}件")
+            sim_cols[1].metric("時短経由初当たり割合", f"{float(simulation_summary['simulated_pity_percentage']):.4f}%")
             sim_cols[2].metric("平均総獲得NOTES", f"{float(simulation_summary['average_total_notes_simulated']):,.2f}")
             sim_cols[3].metric("平均RUSH大当たり", f"{float(simulation_summary['average_rush_hits_simulated']):.4f}回")
+            sim_cols[4].metric("時短RUSH突入期待度", f"{float(simulation_summary['theoretical_time_rush_entry_percentage']):.2f}%")
             st.caption(
                 f"通常初当たり：{int(simulation_summary['normal_initial_count']):,}件"
                 f" ／ 遊タイム：{int(simulation_summary['simulated_pity_count']):,}件"
             )
             st.caption(
-                f"理論値：遊タイム発動 約{float(simulation_summary['theoretical_pity_percentage']):.4f}%"
+                f"理論値：時短経由初当たり割合 約{float(simulation_summary['theoretical_pity_percentage']):.4f}%"
+                f" ／ 1回の通常区間で150回転未当選となる確率 約{float(simulation_summary['theoretical_pity_trigger_probability_percentage']):.4f}%"
+                f" ／ 時短中RUSH突入期待度 約{float(simulation_summary['theoretical_time_rush_entry_percentage']):.2f}%"
                 f" ／ 通常時出玉期待値 {float(simulation_summary['average_initial_notes_theoretical']):,.2f} NOTES"
                 f" ／ RUSH獲得期待出玉 {float(simulation_summary['average_rush_notes_theoretical']):,.2f} NOTES"
                 f" ／ 総獲得期待出玉 {float(simulation_summary['average_total_notes_theoretical']):,.2f} NOTES"

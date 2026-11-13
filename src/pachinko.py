@@ -12,8 +12,10 @@ RESERVE_HOLDS = 4
 TOTAL_RUSH_DRAWS = ST_MAX + RESERVE_HOLDS
 RUSH_HIT_PROBABILITY = 1 / 73
 PITY_SPINS = 150
-PITY_PAYOUT = 6000
-INITIAL_HIT_PROBABILITY = 1 / 34.6
+PITY_PAYOUT = 6000  # 時短中大当たり時のみ付与
+TIME_SPINS = 131
+INITIAL_HIT_PROBABILITY = 52 / 1799
+TIME_HIT_PROBABILITY = INITIAL_HIT_PROBABILITY
 PITY_PROBABILITY = (1 - INITIAL_HIT_PROBABILITY) ** PITY_SPINS
 MAX_HOLDS = 5
 RANKING_CSV = Path(__file__).resolve().parent.parent / "output" / "ranking_batch_results.csv"
@@ -100,11 +102,22 @@ def expected_values() -> dict:
     expected_rush_hits = continuation / miss_run_probability
     expected_rush_spins = 73 * expected_rush_hits
     rush_ev = expected_rush_hits * rush_payout_ev
-    initial_ev_with_pity = (1 - PITY_PROBABILITY) * initial_ev + PITY_PROBABILITY * PITY_PAYOUT
+    time_hit_probability = 1 - (1 - TIME_HIT_PROBABILITY) ** TIME_SPINS
+    # A pity trigger itself awards nothing; only a time-mode hit awards 6,000.
+    eventual_time_jackpot_probability = (
+        PITY_PROBABILITY * time_hit_probability
+        / (1 - PITY_PROBABILITY * (1 - time_hit_probability))
+    )
+    time_ev = eventual_time_jackpot_probability * PITY_PAYOUT
+    initial_ev_with_pity = (1 - eventual_time_jackpot_probability) * initial_ev + time_ev
     return {
         "normal_initial_notes": initial_ev,
         "initial_notes": initial_ev_with_pity,
         "pity_probability": PITY_PROBABILITY,
+        "time_spins": TIME_SPINS,
+        "time_hit_probability": time_hit_probability,
+        "time_notes": time_ev,
+        "eventual_time_jackpot_probability": eventual_time_jackpot_probability,
         "rush_hit_notes": rush_payout_ev,
         "rush_hits": expected_rush_hits,
         "rush_spins": expected_rush_spins,
@@ -122,8 +135,11 @@ class PachinkoSession:
     initial_overall: float | None = None
     initial_triple: str | None = None
     is_pity_time: bool = False
+    time_mode: bool = False
+    time_spins: int = 0
     initial_payout: int = 0
     initial_spins: int = 0
+    normal_streak: int = 0
     in_rush: bool = False
     st_remaining: int = 0
     holds: list[str] = field(default_factory=list)
@@ -145,15 +161,25 @@ class PachinkoSession:
         if not overall_values:
             raise ValueError("OVERALLデータが空です")
         self.initial_spins += 1
-        value = self.rng.choice(overall_values)
-        triple = decimal_triple(value)
-        if not triple:
-            if self.initial_spins < PITY_SPINS:
-                self.last_event = {"type": "miss", "overall": value, "spins": self.initial_spins}
+        if self.time_mode:
+            self.time_spins += 1
+            value = self.rng.choice(overall_values)
+            triple = decimal_triple(value)
+            if not triple and self.time_spins < TIME_SPINS:
+                self.last_event = {"type": "time_miss", "overall": value, "time_spins": self.time_spins,
+                                   "time_remaining": TIME_SPINS - self.time_spins}
+                return self.last_event.copy()
+            if not triple:
+                self.time_mode = False
+                self.normal_streak = 0
+                self.time_spins = 0
+                self.last_event = {"type": "time_end", "overall": value, "spins": self.initial_spins,
+                                   "category": "TIME MISS"}
                 return self.last_event.copy()
             self.is_pity_time = True
-            self.initial_overall = None
-            self.initial_triple = None
+            self.time_mode = False
+            self.initial_overall = value
+            self.initial_triple = triple
             self.initial_payout = PITY_PAYOUT
             self.notes += PITY_PAYOUT
             self.payout_counts[PITY_PAYOUT] += 1
@@ -161,12 +187,27 @@ class PachinkoSession:
             self.st_remaining = ST_MAX
             self.segment_spins = 0
             self.reserve_spins = 0
-            self.last_event = {
-                "type": "pity_time", "overall": None, "spins": self.initial_spins,
-                "category": "PITY TIME", "payout": PITY_PAYOUT,
-            }
+            self.last_event = {"type": "time_jackpot", "overall": value, "triple": triple,
+                               "spins": self.initial_spins, "time_spins": self.time_spins,
+                               "category": "TIME JACKPOT", "payout": PITY_PAYOUT}
             return self.last_event.copy()
+        self.normal_streak += 1
+        value = self.rng.choice(overall_values)
+        triple = decimal_triple(value)
+        if not triple:
+            if self.normal_streak < PITY_SPINS:
+                self.last_event = {"type": "miss", "overall": value, "spins": self.initial_spins,
+                                   "normal_streak": self.normal_streak}
+                return self.last_event.copy()
+            self.is_pity_time = True
+            self.time_mode = True
+            self.time_spins = 0
+            self.last_event = {"type": "pity_time", "overall": None, "spins": self.initial_spins,
+                               "category": "PITY TIME", "payout": 0, "time_spins": TIME_SPINS}
+            return self.last_event.copy()
+        self.normal_streak = 0
         self.initial_overall = value
+        self.normal_streak = 0
         self.initial_triple = triple
         self.initial_payout = initial_payout(triple)
         self.notes += self.initial_payout
@@ -236,4 +277,5 @@ class PachinkoSession:
                 "rush_hits": self.rush_hits, "max_combo": self.max_combo, "rush_notes": self.rush_notes,
                 "total_notes": self.notes, "payout_counts": self.payout_counts.copy(),
                 "rush_spins": self.rush_spins, "played_at": self.started_at,
-                "initial_type": "PITY TIME" if self.is_pity_time else "NORMAL"}
+                "initial_type": "TIME" if self.is_pity_time else "NORMAL",
+                "time_spins": self.time_spins}

@@ -422,7 +422,7 @@ $('save').addEventListener('click',()=>{
 function xWeightedLength(text){const urlPattern=/https?:\/\/[^\s]+/g;let total=0,last=0,match;while((match=urlPattern.exec(text))!==null){total+=Array.from(text.slice(last,match.index)).reduce((n,ch)=>n+(ch.codePointAt(0)<=0x10ff?1:((ch.codePointAt(0)===0x200d||ch.codePointAt(0)===0xfe0f||ch.codePointAt(0)===0xfe0e)?0:2)),0)+23;last=match.index+match[0].length;}return total+Array.from(text.slice(last)).reduce((n,ch)=>n+(ch.codePointAt(0)<=0x10ff?1:((ch.codePointAt(0)===0x200d||ch.codePointAt(0)===0xfe0f||ch.codePointAt(0)===0xfe0e)?0:2)),0);}
 function fitXText(lines){
  const limit=220, url=lines.find(line=>/^https?:\/\//.test(line))||APP_URL;
- const tags=lines.find(line=>line.startsWith('#'))||'#LIVESCORELAB #OVERALLPACHINKO';
+ const tags=lines.find(line=>line.startsWith('#'))||'#OVERALLPACHINKO';
  const title=lines[0]||'🎰 OVERALL PACHINKO 結果';
  const score=lines[1]||`総獲得NOTES：${fmt(notes)}（${rankFor(notes)}）`;
  const optional=lines.slice(2).filter(line=>line!==url&&line!==tags);
@@ -463,7 +463,7 @@ $('share').addEventListener('click',()=>{
  lines.push(`シミュレーション位置：${percentileLabel(notes)}`);
  const earned=achievementList();
  if(earned.length)lines.push('獲得称号：'+earned.slice(0,3).join('・')+(earned.length>3?` ほか${earned.length-3}件`:''));
- lines.push(`初当たり：${initialSpins}回転／OVERALL ${initial===null?'--.---':Number(initial).toFixed(3)}`,`初当たり出玉：${fmt(initialPayout)} NOTES（${initialCategory}）`,`RUSH大当たり：${rushHits}回／RUSH獲得：${fmt(rushNotes)} NOTES`,`RUSH消化：${rushSpins}回転`,'#LIVESCORELAB #OVERALLPACHINKO',APP_URL);
+ lines.push(`初当たり：${initialSpins}回転／OVERALL ${initial===null?'--.---':Number(initial).toFixed(3)}`,`初当たり出玉：${fmt(initialPayout)} NOTES（${initialCategory}）`,`RUSH大当たり：${rushHits}回／RUSH獲得：${fmt(rushNotes)} NOTES`,`RUSH消化：${rushSpins}回転`,'#OVERALLPACHINKO',APP_URL);
  const t=fitXText(lines),weighted=xWeightedLength(t);
  if(weighted>220){console.error('X share length guard failed',weighted);return;}
  window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(t),'_blank','noopener');
